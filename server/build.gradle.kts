@@ -13,6 +13,7 @@ application {
 
 dependencies {
     implementation(projects.shared)
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.logback)
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
