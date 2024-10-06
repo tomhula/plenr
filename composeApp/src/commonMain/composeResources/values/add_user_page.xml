@@ -1,0 +1,8 @@
+<resources>
+    <string name="name">Jméno</string>
+    <string name="surname">Příjmení</string>
+    <string name="email">Email</string>
+    <string name="phone">Telefon</string>
+    <string name="add_user_button">Přidat uživatele</string>
+    <string name="busy_times">Nevolné časy</string>
+</resources>
