@@ -5,6 +5,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.json.encodeToStream
 import java.nio.file.Path
+import kotlin.io.path.exists
 import kotlin.io.path.inputStream
 import kotlin.io.path.outputStream
 
@@ -12,20 +13,26 @@ class JsonFileConfigManager(
     private val filePath: Path
 ) : ConfigManager
 {
-    private val json = Json
-
-    @OptIn(ExperimentalSerializationApi::class)
-    override suspend fun loadConfig(): Config
-    {
-        val stream = filePath.inputStream()
-        val config = json.decodeFromStream<Config>(stream)
-
-        return config
+    private val json = Json {
+        encodeDefaults = true
+        prettyPrint = true
     }
 
-    override suspend fun storeConfig(config: Config)
+    override suspend fun initConfig()
     {
-        val stream = filePath.outputStream()
-        json.encodeToStream(config, stream)
+        if (!filePath.exists())
+            setConfig(Config())
+    }
+
+    @OptIn(ExperimentalSerializationApi::class)
+    override suspend fun getConfig(): Config
+    {
+        return filePath.inputStream().use { json.decodeFromStream<Config>(it) }
+    }
+
+    @OptIn(ExperimentalSerializationApi::class)
+    override suspend fun setConfig(config: Config)
+    {
+        filePath.outputStream().use { json.encodeToStream(config, it) }
     }
 }
