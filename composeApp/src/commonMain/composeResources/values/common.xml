@@ -2,7 +2,5 @@
     <string name="first_name">Jméno</string>
     <string name="last_name">Příjmení</string>
     <string name="email">Email</string>
-    <string name="phone">Telefon</string>
-    <string name="add_user_button">Přidat uživatele</string>
-    <string name="busy_times">Nevolné časy</string>
+    <string name="phone">Telefonní číslo</string>
 </resources>
