@@ -6,7 +6,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Config(
     val server: Server = Server(),
-    val database: Database = Database()
+    val database: Database = Database(),
+    val passwordRequirements: PasswordRequirements = PasswordRequirements()
 )
 {
     @Serializable
@@ -21,5 +22,14 @@ data class Config(
         val driver: String = "com.mysql.jdbc.Driver",
         val user: String = "root",
         val password: String = ""
+    )
+
+    @Serializable
+    data class PasswordRequirements(
+        val requireLowercaseLetter: Boolean = false,
+        val requireUppercaseLetter: Boolean = false,
+        val requireNumber: Boolean = false,
+        val requireSpecialSymbol: Boolean = false,
+        val minLength: Int = 8
     )
 }
