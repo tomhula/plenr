@@ -7,17 +7,12 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import cafe.adriel.voyager.core.screen.Screen
+import me.tomasan7.plenr.frontend.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
-import plenr.composeapp.generated.resources.*
-import plenr.composeapp.generated.resources.Res
-import plenr.composeapp.generated.resources.add_user_button
-import plenr.composeapp.generated.resources.name
-import plenr.composeapp.generated.resources.surname
 
 class AddUserScreen : Screen
 {

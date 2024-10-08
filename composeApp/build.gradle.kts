@@ -2,8 +2,8 @@ import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.jetbrainsCompose)
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.compose)
     alias(libs.plugins.compose.compiler)
 }
 
@@ -40,6 +40,10 @@ kotlin {
             implementation(projects.shared)
         }
     }
+}
+
+compose.resources {
+    packageOfResClass = "$group.${rootProject.name}.frontend.generated.resources"
 }
 
 
