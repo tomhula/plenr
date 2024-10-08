@@ -23,8 +23,8 @@ class AddUserScreen : Screen
         val uiState = model.uiState
 
         Column {
-            NameField(uiState.name) { model.setName(it) }
-            SurnameField(uiState.surname) { model.setSurname(it) }
+            FirstNameField(uiState.name) { model.setName(it) }
+            LastNameField(uiState.surname) { model.setSurname(it) }
             PhoneField(uiState.phone) { model.setPhone(it) }
             EmailField(uiState.email) { model.setEmail(it) }
 
@@ -35,9 +35,9 @@ class AddUserScreen : Screen
     }
 
     @Composable
-    private fun NameField(name: String, onValueChange: (String) -> Unit) {
+    private fun FirstNameField(name: String, onValueChange: (String) -> Unit) {
         TextField(
-            label = { Text(stringResource(Res.string.name)) },
+            label = { Text(stringResource(Res.string.first_name)) },
             value = name,
             onValueChange = onValueChange,
             singleLine = true,
@@ -46,9 +46,9 @@ class AddUserScreen : Screen
     }
 
     @Composable
-    private fun SurnameField(surname: String, onValueChange: (String) -> Unit) {
+    private fun LastNameField(surname: String, onValueChange: (String) -> Unit) {
         TextField(
-            label = { Text(stringResource(Res.string.surname)) },
+            label = { Text(stringResource(Res.string.last_name)) },
             value = surname,
             onValueChange = onValueChange,
             singleLine = true,
