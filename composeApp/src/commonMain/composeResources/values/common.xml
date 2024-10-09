@@ -3,4 +3,9 @@
     <string name="last_name">Příjmení</string>
     <string name="email">Email</string>
     <string name="phone">Telefonní číslo</string>
+    <string name="password">Heslo</string>
+    <string name="confirm_password">Potvrďte heslo</string>
+
+    <string name="show_password">Zobrazit heslo</string>
+    <string name="hide_password">Skrýt heslo</string>
 </resources>
