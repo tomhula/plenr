@@ -9,6 +9,7 @@ import kotlinx.coroutines.runBlocking
 import me.tomasan7.Greeting
 import me.tomasan7.plenr.config.Config
 import me.tomasan7.plenr.config.ConfigManager
+import me.tomasan7.plenr.config.EnvVarConfigManager
 import me.tomasan7.plenr.config.JsonFileConfigManager
 import java.nio.file.Path
 
@@ -34,7 +35,7 @@ class Plenr : ConfigManager
 
     private suspend fun initConfigManager(configFilePath: Path)
     {
-        configManager = JsonFileConfigManager(configFilePath)
+        configManager = EnvVarConfigManager(JsonFileConfigManager(configFilePath))
         configManager.initConfig()
     }
 
