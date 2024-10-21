@@ -66,7 +66,7 @@ class AddUserScreen : Screen
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Phone,
                 imeAction = ImeAction.Next,
-                autoCorrect = false
+                autoCorrectEnabled = false
             )
         )
     }
