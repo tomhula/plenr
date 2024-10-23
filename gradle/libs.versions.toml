@@ -1,26 +1,24 @@
 [versions]
-androidx-lifecycle = "2.8.0"
-compose-plugin = "1.7.0"
 junit = "4.13.2"
 kotlin = "2.0.20"
 ktor = "2.3.12"
 logback = "1.5.7"
-voyager = "1.1.0-beta02"
 kotlinx-serialization = "1.7.1"
 clikt = "5.0.1"
+kotlinx-html = "0.11.0"
+compose-plugin = "1.7.0"
+kilua = "0.0.14"
 
 [libraries]
+# UI
+kotlinx-html-wasmJs = { module = "org.jetbrains.kotlinx:kotlinx-html-wasm-js", version.ref = "kotlinx-html" }
+kilua = { module = "dev.kilua:kilua-wasm-js", version.ref = "kilua" }
 # Logging
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 # Serialization
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 # CLI
 clikt = { module = "com.github.ajalt.clikt:clikt", version.ref = "clikt" }
-# Compose
-androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
-voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyager" }
-voyager-screenModel = { module = "cafe.adriel.voyager:voyager-screenmodel", version.ref = "voyager" }
 # Ktor
 ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
 ktor-server-netty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
@@ -31,9 +29,10 @@ kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version
 ktor-server-tests = { module = "io.ktor:ktor-server-tests-jvm", version.ref = "ktor" }
 
 [plugins]
-compose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
+compose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kilua = { id = "dev.kilua", version.ref = "kilua" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

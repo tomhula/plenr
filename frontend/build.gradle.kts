@@ -5,16 +5,17 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.compose)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kilua)
 }
 
 kotlin {
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
-        moduleName = "composeApp"
+        moduleName = "plenr"
         browser {
             val projectDirPath = project.projectDir.path
             commonWebpackConfig {
-                outputFileName = "composeApp.js"
+                outputFileName = "${rootProject.name}.js"
                 devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
                     static = (static ?: mutableListOf()).apply {
                         // Serve sources to debug inside browser
@@ -27,24 +28,12 @@ kotlin {
     }
     
     sourceSets {
+        wasmJsMain.dependencies {
+            implementation(libs.kotlinx.html.wasmJs)
+            implementation(libs.kilua)
+        }
         commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material)
-            implementation(compose.materialIconsExtended)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.runtime.compose)
-            implementation(libs.voyager.navigator)
-            implementation(libs.voyager.screenModel)
             implementation(projects.shared)
         }
     }
 }
-
-compose.resources {
-    packageOfResClass = "$group.${rootProject.name}.frontend.generated.resources"
-}
-
-
