@@ -1,38 +1,52 @@
 [versions]
-junit = "4.13.2"
-kotlin = "2.0.20"
-ktor = "2.3.12"
+kotlin = "2.0.21"
+kotlinx-serialization = "1.7.3"
+kotlinx-coroutines = "1.9.0"
+kotlinx-datetime = "0.6.1"
+ktor = "3.0.0"
 logback = "1.5.7"
-kotlinx-serialization = "1.7.1"
 clikt = "5.0.1"
 kotlinx-html = "0.11.0"
-compose-plugin = "1.7.0"
+compose = "1.7.0"
 kilua = "0.0.14"
+mysql = "9.0.0"
+exposed = "0.55.0"
 
 [libraries]
-# UI
-kotlinx-html-wasmJs = { module = "org.jetbrains.kotlinx:kotlinx-html-wasm-js", version.ref = "kotlinx-html" }
-kilua = { module = "dev.kilua:kilua-wasm-js", version.ref = "kilua" }
-# Logging
-logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+# Kotlin
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 # Serialization
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
+# UI
+kotlinx-html-wasmJs = { module = "org.jetbrains.kotlinx:kotlinx-html-wasm-js", version.ref = "kotlinx-html" }
+kilua-wasmJs = { module = "dev.kilua:kilua-wasm-js", version.ref = "kilua" }
+# Logging
+logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 # CLI
 clikt = { module = "com.github.ajalt.clikt:clikt", version.ref = "clikt" }
 # Ktor
-ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
-ktor-server-netty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
-# Testing
-kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
-ktor-server-tests = { module = "io.ktor:ktor-server-tests-jvm", version.ref = "ktor" }
+ktor-server-core-jvm = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
+ktor-server-netty-jvm = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
+ktor-server-status-pages-jvm = { module = "io.ktor:ktor-server-status-pages-jvm", version.ref = "ktor" }
+ktor-server-content-negotiation-jvm = { module = "io.ktor:ktor-server-content-negotiation-jvm", version.ref = "ktor" }
+ktor-server-websockets-jvm = { module = "io.ktor:ktor-server-websockets", version.ref = "ktor" }
+ktor-server-auth-jvm = { module = "io.ktor:ktor-server-auth-jvm", version.ref = "ktor" }
+ktor-server-auth-jwt-jvm = { module = "io.ktor:ktor-server-auth-jwt-jvm", version.ref = "ktor" }
+ktor-client-js = { module = "io.ktor:ktor-client-js", version.ref = "ktor" }
+ktor-serialization-kotlinx-json-jvm = { module = "io.ktor:ktor-serialization-kotlinx-json-jvm", version.ref = "ktor" }
+# SQL
+mysql-connector-j = { module = "com.mysql:mysql-connector-j", version.ref = "mysql" }
+exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
+exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
+exposed-kotlin-datetime = { module = "org.jetbrains.exposed:exposed-kotlin-datetime", version.ref = "exposed" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
-compose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
+compose = { id = "org.jetbrains.compose", version.ref = "compose" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kilua = { id = "dev.kilua", version.ref = "kilua" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

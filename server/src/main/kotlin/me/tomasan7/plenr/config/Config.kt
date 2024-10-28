@@ -13,13 +13,14 @@ data class Config(
     @Serializable
     data class Server(
         val host: String = "localhost",
-        val port: Int = 8080
+        val port: Int = 8080,
+        val subPath: String = ""
     )
 
     @Serializable
     data class Database(
         val url: String = "jdbc:mysql://localhost:3306/plenr",
-        val driver: String = "com.mysql.jdbc.Driver",
+        val driver: String = "com.mysql.cj.jdbc.Driver",
         val user: String = "root",
         val password: String = ""
     )

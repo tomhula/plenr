@@ -30,10 +30,12 @@ kotlin {
     sourceSets {
         wasmJsMain.dependencies {
             implementation(libs.kotlinx.html.wasmJs)
-            implementation(libs.kilua)
+            implementation(libs.kilua.wasmJs)
         }
         commonMain.dependencies {
             implementation(projects.shared)
+
+            implementation(libs.ktor.client.js)
         }
     }
 }

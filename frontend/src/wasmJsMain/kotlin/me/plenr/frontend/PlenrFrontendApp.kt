@@ -1,9 +1,8 @@
-package me.tomasan7
+package me.plenr.frontend
 
 import dev.kilua.Application
 import dev.kilua.compose.root
 import dev.kilua.html.h1t
-import dev.kilua.startApplication
 
 class PlenrFrontendApp : Application()
 {
@@ -13,9 +12,4 @@ class PlenrFrontendApp : Application()
             h1t(text = "Hello, Plenr!")
         }
     }
-}
-
-fun main()
-{
-    startApplication(::PlenrFrontendApp)
 }

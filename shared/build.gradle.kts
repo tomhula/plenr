@@ -1,22 +1,28 @@
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
-import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.serialization)
+}
+
+repositories {
+    google()
+    mavenCentral()
 }
 
 kotlin {
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         browser()
+        binaries.executable()
     }
 
     jvm()
     
     sourceSets {
         commonMain.dependencies {
-            // put your Multiplatform dependencies here
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.serialization.core)
         }
     }
 }
-
