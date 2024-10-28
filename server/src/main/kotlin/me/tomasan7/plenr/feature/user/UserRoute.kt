@@ -1,9 +1,8 @@
-package me.tomasan7.plenr.routing.api.user
+package me.tomasan7.plenr.feature.user
 
 import io.ktor.server.plugins.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import me.tomasan7.plenr.service.user.UserService
 import me.tomasan7.plenr.util.requireParam
 
 fun Route.userRoute(userService: UserService)

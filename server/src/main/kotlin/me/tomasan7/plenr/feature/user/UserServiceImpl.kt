@@ -1,4 +1,4 @@
-package me.tomasan7.plenr.service.user
+package me.tomasan7.plenr.feature.user
 
 import me.tomasan7.plenr.api.UserDto
 import me.tomasan7.plenr.data.UserTable

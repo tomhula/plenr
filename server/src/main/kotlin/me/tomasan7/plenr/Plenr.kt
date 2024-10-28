@@ -12,8 +12,8 @@ import me.tomasan7.plenr.module.configureAuthentication
 import me.tomasan7.plenr.module.configureContentNegotiation
 import me.tomasan7.plenr.module.configureExceptionHandling
 import me.tomasan7.plenr.module.configureRouting
-import me.tomasan7.plenr.service.user.DatabaseUserService
-import me.tomasan7.plenr.service.user.UserService
+import me.tomasan7.plenr.feature.user.DatabaseUserService
+import me.tomasan7.plenr.feature.user.UserService
 import org.jetbrains.exposed.sql.Database
 import java.nio.file.Path
 
