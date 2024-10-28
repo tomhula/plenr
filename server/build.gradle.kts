@@ -15,11 +15,19 @@ application {
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=${extra["io.ktor.development"] ?: "false"}")
 }
 
-sourceSets.main {
-    resources {
-        tasks.getByPath(":frontend:wasmJsBrowserDistribution").outputs.files.forEach { outputFile ->
-            srcDir(outputFile.absolutePath)
-        }
+tasks {
+    val wasmJsBrowserWebpackTask = project(":frontend").tasks.getByName("wasmJsBrowserDevelopmentExecutableDistribution")
+
+    val compileFrontendDev by registering(Copy::class) {
+        val resourcesOutputPath = "frontend"
+
+        dependsOn(wasmJsBrowserWebpackTask)
+        from(wasmJsBrowserWebpackTask.outputs.files.also { println(it.joinToString { "\n" }) })
+        into(processResources.get().destinationDir.resolve(resourcesOutputPath))
+    }
+
+    compileKotlin {
+        dependsOn(compileFrontendDev)
     }
 }
 
