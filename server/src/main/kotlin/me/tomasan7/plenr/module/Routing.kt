@@ -13,7 +13,7 @@ fun Application.configureRouting(plenr: Plenr, subPath: String = "")
             apiRoute(plenr.userService)
             singlePageApplication {
                 useResources = true
-                filesPath = "/"
+                filesPath = "/frontend/"
                 defaultPage = "index.html"
             }
         }

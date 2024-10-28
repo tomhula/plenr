@@ -22,6 +22,7 @@ kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 # UI
 kotlinx-html-wasmJs = { module = "org.jetbrains.kotlinx:kotlinx-html-wasm-js", version.ref = "kotlinx-html" }
 kilua-wasmJs = { module = "dev.kilua:kilua-wasm-js", version.ref = "kilua" }
+kilua-routing-wasmJs = { module = "dev.kilua:kilua-routing-wasm-js", version.ref = "kilua" }
 # Logging
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 # CLI
