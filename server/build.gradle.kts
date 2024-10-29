@@ -50,4 +50,5 @@ dependencies {
     implementation(libs.exposed.kotlin.datetime)
     implementation(libs.ktor.server.auth.jvm)
     implementation(libs.ktor.server.auth.jwt.jvm)
+    implementation(libs.commons.email2.jakarta)
 }

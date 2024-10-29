@@ -11,6 +11,7 @@ compose = "1.7.0"
 kilua = "0.0.14"
 mysql = "9.0.0"
 exposed = "0.55.0"
+commons-email = "2.0.0-M1"
 
 [libraries]
 # Kotlin
@@ -43,6 +44,8 @@ mysql-connector-j = { module = "com.mysql:mysql-connector-j", version.ref = "mys
 exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
 exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
 exposed-kotlin-datetime = { module = "org.jetbrains.exposed:exposed-kotlin-datetime", version.ref = "exposed" }
+# Mail
+commons-email2-jakarta = { module = "org.apache.commons:commons-email2-jakarta", version.ref = "commons-email" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

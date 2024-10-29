@@ -14,6 +14,8 @@ import me.tomasan7.plenr.module.configureExceptionHandling
 import me.tomasan7.plenr.module.configureRouting
 import me.tomasan7.plenr.feature.user.DatabaseUserService
 import me.tomasan7.plenr.feature.user.UserService
+import me.tomasan7.plenr.mail.MailService
+import me.tomasan7.plenr.mail.SmtpMailService
 import org.jetbrains.exposed.sql.Database
 import java.nio.file.Path
 
@@ -25,6 +27,7 @@ class Plenr : ConfigManager
     private lateinit var database: Database
 
     lateinit var userService: UserService
+    lateinit var mailService: MailService
 
     fun init(configFilePath: Path)
     {
@@ -69,6 +72,12 @@ class Plenr : ConfigManager
     private suspend fun initServices()
     {
         userService = DatabaseUserService(database).also { it.createIfNotExists() }
+        mailService = SmtpMailService(
+            smtpHost = config.smtp.host,
+            smtpPort = config.smtp.port,
+            smtpUsername = config.smtp.username,
+            smtpPassword = config.smtp.password
+        )
     }
 
     fun startBlocking()

@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 data class Config(
     val server: Server = Server(),
     val database: Database = Database(),
+    val smtp: Smtp = Smtp(),
     val passwordRequirements: PasswordRequirements = PasswordRequirements()
 )
 {
@@ -32,5 +33,13 @@ data class Config(
         val requireNumber: Boolean = false,
         val requireSpecialSymbol: Boolean = false,
         val minLength: Int = 8
+    )
+
+    @Serializable
+    data class Smtp(
+        val host: String = "localhost",
+        val port: Int = 1025,
+        val username: String = "plenr",
+        val password: String = ""
     )
 }
