@@ -21,4 +21,9 @@ fun Route.userRoute(userService: UserService)
             call.respond(user)
         }
     }
+
+    get("/admin-exists")
+    {
+        call.respond(userService.adminExists())
+    }
 }

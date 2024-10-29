@@ -5,6 +5,7 @@ import me.tomasan7.plenr.data.UserTable
 import me.tomasan7.plenr.service.DatabaseService
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.selectAll
 
 class DatabaseUserService(database: Database) : UserService, DatabaseService(database, UserTable)
@@ -35,5 +36,10 @@ class DatabaseUserService(database: Database) : UserService, DatabaseService(dat
     override suspend fun deleteUser(id: Int): Boolean
     {
         TODO("Not yet implemented")
+    }
+
+    override suspend fun adminExists(): Boolean
+    {
+        return query { UserTable.select(UserTable.id).where { UserTable.isAdmin eq true }.limit(1).singleOrNull() } != null
     }
 }

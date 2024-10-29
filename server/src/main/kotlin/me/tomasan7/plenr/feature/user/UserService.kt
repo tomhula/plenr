@@ -8,4 +8,6 @@ interface UserService
     suspend fun getUser(id: Int): UserDto?
     suspend fun updateUser(user: UserDto): Boolean
     suspend fun deleteUser(id: Int): Boolean
+
+    suspend fun adminExists(): Boolean
 }
