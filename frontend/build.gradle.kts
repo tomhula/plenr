@@ -32,6 +32,9 @@ kotlin {
             implementation(libs.kotlinx.html.wasmJs)
             implementation(libs.kilua.wasmJs)
             implementation(libs.kilua.routing.wasmJs)
+            implementation(libs.ktor.client.js)
+            implementation(libs.ktor.client.content.negotiation.wasmJs)
+            implementation(libs.ktor.serialization.kotlinx.json)
         }
         commonMain.dependencies {
             implementation(projects.shared)

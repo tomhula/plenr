@@ -41,7 +41,7 @@ dependencies {
     implementation(libs.ktor.server.netty.jvm)
     implementation(libs.ktor.server.status.pages.jvm)
     implementation(libs.ktor.server.content.negotiation.jvm)
-    implementation(libs.ktor.serialization.kotlinx.json.jvm)
+    implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.ktor.server.websockets.jvm)
     implementation(libs.clikt)
     implementation(libs.mysql.connector.j)
