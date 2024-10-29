@@ -22,7 +22,7 @@ tasks {
         val resourcesOutputPath = "frontend"
 
         dependsOn(wasmJsBrowserWebpackTask)
-        from(wasmJsBrowserWebpackTask.outputs.files.also { println(it.joinToString { "\n" }) })
+        from(wasmJsBrowserWebpackTask.outputs.files)
         into(processResources.get().destinationDir.resolve(resourcesOutputPath))
     }
 
