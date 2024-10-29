@@ -1,4 +1,4 @@
-package me.tomasan7.plenr.data
+package me.tomasan7.plenr.feature.user
 
 import org.jetbrains.exposed.dao.id.IntIdTable
 
