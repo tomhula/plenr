@@ -71,13 +71,13 @@ class Plenr : ConfigManager
 
     private suspend fun initServices()
     {
-        userService = DatabaseUserService(database).also { it.createIfNotExists() }
         mailService = SmtpMailService(
             smtpHost = config.smtp.host,
             smtpPort = config.smtp.port,
             smtpUsername = config.smtp.username,
             smtpPassword = config.smtp.password
         )
+        userService = DatabaseUserService(database, mailService).also { it.createIfNotExists() }
     }
 
     fun startBlocking()

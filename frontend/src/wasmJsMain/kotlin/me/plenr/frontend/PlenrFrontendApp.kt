@@ -6,7 +6,7 @@ import app.softwork.routingcompose.Router
 import dev.kilua.Application
 import dev.kilua.compose.root
 import dev.kilua.html.h1t
-import me.plenr.frontend.page.adminsetup.AdminSetupPage
+import me.plenr.frontend.page.adminsetup.adminSetupPage
 
 class PlenrFrontendApp : Application()
 {
@@ -25,7 +25,7 @@ class PlenrFrontendApp : Application()
                     h1t(text = "Hello, Plenr!")
                 }
                 route("/admin-setup") {
-                    AdminSetupPage(plenrClient)
+                    adminSetupPage(plenrClient)
                 }
                 noMatch {
                     h1t(text = "Not Found")

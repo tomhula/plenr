@@ -6,7 +6,9 @@ import io.ktor.client.engine.js.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
+import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
+import me.tomasan7.plenr.api.UserDto
 import web.window
 
 class PlenrClient
@@ -23,5 +25,13 @@ class PlenrClient
     suspend fun adminExists(): Boolean
     {
         return httpClient.get("admin-exists").body()
+    }
+
+    suspend fun createUser(user: UserDto): Int
+    {
+        return httpClient.post("user") {
+            contentType(ContentType.Application.Json)
+            setBody(user)
+        }.body()
     }
 }

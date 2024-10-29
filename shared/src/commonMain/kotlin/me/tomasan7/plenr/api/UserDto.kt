@@ -8,5 +8,6 @@ data class UserDto(
     val name: String,
     val email: String,
     val phone: String,
+    val isActive: Boolean,
     val isAdmin: Boolean,
 )

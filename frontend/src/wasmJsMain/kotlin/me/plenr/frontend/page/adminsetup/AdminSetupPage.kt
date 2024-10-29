@@ -2,26 +2,34 @@ package me.plenr.frontend.page.adminsetup
 
 import androidx.compose.runtime.*
 import dev.kilua.core.IComponent
-import dev.kilua.form.InputType
-import dev.kilua.form.text.text
+import dev.kilua.html.ButtonType
+import dev.kilua.html.button
 import dev.kilua.html.h1t
-import dev.kilua.html.h3t
+import kotlinx.coroutines.launch
 import me.plenr.frontend.PlenrClient
+import me.plenr.frontend.component.userCreationForm
 
 @Composable
-fun IComponent.AdminSetupPage(plenrClient: PlenrClient)
+fun IComponent.adminSetupPage(plenrClient: PlenrClient)
 {
-    var textValue by remember { mutableStateOf("") }
+    var state by remember { mutableStateOf(AdminSetupState()) }
+    val coroutineScope = rememberCoroutineScope()
 
     h1t("Admin Setup")
-    text(
-        type = InputType.Email,
-        value = textValue,
-    ) {
-        onInput {
-            textValue = this.value ?: ""
-        }
+
+    userCreationForm(state.userCreationFormState) {
+        state = AdminSetupState(userCreationFormState = it)
     }
 
-    h3t(textValue)
+    button(className = "submit-button") {
+        type(ButtonType.Submit)
+        +"Submit"
+
+        onClick {
+            coroutineScope.launch {
+                val id = plenrClient.createUser(state.userCreationFormState.toUserDto())
+                println("Check your email $id")
+            }
+        }
+    }
 }

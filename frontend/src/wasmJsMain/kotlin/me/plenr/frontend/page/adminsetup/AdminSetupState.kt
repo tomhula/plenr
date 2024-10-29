@@ -1,7 +1,7 @@
 package me.plenr.frontend.page.adminsetup
 
-data class AdminSetupState(
-    val email: String = "",
-    val password: String = "",
+import me.plenr.frontend.component.UserCreationFormState
 
+data class AdminSetupState(
+    val userCreationFormState: UserCreationFormState = UserCreationFormState()
 )
