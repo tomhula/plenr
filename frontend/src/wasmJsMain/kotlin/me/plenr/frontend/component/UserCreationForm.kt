@@ -65,7 +65,7 @@ data class UserCreationFormState(
     val phoneNumber: String = ""
 )
 {
-    fun toUserDto(): UserDto
+    fun toUserDto(isAdmin: Boolean = false): UserDto
     {
         return UserDto(
             id = -1,
@@ -73,7 +73,7 @@ data class UserCreationFormState(
             email = email,
             phone = phoneNumber,
             isActive = false,
-            isAdmin = false
+            isAdmin = isAdmin
         )
     }
 }

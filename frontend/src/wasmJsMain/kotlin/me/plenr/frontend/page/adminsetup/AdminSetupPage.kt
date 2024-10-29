@@ -27,7 +27,7 @@ fun IComponent.adminSetupPage(plenrClient: PlenrClient)
 
         onClick {
             coroutineScope.launch {
-                val id = plenrClient.createUser(state.userCreationFormState.toUserDto())
+                val id = plenrClient.createUser(state.userCreationFormState.toUserDto(isAdmin = true))
                 println("Check your email $id")
             }
         }
