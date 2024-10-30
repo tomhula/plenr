@@ -1,5 +1,6 @@
 package me.tomasan7.plenr.feature.user
 
+import io.ktor.http.*
 import io.ktor.util.*
 import me.tomasan7.plenr.security.PasswordHasher
 import me.tomasan7.plenr.security.PasswordValidator
@@ -14,9 +15,12 @@ class DatabaseUserService(
     private val passwordValidator: PasswordValidator,
     private val passwordHasher: PasswordHasher,
     private val tokenGenerator: TokenGenerator,
+    serverUrl: String,
     private val mailService: MailService
 ) : UserService, DatabaseService(database, UserTable, UserActivationTable)
 {
+    private val serverUrl = serverUrl.removeSuffix("/")
+
     private fun ResultRow.toUserDto() = UserDto(
         id = this[UserTable.id].value,
         name = this[UserTable.name],
@@ -52,10 +56,13 @@ class DatabaseUserService(
             userId
         }
 
+        val tokenB64 = token.encodeBase64()
+        val tokenB64UrlEncoded = tokenB64.encodeURLPath(encodeSlash = true)
+
         mailService.sendMail(
             recipient = user.email,
             subject = "Welcome to Plenr",
-            body = "Welcome to Plenr! Set your password here: http://localhost:8080/set-password/${token.encodeBase64()}"
+            body = "Welcome to Plenr! Set your password here: $serverUrl/set-password/${tokenB64UrlEncoded}"
         )
 
         return userId

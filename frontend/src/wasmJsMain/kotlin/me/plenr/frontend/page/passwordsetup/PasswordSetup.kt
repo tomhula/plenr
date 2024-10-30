@@ -8,6 +8,7 @@ import dev.kilua.form.text.text
 import dev.kilua.html.button
 import dev.kilua.html.h1t
 import dev.kilua.html.label
+import io.ktor.http.*
 import kotlinx.coroutines.launch
 import me.plenr.frontend.PlenrClient
 import web.window
@@ -17,6 +18,8 @@ fun IComponent.passwordSetupPage(plenrClient: PlenrClient, token: String)
 {
     val coroutineScope = rememberCoroutineScope()
     val router = Router.current
+
+    val tokenUrlDecoded = token.decodeURLPart()
 
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
@@ -52,7 +55,7 @@ fun IComponent.passwordSetupPage(plenrClient: PlenrClient, token: String)
             }
 
             coroutineScope.launch {
-                plenrClient.setPassword(token, password)
+                plenrClient.setPassword(tokenUrlDecoded, password)
                 window.alert("Password set")
             }
         }

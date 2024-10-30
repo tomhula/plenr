@@ -15,7 +15,7 @@ data class Config(
     data class Server(
         val host: String = "localhost",
         val port: Int = 8080,
-        val subPath: String = ""
+        val url: String = "http://localhost:8080"
     )
 
     @Serializable

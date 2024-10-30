@@ -95,7 +95,14 @@ class Plenr : ConfigManager
             smtpUsername = config.smtp.username,
             smtpPassword = config.smtp.password
         )
-        userService = DatabaseUserService(database, passwordValidator, passwordHasher, tokenGenerator, mailService).also { it.createIfNotExists() }
+        userService = DatabaseUserService(
+            database,
+            passwordValidator,
+            passwordHasher,
+            tokenGenerator,
+            config.server.url,
+            mailService
+        ).also { it.createIfNotExists() }
     }
 
     fun startBlocking()
