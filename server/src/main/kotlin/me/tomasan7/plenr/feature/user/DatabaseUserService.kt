@@ -1,17 +1,21 @@
 package me.tomasan7.plenr.feature.user
 
+import io.ktor.util.*
+import me.tomasan7.plenr.security.PasswordHasher
+import me.tomasan7.plenr.security.PasswordValidator
 import me.tomasan7.plenr.api.UserDto
 import me.tomasan7.plenr.mail.MailService
+import me.tomasan7.plenr.security.TokenGenerator
 import me.tomasan7.plenr.service.DatabaseService
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.insertAndGetId
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.*
 
 class DatabaseUserService(
     database: Database,
+    private val passwordValidator: PasswordValidator,
+    private val passwordHasher: PasswordHasher,
+    private val tokenGenerator: TokenGenerator,
     private val mailService: MailService
-) : UserService, DatabaseService(database, UserTable)
+) : UserService, DatabaseService(database, UserTable, UserActivationTable)
 {
     private fun ResultRow.toUserDto() = UserDto(
         id = this[UserTable.id].value,
@@ -29,23 +33,32 @@ class DatabaseUserService(
 
     override suspend fun createUser(user: UserDto): Int
     {
-        val id = query {
-            UserTable.insertAndGetId {
+        val token = tokenGenerator.generate(32)
+
+        val userId = query {
+            val userId = UserTable.insertAndGetId {
                 it[name] = user.name
                 it[email] = user.email
                 it[phone] = user.phone
                 it[passwordHash] = null
                 it[isAdmin] = user.isAdmin
+            }.value
+
+            UserActivationTable.insert {
+                it[UserActivationTable.userId] = userId
+                it[UserActivationTable.token] = token
             }
-        }.value
+
+            userId
+        }
 
         mailService.sendMail(
             recipient = user.email,
             subject = "Welcome to Plenr",
-            body = "Welcome to Plenr! Your user ID is $id"
+            body = "Welcome to Plenr! Set your password here: http://localhost:8080/set-password/${token.encodeBase64()}"
         )
 
-        return id
+        return userId
     }
 
     override suspend fun updateUser(user: UserDto): Boolean
@@ -63,5 +76,18 @@ class DatabaseUserService(
         return query {
             UserTable.select(UserTable.id).where { UserTable.isAdmin eq true }.limit(1).singleOrNull()
         } != null
+    }
+
+    override suspend fun setPassword(token: ByteArray, password: String)
+    {
+        check(token.size == 32) { "Invalid token size" }
+        check(passwordValidator.validate(password).isEmpty()) { "Invalid password" }
+
+        val passwordHash = passwordHasher.hash(password)
+        query {
+            UserTable.join(UserActivationTable, JoinType.INNER).update({ UserActivationTable.token eq token }) {
+                it[UserTable.passwordHash] = passwordHash
+            }
+        }
     }
 }

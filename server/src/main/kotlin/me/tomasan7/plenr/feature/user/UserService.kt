@@ -10,4 +10,5 @@ interface UserService
     suspend fun deleteUser(id: Int): Boolean
 
     suspend fun adminExists(): Boolean
+    suspend fun setPassword(token: ByteArray, password: String)
 }

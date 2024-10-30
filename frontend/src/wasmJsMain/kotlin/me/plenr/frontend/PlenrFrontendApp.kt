@@ -7,6 +7,7 @@ import dev.kilua.Application
 import dev.kilua.compose.root
 import dev.kilua.html.h1t
 import me.plenr.frontend.page.adminsetup.adminSetupPage
+import me.plenr.frontend.page.passwordsetup.passwordSetupPage
 
 class PlenrFrontendApp : Application()
 {
@@ -26,6 +27,11 @@ class PlenrFrontendApp : Application()
                 }
                 route("/admin-setup") {
                     adminSetupPage(plenrClient)
+                }
+                route("/set-password") {
+                    string { token ->
+                        passwordSetupPage(plenrClient, token)
+                    }
                 }
                 noMatch {
                     h1t(text = "Not Found")

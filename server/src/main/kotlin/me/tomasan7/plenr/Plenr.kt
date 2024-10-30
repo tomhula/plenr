@@ -16,6 +16,7 @@ import me.tomasan7.plenr.feature.user.DatabaseUserService
 import me.tomasan7.plenr.feature.user.UserService
 import me.tomasan7.plenr.mail.MailService
 import me.tomasan7.plenr.mail.SmtpMailService
+import me.tomasan7.plenr.security.*
 import org.jetbrains.exposed.sql.Database
 import java.nio.file.Path
 
@@ -25,6 +26,9 @@ class Plenr : ConfigManager
     private lateinit var configManager: ConfigManager
     private lateinit var config: Config
     private lateinit var database: Database
+    private lateinit var passwordValidator: PasswordValidator
+    private lateinit var passwordHasher: PasswordHasher
+    private lateinit var tokenGenerator: TokenGenerator
 
     lateinit var userService: UserService
     lateinit var mailService: MailService
@@ -36,6 +40,7 @@ class Plenr : ConfigManager
             initConfigManager(configFilePath)
             reloadConfig()
 
+            initPasswordManagement()
             initApplicationEngine()
             initDb()
             initServices()
@@ -46,6 +51,19 @@ class Plenr : ConfigManager
     {
         configManager = EnvVarConfigManager(JsonFileConfigManager(configFilePath))
         configManager.initConfig()
+    }
+
+    private fun initPasswordManagement()
+    {
+        passwordValidator = PasswordValidator(
+            lowerCaseLetter = config.passwordRequirements.requireLowercaseLetter,
+            upperCaseLetter = config.passwordRequirements.requireUppercaseLetter,
+            number = config.passwordRequirements.requireNumber,
+            specialSymbol = config.passwordRequirements.requireSpecialSymbol,
+            minLength = config.passwordRequirements.minLength
+        )
+        passwordHasher = Sha256PasswordHasher()
+        tokenGenerator = SecureRandomTokenGenerator()
     }
 
     private fun initApplicationEngine()
@@ -77,7 +95,7 @@ class Plenr : ConfigManager
             smtpUsername = config.smtp.username,
             smtpPassword = config.smtp.password
         )
-        userService = DatabaseUserService(database, mailService).also { it.createIfNotExists() }
+        userService = DatabaseUserService(database, passwordValidator, passwordHasher, tokenGenerator, mailService).also { it.createIfNotExists() }
     }
 
     fun startBlocking()

@@ -22,8 +22,17 @@ tasks {
         val resourcesOutputPath = "frontend"
 
         dependsOn(wasmJsBrowserWebpackTask)
-        from(wasmJsBrowserWebpackTask.outputs.files)
+
+        from(wasmJsBrowserWebpackTask.outputs.files) {
+            // TODO: This is a workaround for https://youtrack.jetbrains.com/issue/KT-72681/Wasm-file-is-referenced-relatively
+            eachFile {
+                if (file.name == "plenr.js")
+                    filter { line -> line.replace("./plenr.wasm", "/plenr.wasm") }
+            }
+        }
+
         into(processResources.get().destinationDir.resolve(resourcesOutputPath))
+        includeEmptyDirs = false
     }
 
     compileKotlin {

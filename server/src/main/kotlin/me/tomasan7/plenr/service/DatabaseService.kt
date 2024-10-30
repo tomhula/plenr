@@ -11,7 +11,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 abstract class DatabaseService(
     private val database: Database,
-    private val table: Table,
+    private vararg val tables: Table,
     private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO
 )
 {
@@ -21,5 +21,7 @@ abstract class DatabaseService(
         }
     }
 
-    suspend fun createIfNotExists() = query { SchemaUtils.create(table) }
+    suspend fun createIfNotExists() = query {
+        SchemaUtils.create(*tables)
+    }
 }

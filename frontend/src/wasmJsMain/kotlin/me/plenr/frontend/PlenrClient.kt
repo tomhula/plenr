@@ -8,6 +8,9 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
+import io.ktor.util.*
+import io.ktor.utils.io.core.*
+import me.tomasan7.plenr.api.SetPasswordDto
 import me.tomasan7.plenr.api.UserDto
 import web.window
 
@@ -33,5 +36,15 @@ class PlenrClient
             contentType(ContentType.Application.Json)
             setBody(user)
         }.body()
+    }
+
+    suspend fun setPassword(tokenB64: String, password: String)
+    {
+        val token = tokenB64.decodeBase64Bytes()
+
+        httpClient.post("set-password") {
+            contentType(ContentType.Application.Json)
+            setBody(SetPasswordDto(token, password))
+        }
     }
 }
