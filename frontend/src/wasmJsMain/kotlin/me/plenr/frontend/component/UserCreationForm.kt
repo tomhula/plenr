@@ -4,8 +4,7 @@ import androidx.compose.runtime.Composable
 import dev.kilua.core.IComponent
 import dev.kilua.form.InputType
 import dev.kilua.form.text.text
-import dev.kilua.html.div
-import dev.kilua.html.label
+import dev.kilua.html.*
 import me.tomasan7.plenr.api.UserDto
 
 @Composable
@@ -14,46 +13,58 @@ fun IComponent.userCreationForm(
     onChange: (UserCreationFormState) -> Unit
 )
 {
-    div(className = "user-creation-form") {
-        label {
-            htmlFor("first-name")
-            +"First Name"
+    column(
+        alignItems = AlignItems.Center
+    ) {
+        className("user-creation-form")
+        rowGap(10.px)
+
+        column {
+            label {
+                htmlFor("first-name")
+                +"First Name"
+            }
+            text(state.firstName) {
+                id("first-name")
+                type(InputType.Text)
+                onInput { onChange(state.copy(firstName = this.value ?: "")) }
+            }
         }
-        text(state.firstName) {
-            className("first-name")
-            id("first-name")
-            type(InputType.Text)
-            onInput { onChange(state.copy(firstName = this.value ?: "")) }
+
+        column {
+            label {
+                htmlFor("last-name")
+                +"Last Name"
+            }
+            text(state.lastName) {
+                id("last-name")
+                type(InputType.Text)
+                onInput { onChange(state.copy(lastName = this.value ?: "")) }
+            }
         }
-        label {
-            htmlFor("last-name")
-            +"Last Name"
+
+        column {
+            label {
+                htmlFor("email")
+                +"Email"
+            }
+            text(state.email) {
+                id("email")
+                type(InputType.Email)
+                onInput { onChange(state.copy(email = this.value ?: "")) }
+            }
         }
-        text(state.lastName) {
-            className("last-name")
-            id("last-name")
-            type(InputType.Text)
-            onInput { onChange(state.copy(lastName = this.value ?: "")) }
-        }
-        label {
-            htmlFor("email")
-            +"Email"
-        }
-        text(state.email) {
-            className("email")
-            id("email")
-            type(InputType.Email)
-            onInput { onChange(state.copy(email = this.value ?: "")) }
-        }
-        label {
-            htmlFor("phone-number")
-            +"Phone Number"
-        }
-        text(state.phoneNumber) {
-            className("phone-number")
-            id("phone-number")
-            type(InputType.Tel)
-            onInput { onChange(state.copy(phoneNumber = this.value ?: "")) }
+
+        column {
+            label {
+                htmlFor("phone-number")
+                +"Phone Number"
+            }
+            text(state.phoneNumber) {
+                id("phone-number")
+                type(InputType.Tel)
+                onInput { onChange(state.copy(phoneNumber = this.value ?: "")) }
+            }
         }
     }
 }
