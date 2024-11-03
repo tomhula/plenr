@@ -39,7 +39,7 @@ data class Config(
     data class Smtp(
         val host: String = "localhost",
         val port: Int = 1025,
-        val username: String = "plenr",
+        val username: String = "plenr@domain.com",
         val password: String = ""
     )
 }
