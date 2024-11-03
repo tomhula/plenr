@@ -31,7 +31,7 @@ fun Routing.apiRoute(
                 plenr.passwordHasher,
                 plenr.tokenGenerator,
                 plenr.mailService
-            )
+            ).also { runBlocking { it.createIfNotExists() } }
         }
     }
 }
