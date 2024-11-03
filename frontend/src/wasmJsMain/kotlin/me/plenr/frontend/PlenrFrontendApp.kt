@@ -1,6 +1,6 @@
 package me.plenr.frontend
 
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.*
 import app.softwork.routingcompose.BrowserRouter
 import app.softwork.routingcompose.Router
 import dev.kilua.Application
@@ -16,26 +16,40 @@ class PlenrFrontendApp : Application()
     override fun start()
     {
         root("root") {
-            BrowserRouter("/") {
-                val router = Router.current
-                LaunchedEffect(Unit) {
-                    if (!plenrClient.adminExists())
-                        router.navigate("/admin-setup")
-                }
-                route("/") {
-                    h1t(text = "Hello, Plenr!")
-                }
-                route("/admin-setup") {
-                    adminSetupPage(plenrClient)
-                }
-                route("/set-password") {
-                    string { token ->
-                        passwordSetupPage(plenrClient, token)
+            var initialized by remember { mutableStateOf(false) }
+
+            LaunchedEffect(Unit) {
+                plenrClient.init()
+                initialized = true
+            }
+
+            if (initialized)
+            {
+                BrowserRouter("/") {
+                    val router = Router.current
+                    LaunchedEffect(Unit) {
+                        if (!plenrClient.adminExists())
+                            router.navigate("/admin-setup")
+                    }
+                    route("/") {
+                        h1t(text = "Hello, Plenr!")
+                    }
+                    route("/admin-setup") {
+                        adminSetupPage(plenrClient)
+                    }
+                    route("/set-password") {
+                        string { token ->
+                            passwordSetupPage(plenrClient, token)
+                        }
+                    }
+                    noMatch {
+                        h1t(text = "Not Found")
                     }
                 }
-                noMatch {
-                    h1t(text = "Not Found")
-                }
+            }
+            else
+            {
+                h1t(text = "Loading...")
             }
         }
     }

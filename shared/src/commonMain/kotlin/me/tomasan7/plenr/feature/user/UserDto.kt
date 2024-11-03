@@ -1,4 +1,4 @@
-package me.tomasan7.plenr.api
+package me.tomasan7.plenr.feature.user
 
 import kotlinx.serialization.Serializable
 

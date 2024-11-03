@@ -2,12 +2,9 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ktor)
     alias(libs.plugins.serialization)
+    /* TODO: Replace with platform */
+    alias(libs.plugins.kotlinx.rpc.plugin)
     application
-}
-
-repositories {
-    google()
-    mavenCentral()
 }
 
 application {
@@ -31,6 +28,9 @@ tasks {
             }
         }
 
+        // TODO: This is a workaround, the wasmJsBrowserDevelopmentExecutableDistribution task for some reason does not include wasm source maps
+        from(project(":frontend").layout.buildDirectory.file("compileSync/wasmJs/main/developmentExecutable/kotlin/plenr.wasm.map"))
+
         into(processResources.get().destinationDir.resolve(resourcesOutputPath))
         includeEmptyDirs = false
     }
@@ -52,6 +52,10 @@ dependencies {
     implementation(libs.ktor.server.content.negotiation.jvm)
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.ktor.server.websockets.jvm)
+    implementation(libs.kotlinx.rpc.krpc.server)
+    implementation(libs.kotlinx.rpc.krpc.serialization.json)
+    implementation(libs.kotlinx.rpc.krpc.ktor.server)
+
     implementation(libs.clikt)
     implementation(libs.mysql.connector.j)
     implementation(libs.exposed.core)

@@ -12,6 +12,7 @@ kilua = "0.0.14"
 mysql = "9.0.0"
 exposed = "0.55.0"
 commons-email = "2.0.0-M1"
+kotlinx-rpc = "0.4.0-alpha"
 
 [libraries]
 # Kotlin
@@ -39,6 +40,13 @@ ktor-server-auth-jwt-jvm = { module = "io.ktor:ktor-server-auth-jwt-jvm", versio
 ktor-client-js = { module = "io.ktor:ktor-client-js", version.ref = "ktor" }
 ktor-client-content-negotiation-wasmJs = { module = "io.ktor:ktor-client-content-negotiation-wasm-js", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+# RPC
+kotlinx-rpc-core = { module = "org.jetbrains.kotlinx:kotlinx-rpc-core", version.ref = "kotlinx-rpc" }
+kotlinx-rpc-krpc-client = { module = "org.jetbrains.kotlinx:kotlinx-rpc-krpc-client", version.ref = "kotlinx-rpc" }
+kotlinx-rpc-krpc-server = { module = "org.jetbrains.kotlinx:kotlinx-rpc-krpc-server", version.ref = "kotlinx-rpc" }
+kotlinx-rpc-krpc-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-rpc-krpc-serialization-json", version.ref = "kotlinx-rpc" }
+kotlinx-rpc-krpc-ktor-client = { module = "org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-client", version.ref = "kotlinx-rpc" }
+kotlinx-rpc-krpc-ktor-server = { module = "org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-server", version.ref = "kotlinx-rpc" }
 # SQL
 mysql-connector-j = { module = "com.mysql:mysql-connector-j", version.ref = "mysql" }
 exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
@@ -55,3 +63,5 @@ compose = { id = "org.jetbrains.compose", version.ref = "compose" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kilua = { id = "dev.kilua", version.ref = "kilua" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlinx-rpc-plugin = { id = "org.jetbrains.kotlinx.rpc.plugin", version.ref = "kotlinx-rpc" }
+kotlinx-rpc-platform = { id = "org.jetbrains.kotlinx.rpc.platform", version.ref = "kotlinx-rpc" }

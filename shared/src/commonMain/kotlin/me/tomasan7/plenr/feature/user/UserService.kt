@@ -1,8 +1,10 @@
 package me.tomasan7.plenr.feature.user
 
-import me.tomasan7.plenr.api.UserDto
+import kotlinx.rpc.RemoteService
+import kotlinx.rpc.annotations.Rpc
 
-interface UserService
+@Rpc
+interface UserService : RemoteService
 {
     suspend fun createUser(user: UserDto): Int
     suspend fun getUser(id: Int): UserDto?

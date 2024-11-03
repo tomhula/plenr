@@ -4,18 +4,19 @@ import io.ktor.http.*
 import io.ktor.util.*
 import me.tomasan7.plenr.security.PasswordHasher
 import me.tomasan7.plenr.security.PasswordValidator
-import me.tomasan7.plenr.api.UserDto
 import me.tomasan7.plenr.mail.MailService
 import me.tomasan7.plenr.security.TokenGenerator
 import me.tomasan7.plenr.service.DatabaseService
 import org.jetbrains.exposed.sql.*
+import kotlin.coroutines.CoroutineContext
 
 class DatabaseUserService(
+    override val coroutineContext: CoroutineContext,
+    serverUrl: String,
     database: Database,
     private val passwordValidator: PasswordValidator,
     private val passwordHasher: PasswordHasher,
     private val tokenGenerator: TokenGenerator,
-    serverUrl: String,
     private val mailService: MailService
 ) : UserService, DatabaseService(database, UserTable, UserActivationTable)
 {

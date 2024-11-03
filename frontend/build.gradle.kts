@@ -40,6 +40,9 @@ kotlin {
             implementation(projects.shared)
 
             implementation(libs.ktor.client.js)
+            implementation(libs.kotlinx.rpc.krpc.client)
+            implementation(libs.kotlinx.rpc.krpc.ktor.client)
+            implementation(libs.kotlinx.rpc.krpc.serialization.json)
         }
     }
 }

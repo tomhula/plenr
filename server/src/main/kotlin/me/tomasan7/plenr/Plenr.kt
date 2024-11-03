@@ -1,21 +1,18 @@
 package me.tomasan7.plenr
 
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import kotlinx.coroutines.runBlocking
+import kotlinx.rpc.krpc.ktor.server.RPC
 import me.tomasan7.plenr.config.Config
 import me.tomasan7.plenr.config.ConfigManager
 import me.tomasan7.plenr.config.EnvVarConfigManager
 import me.tomasan7.plenr.config.JsonFileConfigManager
-import me.tomasan7.plenr.module.configureAuthentication
-import me.tomasan7.plenr.module.configureContentNegotiation
-import me.tomasan7.plenr.module.configureExceptionHandling
-import me.tomasan7.plenr.module.configureRouting
-import me.tomasan7.plenr.feature.user.DatabaseUserService
-import me.tomasan7.plenr.feature.user.UserService
 import me.tomasan7.plenr.mail.MailService
 import me.tomasan7.plenr.mail.SmtpMailService
+import me.tomasan7.plenr.module.*
 import me.tomasan7.plenr.security.*
 import org.jetbrains.exposed.sql.Database
 import java.nio.file.Path
@@ -25,12 +22,11 @@ class Plenr : ConfigManager
     private lateinit var embeddedServer: EmbeddedServer<*, *>
     private lateinit var configManager: ConfigManager
     private lateinit var config: Config
-    private lateinit var database: Database
-    private lateinit var passwordValidator: PasswordValidator
-    private lateinit var passwordHasher: PasswordHasher
-    private lateinit var tokenGenerator: TokenGenerator
+    internal lateinit var database: Database
+    internal lateinit var passwordValidator: PasswordValidator
+    internal lateinit var passwordHasher: PasswordHasher
+    internal lateinit var tokenGenerator: TokenGenerator
 
-    lateinit var userService: UserService
     lateinit var mailService: MailService
 
     fun init(configFilePath: Path)
@@ -95,14 +91,6 @@ class Plenr : ConfigManager
             smtpUsername = config.smtp.username,
             smtpPassword = config.smtp.password
         )
-        userService = DatabaseUserService(
-            database,
-            passwordValidator,
-            passwordHasher,
-            tokenGenerator,
-            config.server.url,
-            mailService
-        ).also { it.createIfNotExists() }
     }
 
     fun startBlocking()
@@ -112,10 +100,11 @@ class Plenr : ConfigManager
 
     private fun Application.module()
     {
+        install(RPC)
         configureContentNegotiation()
         configureExceptionHandling()
         configureAuthentication()
-        configureRouting(this@Plenr)
+        configureRouting(this@Plenr, Url(config.server.url).fullPath.removeSuffix("/"))
     }
 
     override suspend fun getConfig() = config

@@ -1,1 +1,1 @@
-config.output.publicPath = '/tmp/gay/'
+// Additional manual configuration for webpack

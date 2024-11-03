@@ -5,8 +5,6 @@ import io.ktor.server.plugins.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import me.tomasan7.plenr.api.SetPasswordDto
-import me.tomasan7.plenr.api.UserDto
 import me.tomasan7.plenr.util.requireParam
 
 fun Route.userRoute(userService: UserService)

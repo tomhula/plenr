@@ -5,7 +5,7 @@ import dev.kilua.core.IComponent
 import dev.kilua.form.InputType
 import dev.kilua.form.text.text
 import dev.kilua.html.*
-import me.tomasan7.plenr.api.UserDto
+import me.tomasan7.plenr.feature.user.UserDto
 
 @Composable
 fun IComponent.userCreationForm(

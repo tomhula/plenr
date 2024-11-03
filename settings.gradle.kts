@@ -12,6 +12,8 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
+        /* TODO: Temporary for Kotlinx RPC */
+        mavenLocal()
     }
 }
 
@@ -25,6 +27,8 @@ dependencyResolutionManagement {
             }
         }
         mavenCentral()
+        /* TODO: Temporary for Kotlinx RPC */
+        mavenLocal()
     }
 }
 

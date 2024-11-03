@@ -1,50 +1,55 @@
 package me.plenr.frontend
 
 import io.ktor.client.*
-import io.ktor.client.call.*
 import io.ktor.client.engine.js.*
-import io.ktor.client.plugins.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.request.*
 import io.ktor.http.*
-import io.ktor.serialization.kotlinx.json.*
 import io.ktor.util.*
-import io.ktor.utils.io.core.*
-import me.tomasan7.plenr.api.SetPasswordDto
-import me.tomasan7.plenr.api.UserDto
-import web.window
+import kotlinx.browser.window
+import kotlinx.rpc.krpc.ktor.client.installRPC
+import kotlinx.rpc.krpc.ktor.client.rpc
+import kotlinx.rpc.krpc.ktor.client.rpcConfig
+import kotlinx.rpc.krpc.serialization.json.json
+import kotlinx.rpc.withService
+import me.tomasan7.plenr.feature.user.UserDto
+import me.tomasan7.plenr.feature.user.UserService
 
 class PlenrClient
 {
     private val httpClient = HttpClient(Js) {
-        defaultRequest {
+        /*defaultRequest {
             url(window.origin + "/api/")
-        }
-        install(ContentNegotiation) {
+        }*/
+        /*install(ContentNegotiation) {
             json()
-        }
+        }*/
+        installRPC()
+    }
+    private lateinit var userService: UserService
+
+    suspend fun init()
+    {
+        userService = httpClient.rpc {
+            url {
+                host = window.location.hostname
+                port = getCurrentPort()
+                encodedPath = "/api"
+            }
+
+            rpcConfig {
+                serialization {
+                    json()
+                }
+            }
+        }.withService<UserService>()
     }
 
-    suspend fun adminExists(): Boolean
-    {
-        return httpClient.get("admin-exists").body()
-    }
+    suspend fun adminExists() = userService.adminExists()
 
-    suspend fun createUser(user: UserDto): Int
-    {
-        return httpClient.post("user") {
-            contentType(ContentType.Application.Json)
-            setBody(user)
-        }.body()
-    }
+    suspend fun createUser(user: UserDto) = userService.createUser(user)
 
     suspend fun setPassword(tokenB64: String, password: String)
     {
         val token = tokenB64.decodeBase64Bytes()
-
-        httpClient.post("set-password") {
-            contentType(ContentType.Application.Json)
-            setBody(SetPasswordDto(token, password))
-        }
+        userService.setPassword(token, password)
     }
 }

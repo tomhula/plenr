@@ -11,9 +11,10 @@ class EnvVarConfigManager(
     override suspend fun getConfig(): Config
     {
         val jsonConfig = primaryConfigManager.getConfig()
-        val serverHost = System.getenv(EnvVars.SERVER_HOST) ?: jsonConfig.server.host
-        val serverPort = System.getenv(EnvVars.SERVER_PORT)?.toIntOrNull() ?: jsonConfig.server.port
-        val serverConfig = Config.Server(serverHost, serverPort)
+        val jsonServerConfig = jsonConfig.server
+        val serverHost = System.getenv(EnvVars.SERVER_HOST) ?: jsonServerConfig.host
+        val serverPort = System.getenv(EnvVars.SERVER_PORT)?.toIntOrNull() ?: jsonServerConfig.port
+        val serverConfig = jsonServerConfig.copy(host = serverHost, port = serverPort)
         val finalConfig = jsonConfig.copy(server = serverConfig)
         return finalConfig
     }
