@@ -3,9 +3,9 @@ package me.tomasan7.plenr.feature.user
 import io.ktor.http.*
 import io.ktor.util.*
 import me.tomasan7.plenr.auth.AuthService
+import me.tomasan7.plenr.mail.MailService
 import me.tomasan7.plenr.security.PasswordHasher
 import me.tomasan7.plenr.security.PasswordValidator
-import me.tomasan7.plenr.mail.MailService
 import me.tomasan7.plenr.security.TokenGenerator
 import me.tomasan7.plenr.service.DatabaseService
 import org.jetbrains.exposed.sql.*
@@ -38,7 +38,11 @@ class DatabaseUserService(
         return query { UserTable.selectAll().where { UserTable.id eq id }.singleOrNull() }?.toUserDto()
     }
 
-    override suspend fun createUser(user: UserDto, authToken: String): Int
+    /**
+     * Allows admins to create new users.
+     * Allows anyone to create an admin account if one does not exist yet.
+     */
+    override suspend fun createUser(user: UserDto, authToken: String?): Int
     {
         val token = tokenGenerator.generate(32)
 
