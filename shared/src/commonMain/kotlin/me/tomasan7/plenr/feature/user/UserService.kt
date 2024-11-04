@@ -6,7 +6,7 @@ import kotlinx.rpc.annotations.Rpc
 @Rpc
 interface UserService : RemoteService
 {
-    suspend fun createUser(user: UserDto, authToken: String): Int
+    suspend fun createUser(user: UserDto, authToken: String?): Int
     suspend fun getUser(id: Int, authToken: String): UserDto?
     suspend fun updateUser(user: UserDto, authToken: String): Boolean
     suspend fun deleteUser(id: Int, authToken: String): Boolean
