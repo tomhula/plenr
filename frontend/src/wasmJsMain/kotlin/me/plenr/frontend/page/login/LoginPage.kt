@@ -3,12 +3,14 @@ package me.plenr.frontend.page.login
 import androidx.compose.runtime.*
 import dev.kilua.core.IComponent
 import dev.kilua.form.InputType
+import dev.kilua.form.form
 import dev.kilua.form.text.text
 import dev.kilua.html.*
-import dev.kilua.html.helpers.onClickLaunch
 import kotlinx.browser.window
+import kotlinx.coroutines.launch
 import me.plenr.frontend.PlenrClient
-import me.plenr.frontend.component.column
+import me.plenr.frontend.component.applyColumn
+import me.plenr.frontend.component.onSubmit
 
 @Composable
 fun IComponent.loginPage(plenrClient: PlenrClient)
@@ -18,13 +20,20 @@ fun IComponent.loginPage(plenrClient: PlenrClient)
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    column(
-        alignItems = AlignItems.Center
-    ) {
+    form {
+        applyColumn(alignItems = AlignItems.Center)
+
+        onSubmit {
+            coroutineScope.launch {
+                window.alert(plenrClient.login(email, password).toString())
+            }
+        }
+
         h1 {
             +"Login"
         }
-        column {
+        div {
+            applyColumn()
             label {
                 htmlFor("email")
                 +"Email"
@@ -36,7 +45,8 @@ fun IComponent.loginPage(plenrClient: PlenrClient)
                 }
             }
         }
-        column {
+        div {
+            applyColumn()
             label {
                 htmlFor("password")
                 +"Password"
@@ -49,10 +59,8 @@ fun IComponent.loginPage(plenrClient: PlenrClient)
             }
         }
         button {
+            type(ButtonType.Submit)
             +"Login"
-            onClickLaunch(coroutineScope) {
-                window.alert(plenrClient.login(email, password).toString())
-            }
         }
     }
 }

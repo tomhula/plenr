@@ -3,29 +3,28 @@ package me.plenr.frontend.component
 import androidx.compose.runtime.Composable
 import dev.kilua.core.IComponent
 import dev.kilua.html.*
+import web.dom.HTMLElement
 
 @Composable
-fun IComponent.column(
+fun <E : HTMLElement> ITag<E>.applyColumn(
     justifyContent: JustifyContent = JustifyContent.Start,
-    alignItems: AlignItems = AlignItems.Start,
-    content: @Composable IDiv.() -> Unit
-) = div {
+    alignItems: AlignItems = AlignItems.Start
+)
+{
     display(Display.Flex)
     flexDirection(FlexDirection.Column)
     justifyContent(justifyContent)
     alignItems(alignItems)
-    content()
 }
 
 @Composable
-fun IComponent.row(
+fun <E : HTMLElement> ITag<E>.row(
     justifyContent: JustifyContent = JustifyContent.Center,
-    alignItems: AlignItems = AlignItems.Center,
-    content: @Composable IDiv.() -> Unit
-) = div {
+    alignItems: AlignItems = AlignItems.Center
+)
+{
     display(Display.Flex)
     flexDirection(FlexDirection.Row)
     justifyContent(justifyContent)
     alignSelf(alignItems)
-    content()
 }

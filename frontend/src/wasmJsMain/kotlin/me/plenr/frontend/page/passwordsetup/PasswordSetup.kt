@@ -5,14 +5,11 @@ import app.softwork.routingcompose.Router
 import dev.kilua.core.IComponent
 import dev.kilua.form.InputType
 import dev.kilua.form.text.text
-import dev.kilua.html.AlignItems
-import dev.kilua.html.button
-import dev.kilua.html.h1t
-import dev.kilua.html.label
+import dev.kilua.html.*
 import io.ktor.http.*
 import kotlinx.coroutines.launch
 import me.plenr.frontend.PlenrClient
-import me.plenr.frontend.component.column
+import me.plenr.frontend.component.applyColumn
 import web.window
 
 @Composable
@@ -27,12 +24,12 @@ fun IComponent.passwordSetupPage(plenrClient: PlenrClient, token: String)
     var confirmPassword by remember { mutableStateOf("") }
 
 
-    column(
-        alignItems = AlignItems.Center
-    ) {
+    div {
+        applyColumn(alignItems = AlignItems.Center)
         h1t("Password Setup")
 
-        column {
+        div {
+            applyColumn()
             label {
                 htmlFor("password")
                 +"Password"
@@ -45,7 +42,8 @@ fun IComponent.passwordSetupPage(plenrClient: PlenrClient, token: String)
             }
         }
 
-        column {
+        div {
+            applyColumn()
             label {
                 htmlFor("confirm-password")
                 +"Confirm Password"

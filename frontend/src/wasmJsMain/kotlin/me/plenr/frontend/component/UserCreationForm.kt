@@ -13,13 +13,13 @@ fun IComponent.userCreationForm(
     onChange: (UserCreationFormState) -> Unit
 )
 {
-    column(
-        alignItems = AlignItems.Center
-    ) {
+    div {
         className("user-creation-form")
+        applyColumn(alignItems = AlignItems.Center)
         rowGap(10.px)
 
-        column {
+        div {
+            applyColumn()
             label {
                 htmlFor("first-name")
                 +"First Name"
@@ -31,7 +31,8 @@ fun IComponent.userCreationForm(
             }
         }
 
-        column {
+        div {
+            applyColumn()
             label {
                 htmlFor("last-name")
                 +"Last Name"
@@ -43,7 +44,8 @@ fun IComponent.userCreationForm(
             }
         }
 
-        column {
+        div {
+            applyColumn()
             label {
                 htmlFor("email")
                 +"Email"
@@ -55,7 +57,8 @@ fun IComponent.userCreationForm(
             }
         }
 
-        column {
+        div {
+            applyColumn()
             label {
                 htmlFor("phone-number")
                 +"Phone Number"
