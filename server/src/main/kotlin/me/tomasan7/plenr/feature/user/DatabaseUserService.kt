@@ -24,15 +24,6 @@ class DatabaseUserService(
 {
     private val serverUrl = serverUrl.removeSuffix("/")
 
-    private fun ResultRow.toUserDto() = UserDto(
-        id = this[UserTable.id].value,
-        name = this[UserTable.name],
-        email = this[UserTable.email],
-        phone = this[UserTable.phone],
-        isAdmin = this[UserTable.isAdmin],
-        isActive = this[UserTable.passwordHash] != null
-    )
-
     override suspend fun getUser(id: Int, authToken: String): UserDto?
     {
         return query { UserTable.selectAll().where { UserTable.id eq id }.singleOrNull() }?.toUserDto()
