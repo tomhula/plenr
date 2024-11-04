@@ -38,10 +38,6 @@ class DatabaseUserService(
         return query { UserTable.selectAll().where { UserTable.id eq id }.singleOrNull() }?.toUserDto()
     }
 
-    /**
-     * Allows admins to create new users.
-     * Allows anyone to create an admin account if one does not exist yet.
-     */
     override suspend fun createUser(user: UserDto, authToken: String?): Int
     {
         val token = tokenGenerator.generate(32)
@@ -73,16 +69,6 @@ class DatabaseUserService(
         )
 
         return userId
-    }
-
-    override suspend fun updateUser(user: UserDto, authToken: String): Boolean
-    {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun deleteUser(id: Int, authToken: String): Boolean
-    {
-        TODO("Not yet implemented")
     }
 
     override suspend fun adminExists(): Boolean
