@@ -22,6 +22,7 @@ tasks {
 
         from(wasmJsBrowserWebpackTask.outputs.files) {
             // TODO: This is a workaround for https://youtrack.jetbrains.com/issue/KT-72681/Wasm-file-is-referenced-relatively
+            /* Has been fixed in Kotlin 2.1.0-Beta2, see https://youtrack.jetbrains.com/issue/KT-72681 */
             eachFile {
                 if (file.name == "plenr.js")
                     filter { line -> line.replace("./plenr.wasm", "/plenr.wasm") }
