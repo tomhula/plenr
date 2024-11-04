@@ -6,6 +6,8 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.rpc.krpc.ktor.server.RPC
+import me.tomasan7.plenr.auth.AuthService
+import me.tomasan7.plenr.auth.BasicAuthService
 import me.tomasan7.plenr.config.Config
 import me.tomasan7.plenr.config.ConfigManager
 import me.tomasan7.plenr.config.EnvVarConfigManager
@@ -26,6 +28,7 @@ class Plenr : ConfigManager
     internal lateinit var passwordValidator: PasswordValidator
     internal lateinit var passwordHasher: PasswordHasher
     internal lateinit var tokenGenerator: TokenGenerator
+    internal lateinit var authService: AuthService
 
     lateinit var mailService: MailService
 
@@ -91,6 +94,7 @@ class Plenr : ConfigManager
             smtpUsername = config.smtp.username,
             smtpPassword = config.smtp.password
         )
+        authService = BasicAuthService(database, passwordHasher)
     }
 
     fun startBlocking()

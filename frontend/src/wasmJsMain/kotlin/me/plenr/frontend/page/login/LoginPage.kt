@@ -6,7 +6,6 @@ import dev.kilua.form.InputType
 import dev.kilua.form.form
 import dev.kilua.form.text.text
 import dev.kilua.html.*
-import kotlinx.browser.window
 import kotlinx.coroutines.launch
 import me.plenr.frontend.PlenrClient
 import me.plenr.frontend.component.applyColumn
@@ -19,13 +18,14 @@ fun IComponent.loginPage(plenrClient: PlenrClient)
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var authenticated by remember { mutableStateOf<Boolean?>(null) }
 
     form {
         applyColumn(alignItems = AlignItems.Center)
 
         onSubmit {
             coroutineScope.launch {
-                window.alert(plenrClient.login(email, password).toString())
+                authenticated = plenrClient.login(email, password)
             }
         }
 
@@ -61,6 +61,13 @@ fun IComponent.loginPage(plenrClient: PlenrClient)
         button {
             type(ButtonType.Submit)
             +"Login"
+        }
+
+        when (authenticated)
+        {
+            true -> p { +"Authenticated" }
+            false -> p { +"Incorrect credentials" }
+            null -> {}
         }
     }
 }

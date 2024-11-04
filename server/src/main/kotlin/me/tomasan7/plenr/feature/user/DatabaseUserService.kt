@@ -2,6 +2,7 @@ package me.tomasan7.plenr.feature.user
 
 import io.ktor.http.*
 import io.ktor.util.*
+import me.tomasan7.plenr.auth.AuthService
 import me.tomasan7.plenr.security.PasswordHasher
 import me.tomasan7.plenr.security.PasswordValidator
 import me.tomasan7.plenr.mail.MailService
@@ -17,7 +18,8 @@ class DatabaseUserService(
     private val passwordValidator: PasswordValidator,
     private val passwordHasher: PasswordHasher,
     private val tokenGenerator: TokenGenerator,
-    private val mailService: MailService
+    private val mailService: MailService,
+    private val authService: AuthService
 ) : UserService, DatabaseService(database, UserTable, UserActivationTable)
 {
     private val serverUrl = serverUrl.removeSuffix("/")
@@ -31,12 +33,12 @@ class DatabaseUserService(
         isActive = this[UserTable.passwordHash] != null
     )
 
-    override suspend fun getUser(id: Int): UserDto?
+    override suspend fun getUser(id: Int, authToken: String): UserDto?
     {
         return query { UserTable.selectAll().where { UserTable.id eq id }.singleOrNull() }?.toUserDto()
     }
 
-    override suspend fun createUser(user: UserDto): Int
+    override suspend fun createUser(user: UserDto, authToken: String): Int
     {
         val token = tokenGenerator.generate(32)
 
@@ -69,12 +71,12 @@ class DatabaseUserService(
         return userId
     }
 
-    override suspend fun updateUser(user: UserDto): Boolean
+    override suspend fun updateUser(user: UserDto, authToken: String): Boolean
     {
         TODO("Not yet implemented")
     }
 
-    override suspend fun deleteUser(id: Int): Boolean
+    override suspend fun deleteUser(id: Int, authToken: String): Boolean
     {
         TODO("Not yet implemented")
     }
@@ -99,12 +101,8 @@ class DatabaseUserService(
         }
     }
 
-    override suspend fun login(username: String, password: String): Boolean
+    override suspend fun login(username: String, password: String): String?
     {
-        val passwordHash = passwordHasher.hash(password)
-
-        return query {
-            UserTable.select(UserTable.id).where { UserTable.email eq username and (UserTable.passwordHash eq passwordHash) }.limit(1).singleOrNull() != null
-        }
+        return authService.authenticate(username, password)
     }
 }

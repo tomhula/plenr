@@ -25,6 +25,7 @@ class PlenrClient
         installRPC()
     }
     private lateinit var userService: UserService
+    private var authToken: String? = null
 
     suspend fun init()
     {
@@ -45,7 +46,7 @@ class PlenrClient
 
     suspend fun adminExists() = userService.adminExists()
 
-    suspend fun createUser(user: UserDto) = userService.createUser(user)
+    suspend fun createUser(user: UserDto) = userService.createUser(user, authToken!!)
 
     suspend fun setPassword(tokenB64: String, password: String)
     {
@@ -55,6 +56,8 @@ class PlenrClient
 
     suspend fun login(username: String, password: String): Boolean
     {
-        return userService.login(username, password)
+        authToken = userService.login(username, password) ?: return false
+        println("New authToken: $authToken")
+        return true
     }
 }

@@ -30,7 +30,8 @@ fun Routing.apiRoute(
                 plenr.passwordValidator,
                 plenr.passwordHasher,
                 plenr.tokenGenerator,
-                plenr.mailService
+                plenr.mailService,
+                plenr.authService
             ).also { runBlocking { it.createIfNotExists() } }
         }
     }
