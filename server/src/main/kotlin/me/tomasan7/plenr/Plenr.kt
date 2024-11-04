@@ -107,7 +107,6 @@ class Plenr : ConfigManager
         install(RPC)
         configureContentNegotiation()
         configureExceptionHandling()
-        configureAuthentication()
         configureRouting(this@Plenr, Url(config.server.url).fullPath.removeSuffix("/"))
     }
 
