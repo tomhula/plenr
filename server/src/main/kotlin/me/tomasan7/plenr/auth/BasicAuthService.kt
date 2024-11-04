@@ -1,7 +1,9 @@
 package me.tomasan7.plenr.auth
 
 import io.ktor.util.*
+import me.tomasan7.plenr.feature.user.UserDto
 import me.tomasan7.plenr.feature.user.UserTable
+import me.tomasan7.plenr.feature.user.toUserDto
 import me.tomasan7.plenr.security.PasswordHasher
 import me.tomasan7.plenr.service.DatabaseService
 import org.jetbrains.exposed.sql.Database
@@ -13,7 +15,7 @@ class BasicAuthService(
     private val passwordHasher: PasswordHasher
 ) : AuthService, DatabaseService(database, UserTable)
 {
-    private suspend fun checkAuth(email: String, password: String): Int?
+    private suspend fun checkAuth(email: String, password: String): UserDto?
     {
         val passwordHash = passwordHasher.hash(password)
 
@@ -23,11 +25,11 @@ class BasicAuthService(
                 .where { UserTable.email eq email and (UserTable.passwordHash eq passwordHash) }
                 .limit(1)
                 .singleOrNull()
-                ?.get(UserTable.id)?.value
+                ?.toUserDto()
         }
     }
 
-    override suspend fun validateToken(token: String): Int?
+    override suspend fun validateToken(token: String): UserDto?
     {
         val decodedToken = token.decodeBase64String()
         val (email, password) = decodedToken.split(":")
