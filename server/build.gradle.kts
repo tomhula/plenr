@@ -21,15 +21,15 @@ tasks {
         dependsOn(wasmJsBrowserWebpackTask)
 
         from(wasmJsBrowserWebpackTask.outputs.files) {
-            // TODO: This is a workaround for https://youtrack.jetbrains.com/issue/KT-72681/Wasm-file-is-referenced-relatively
-            /* Has been fixed in Kotlin 2.1.0-Beta2, see https://youtrack.jetbrains.com/issue/KT-72681 */
+            /* TEMP: This is a workaround for https://youtrack.jetbrains.com/issue/KT-72681/Wasm-file-is-referenced-relatively
+                Has been fixed in Kotlin 2.1.0-Beta2, see https://youtrack.jetbrains.com/issue/KT-72681 */
             eachFile {
                 if (file.name == "plenr.js")
                     filter { line -> line.replace("./plenr.wasm", "/plenr.wasm") }
             }
         }
 
-        // TODO: This is a workaround, the wasmJsBrowserDevelopmentExecutableDistribution task for some reason does not include wasm source maps
+        // TEMP: This is a workaround, the wasmJsBrowserDevelopmentExecutableDistribution task for some reason does not include wasm source maps
         from(project(":frontend").layout.buildDirectory.file("compileSync/wasmJs/main/developmentExecutable/kotlin/plenr.wasm.map"))
 
         into(processResources.get().destinationDir.resolve(resourcesOutputPath))
