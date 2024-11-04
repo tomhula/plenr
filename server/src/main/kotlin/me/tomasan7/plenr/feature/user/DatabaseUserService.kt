@@ -98,4 +98,13 @@ class DatabaseUserService(
             }
         }
     }
+
+    override suspend fun login(username: String, password: String): Boolean
+    {
+        val passwordHash = passwordHasher.hash(password)
+
+        return query {
+            UserTable.select(UserTable.id).where { UserTable.email eq username and (UserTable.passwordHash eq passwordHash) }.limit(1).singleOrNull() != null
+        }
+    }
 }

@@ -13,4 +13,7 @@ interface UserService : RemoteService
 
     suspend fun adminExists(): Boolean
     suspend fun setPassword(token: ByteArray, password: String)
+
+    /** Returns whether credentials are correct. */
+    suspend fun login(username: String, password: String): Boolean
 }

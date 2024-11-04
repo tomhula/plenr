@@ -52,4 +52,9 @@ class PlenrClient
         val token = tokenB64.decodeBase64Bytes()
         userService.setPassword(token, password)
     }
+
+    suspend fun login(username: String, password: String): Boolean
+    {
+        return userService.login(username, password)
+    }
 }

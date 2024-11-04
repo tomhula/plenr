@@ -1,2 +1,3 @@
 - Authentication/Authorization
 - Server exception encapsulation
+- Use better authentication (JWT?)
