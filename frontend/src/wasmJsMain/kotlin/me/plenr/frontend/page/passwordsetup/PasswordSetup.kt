@@ -4,12 +4,14 @@ import androidx.compose.runtime.*
 import app.softwork.routingcompose.Router
 import dev.kilua.core.IComponent
 import dev.kilua.form.InputType
+import dev.kilua.form.form
 import dev.kilua.form.text.text
 import dev.kilua.html.*
 import io.ktor.http.*
 import kotlinx.coroutines.launch
 import me.plenr.frontend.PlenrClient
 import me.plenr.frontend.component.applyColumn
+import me.plenr.frontend.component.onSubmit
 import web.window
 
 @Composable
@@ -24,8 +26,21 @@ fun IComponent.passwordSetupPage(plenrClient: PlenrClient, token: String)
     var confirmPassword by remember { mutableStateOf("") }
 
 
-    div {
+    form {
         applyColumn(alignItems = AlignItems.Center)
+        onSubmit {
+            if (password != confirmPassword)
+            {
+                window.alert("Passwords do not match")
+                return@onSubmit
+            }
+
+            coroutineScope.launch {
+                plenrClient.setPassword(tokenUrlDecoded, password)
+                router.navigate("/login")
+            }
+        }
+
         h1t("Password Setup")
 
         div {
@@ -57,18 +72,7 @@ fun IComponent.passwordSetupPage(plenrClient: PlenrClient, token: String)
         }
 
         button {
-            onClick {
-                if (password != confirmPassword)
-                {
-                    window.alert("Passwords do not match")
-                    return@onClick
-                }
-
-                coroutineScope.launch {
-                    plenrClient.setPassword(tokenUrlDecoded, password)
-                    router.navigate("/login")
-                }
-            }
+            type(ButtonType.Submit)
             +"Set Password"
         }
     }
