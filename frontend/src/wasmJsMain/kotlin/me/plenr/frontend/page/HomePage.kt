@@ -8,5 +8,5 @@ import me.plenr.frontend.PlenrClient
 @Composable
 fun IComponent.homePage(plenrClient: PlenrClient)
 {
-    h1t("Welcome ${plenrClient.user?.name}")
+    h1t("Welcome ${plenrClient.user?.firstName}")
 }

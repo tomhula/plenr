@@ -83,7 +83,8 @@ data class UserCreationFormState(
     {
         return UserDto(
             id = -1,
-            name = "$firstName $lastName",
+            firstName = firstName,
+            lastName = lastName,
             email = email,
             phone = phoneNumber,
             isActive = false,

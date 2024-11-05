@@ -4,7 +4,8 @@ import org.jetbrains.exposed.sql.ResultRow
 
 fun ResultRow.toUserDto() = UserDto(
     id = this[UserTable.id].value,
-    name = this[UserTable.name],
+    firstName = this[UserTable.firstName],
+    lastName = this[UserTable.lastName],
     email = this[UserTable.email],
     phone = this[UserTable.phone],
     isAdmin = this[UserTable.isAdmin],

@@ -31,13 +31,13 @@ class PlenrFrontendApp : Application()
                 BrowserRouter("/") {
                     val router = Router.current
                     LaunchedEffect(Unit) {
-                        if (!plenrClient.isLoggedIn)
-                            router.navigate("/login")
                         if (!plenrClient.adminExists())
                             router.navigate("/admin-setup")
                     }
                     route("/") {
                         homePage(plenrClient)
+                        if (!plenrClient.isLoggedIn)
+                            router.navigate("/login")
                     }
                     route("/admin-setup") {
                         adminSetupPage(plenrClient)

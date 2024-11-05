@@ -44,9 +44,12 @@ class DatabaseUserService(
                 throw UnauthorizedException("Only admins can create new users")
         }
 
+        val activationToken = tokenGenerator.generate(32)
+
         val userId = query {
             val userId = UserTable.insertAndGetId {
-                it[name] = newUser.name
+                it[firstName] = newUser.firstName
+                it[lastName] = newUser.lastName
                 it[email] = newUser.email
                 it[phone] = newUser.phone
                 it[passwordHash] = null
@@ -55,21 +58,20 @@ class DatabaseUserService(
 
             UserActivationTable.insert {
                 it[UserActivationTable.userId] = userId
-                it[UserActivationTable.token] = token
+                it[UserActivationTable.token] = activationToken
             }
 
             userId
         }
 
-        val token = tokenGenerator.generate(32)
 
-        val tokenB64 = token.encodeBase64()
-        val tokenB64UrlEncoded = tokenB64.encodeURLPath(encodeSlash = true)
+        val activationTokenB64 = activationToken.encodeBase64()
+        val activationTokenB64UrlEncoded = activationTokenB64.encodeURLPathPart()
 
         mailService.sendMail(
             recipient = newUser.email,
             subject = "Welcome to Plenr",
-            body = "Welcome to Plenr! Set your password here: $serverUrl/set-password/${tokenB64UrlEncoded}"
+            body = "Welcome to Plenr! Set your password here: $serverUrl/set-password/${activationTokenB64UrlEncoded}"
         )
 
         return userId

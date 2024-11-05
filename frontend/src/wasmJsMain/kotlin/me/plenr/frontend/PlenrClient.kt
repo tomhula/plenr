@@ -50,7 +50,7 @@ class PlenrClient
 
     suspend fun adminExists() = userService.adminExists()
 
-    suspend fun createUser(user: UserDto) = userService.createUser(user, authToken!!)
+    suspend fun createUser(user: UserDto) = userService.createUser(user, authToken)
 
     suspend fun setPassword(tokenB64: String, password: String)
     {
