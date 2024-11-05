@@ -66,7 +66,7 @@ fun IComponent.passwordSetupPage(plenrClient: PlenrClient, token: String)
 
                 coroutineScope.launch {
                     plenrClient.setPassword(tokenUrlDecoded, password)
-                    window.alert("Password set")
+                    router.navigate("/login")
                 }
             }
             +"Set Password"
