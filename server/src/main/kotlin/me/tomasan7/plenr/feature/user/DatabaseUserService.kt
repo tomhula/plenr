@@ -105,7 +105,7 @@ class DatabaseUserService(
         }
     }
 
-    override suspend fun login(username: String, password: String): String?
+    override suspend fun login(username: String, password: String): AuthenticationResponse?
     {
         return authService.authenticate(username, password)
     }

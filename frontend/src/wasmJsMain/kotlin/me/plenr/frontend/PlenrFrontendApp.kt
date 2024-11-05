@@ -6,7 +6,9 @@ import app.softwork.routingcompose.Router
 import dev.kilua.Application
 import dev.kilua.compose.root
 import dev.kilua.html.h1t
+import dev.kilua.html.span
 import me.plenr.frontend.page.adminsetup.adminSetupPage
+import me.plenr.frontend.page.homePage
 import me.plenr.frontend.page.login.loginPage
 import me.plenr.frontend.page.passwordsetup.passwordSetupPage
 
@@ -29,11 +31,13 @@ class PlenrFrontendApp : Application()
                 BrowserRouter("/") {
                     val router = Router.current
                     LaunchedEffect(Unit) {
+                        if (!plenrClient.isLoggedIn)
+                            router.navigate("/login")
                         if (!plenrClient.adminExists())
                             router.navigate("/admin-setup")
                     }
                     route("/") {
-                        h1t(text = "Hello, Plenr!")
+                        homePage(plenrClient)
                     }
                     route("/admin-setup") {
                         adminSetupPage(plenrClient)
@@ -53,7 +57,7 @@ class PlenrFrontendApp : Application()
             }
             else
             {
-                h1t(text = "Loading...")
+                span("spinner")
             }
         }
     }

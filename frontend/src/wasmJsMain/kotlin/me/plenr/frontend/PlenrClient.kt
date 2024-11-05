@@ -26,6 +26,10 @@ class PlenrClient
     }
     private lateinit var userService: UserService
     private var authToken: String? = null
+    var user: UserDto? = null
+
+    val isLoggedIn: Boolean
+        get() = authToken != null
 
     suspend fun init()
     {
@@ -56,8 +60,10 @@ class PlenrClient
 
     suspend fun login(username: String, password: String): Boolean
     {
-        authToken = userService.login(username, password) ?: return false
-        println("New authToken: $authToken")
+        val authResponse = userService.login(username, password) ?: return false
+
+        authToken = authResponse.authToken
+        user = authResponse.user
         return true
     }
 }

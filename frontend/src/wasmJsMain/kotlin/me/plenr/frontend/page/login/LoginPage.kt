@@ -1,6 +1,7 @@
 package me.plenr.frontend.page.login
 
 import androidx.compose.runtime.*
+import app.softwork.routingcompose.Router
 import dev.kilua.core.IComponent
 import dev.kilua.form.InputType
 import dev.kilua.form.form
@@ -15,6 +16,7 @@ import me.plenr.frontend.component.onSubmit
 fun IComponent.loginPage(plenrClient: PlenrClient)
 {
     val coroutineScope = rememberCoroutineScope()
+    val router = Router.current
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -26,6 +28,8 @@ fun IComponent.loginPage(plenrClient: PlenrClient)
         onSubmit {
             coroutineScope.launch {
                 authenticated = plenrClient.login(email, password)
+                if (authenticated == true)
+                    router.navigate("/")
             }
         }
 
@@ -65,9 +69,8 @@ fun IComponent.loginPage(plenrClient: PlenrClient)
 
         when (authenticated)
         {
-            true -> p { +"Authenticated" }
             false -> p { +"Incorrect credentials" }
-            null -> {}
+            else -> Unit
         }
     }
 }

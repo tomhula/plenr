@@ -23,6 +23,6 @@ interface UserService : RemoteService
 
     suspend fun setPassword(token: ByteArray, password: String)
 
-    /** Checks [username] and [password] and returns an auth token. */
-    suspend fun login(username: String, password: String): String?
+    /** Checks [username] and [password] and returns the authenticated [user][UserDto] with auth token. */
+    suspend fun login(username: String, password: String): AuthenticationResponse?
 }
