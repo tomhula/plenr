@@ -10,7 +10,7 @@ interface UserService : RemoteService
      * Allows admins to create new users.
      * Allows creation of admin account without authentication if one does not exist yet.
      */
-    suspend fun createUser(user: UserDto, authToken: String?): Int
+    suspend fun createUser(newUser: UserDto, authToken: String?): Int
 
     /**
      * Allows admins to get any user.
