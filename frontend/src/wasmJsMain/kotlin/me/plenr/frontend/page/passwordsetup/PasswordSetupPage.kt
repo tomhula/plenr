@@ -9,13 +9,13 @@ import dev.kilua.form.text.text
 import dev.kilua.html.*
 import io.ktor.http.*
 import kotlinx.coroutines.launch
-import me.plenr.frontend.PlenrClient
+import me.plenr.frontend.MainViewModel
 import me.plenr.frontend.component.applyColumn
 import me.plenr.frontend.component.onSubmit
 import web.window
 
 @Composable
-fun IComponent.passwordSetupPage(plenrClient: PlenrClient, token: String)
+fun IComponent.passwordSetupPage(mainViewModel: MainViewModel, token: String)
 {
     val coroutineScope = rememberCoroutineScope()
     val router = Router.current
@@ -36,7 +36,7 @@ fun IComponent.passwordSetupPage(plenrClient: PlenrClient, token: String)
             }
 
             coroutineScope.launch {
-                plenrClient.setPassword(tokenUrlDecoded, password)
+                mainViewModel.setPassword(tokenUrlDecoded, password)
                 router.navigate("/login")
             }
         }

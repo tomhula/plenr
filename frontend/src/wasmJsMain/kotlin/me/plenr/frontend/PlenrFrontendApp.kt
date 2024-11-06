@@ -13,21 +13,21 @@ import me.plenr.frontend.page.passwordsetup.passwordSetupPage
 
 class PlenrFrontendApp : Application()
 {
-    private val plenrClient = PlenrClient()
-
     override fun start()
     {
         root("root") {
+            val viewModel = remember { MainViewModel() }
+
             var initialized by remember { mutableStateOf(false) }
 
             LaunchedEffect(Unit) {
-                plenrClient.init()
+                viewModel.init()
                 initialized = true
             }
 
             if (initialized)
             {
-                val initPath = if (plenrClient.isLoggedIn)
+                val initPath = if (viewModel.isLoggedIn)
                     "/"
                 else
                     "/login"
@@ -35,7 +35,7 @@ class PlenrFrontendApp : Application()
                 header(id = "main-header") {
                     val header = buildString {
                         append("Plenr")
-                        plenrClient.user?.let { user ->
+                        viewModel.user?.let { user ->
                             append(" - ${user.firstName}")
                             if (user.isAdmin)
                                 append(" (Admin)")
@@ -47,22 +47,22 @@ class PlenrFrontendApp : Application()
                 BrowserRouter(initPath) {
                     val router = Router.current
                     LaunchedEffect(Unit) {
-                        if (!plenrClient.adminExists())
+                        if (!viewModel.adminExists())
                             router.navigate("/admin-setup")
                     }
                     route("/") {
-                        homePage(plenrClient)
+                        homePage(viewModel)
                     }
                     route("/admin-setup") {
-                        adminSetupPage(plenrClient)
+                        adminSetupPage(viewModel)
                     }
                     route("/set-password") {
                         string { token ->
-                            passwordSetupPage(plenrClient, token)
+                            passwordSetupPage(viewModel, token)
                         }
                     }
                     route("/login") {
-                        loginPage(plenrClient)
+                        loginPage(viewModel)
                     }
                     noMatch {
                         h1t(text = "Not Found")

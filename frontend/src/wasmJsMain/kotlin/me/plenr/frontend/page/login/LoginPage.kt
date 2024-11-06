@@ -8,12 +8,12 @@ import dev.kilua.form.form
 import dev.kilua.form.text.text
 import dev.kilua.html.*
 import kotlinx.coroutines.launch
-import me.plenr.frontend.PlenrClient
+import me.plenr.frontend.MainViewModel
 import me.plenr.frontend.component.applyColumn
 import me.plenr.frontend.component.onSubmit
 
 @Composable
-fun IComponent.loginPage(plenrClient: PlenrClient)
+fun IComponent.loginPage(mainViewModel: MainViewModel)
 {
     val coroutineScope = rememberCoroutineScope()
     val router = Router.current
@@ -27,7 +27,7 @@ fun IComponent.loginPage(plenrClient: PlenrClient)
 
         onSubmit {
             coroutineScope.launch {
-                authenticated = plenrClient.login(email, password)
+                authenticated = mainViewModel.login(email, password)
                 if (authenticated == true)
                     router.navigate("/")
             }

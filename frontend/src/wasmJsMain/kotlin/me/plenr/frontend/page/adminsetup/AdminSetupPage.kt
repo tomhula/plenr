@@ -4,12 +4,12 @@ import androidx.compose.runtime.*
 import dev.kilua.core.IComponent
 import dev.kilua.html.*
 import kotlinx.coroutines.launch
-import me.plenr.frontend.PlenrClient
+import me.plenr.frontend.MainViewModel
 import me.plenr.frontend.component.applyColumn
 import me.plenr.frontend.component.userCreationForm
 
 @Composable
-fun IComponent.adminSetupPage(plenrClient: PlenrClient)
+fun IComponent.adminSetupPage(plenrClient: MainViewModel)
 {
     var state by remember { mutableStateOf(AdminSetupState()) }
     val coroutineScope = rememberCoroutineScope()

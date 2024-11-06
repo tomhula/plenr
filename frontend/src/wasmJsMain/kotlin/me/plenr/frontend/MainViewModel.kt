@@ -1,6 +1,8 @@
 package me.plenr.frontend
 
-import dev.kilua.externals.JSON
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import io.ktor.client.*
 import io.ktor.client.engine.js.*
 import io.ktor.http.*
@@ -20,7 +22,7 @@ import me.tomasan7.plenr.feature.user.UserService
 private const val AUTH_TOKEN_STORAGE_KEY = "authToken"
 private const val USER_STORAGE_KEY = "user"
 
-class PlenrClient
+class MainViewModel
 {
     private val httpClient = HttpClient(Js) {
         /*defaultRequest {
@@ -34,7 +36,7 @@ class PlenrClient
     private val json = Json
     private lateinit var userService: UserService
     private var authToken: String? = null
-    var user: UserDto? = null
+    var user: UserDto? by mutableStateOf(null)
 
     val isLoggedIn: Boolean
         get() = authToken != null && user != null
