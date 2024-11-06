@@ -1,3 +1,4 @@
 - Authentication/Authorization
 - Server exception encapsulation
 - Use better authentication (JWT?)
+- Fix initial /login route not showing in the address bar

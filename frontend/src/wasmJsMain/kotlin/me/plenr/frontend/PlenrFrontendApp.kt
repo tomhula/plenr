@@ -28,7 +28,12 @@ class PlenrFrontendApp : Application()
 
             if (initialized)
             {
-                BrowserRouter("/") {
+                val initPath = if (plenrClient.isLoggedIn)
+                    "/"
+                else
+                    "/login"
+
+                BrowserRouter(initPath) {
                     val router = Router.current
                     LaunchedEffect(Unit) {
                         if (!plenrClient.adminExists())
@@ -36,8 +41,7 @@ class PlenrFrontendApp : Application()
                     }
                     route("/") {
                         homePage(plenrClient)
-                        if (!plenrClient.isLoggedIn)
-                            router.navigate("/login")
+
                     }
                     route("/admin-setup") {
                         adminSetupPage(plenrClient)
