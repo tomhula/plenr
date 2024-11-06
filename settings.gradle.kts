@@ -12,8 +12,6 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
-        /* TEMP: Local build of Kotlinx RPC until official one is published to repository */
-        mavenLocal()
     }
 }
 
@@ -27,8 +25,6 @@ dependencyResolutionManagement {
             }
         }
         mavenCentral()
-        /* TEMP: Local build of Kotlinx RPC until official one is published to repository */
-        mavenLocal()
     }
 }
 

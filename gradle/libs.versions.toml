@@ -12,7 +12,7 @@ kilua = "0.0.14"
 mysql = "9.0.0"
 exposed = "0.55.0"
 commons-email = "2.0.0-M1"
-kotlinx-rpc = "0.4.0-alpha"
+kotlinx-rpc = "0.4.0"
 
 [libraries]
 # Kotlin
@@ -30,7 +30,7 @@ logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 # CLI
 clikt = { module = "com.github.ajalt.clikt:clikt", version.ref = "clikt" }
 # Ktor
-ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
+ktor-server-core = { module = "io.ktor:ktor-server-core" }
 ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
 ktor-server-status-pages = { module = "io.ktor:ktor-server-status-pages", version.ref = "ktor" }
 ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
@@ -64,4 +64,3 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 kilua = { id = "dev.kilua", version.ref = "kilua" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlinx-rpc-plugin = { id = "org.jetbrains.kotlinx.rpc.plugin", version.ref = "kotlinx-rpc" }
-kotlinx-rpc-platform = { id = "org.jetbrains.kotlinx.rpc.platform", version.ref = "kotlinx-rpc" }

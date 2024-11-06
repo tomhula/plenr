@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ktor)
     alias(libs.plugins.serialization)
-    /* TODO: Replace with platform */
     alias(libs.plugins.kotlinx.rpc.plugin)
     application
 }
