@@ -2,3 +2,5 @@
 - Server exception encapsulation
 - Use better authentication (JWT?)
 - Fix initial /login route not showing in the address bar
+- Handle authentication cases. Token not being valid anymore. Basically some call failing due to invalid auth token, so authentication challenge should happen again.
+- Add possibility to log-out.
