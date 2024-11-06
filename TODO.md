@@ -5,3 +5,4 @@
 - Handle authentication cases. Token not being valid anymore. Basically some call failing due to invalid auth token, so authentication challenge should happen again.
 - Add possibility to log-out.
 - Add localisation
+- Make sure the navigation stack actually is how it should be (go back pops and does not add)
