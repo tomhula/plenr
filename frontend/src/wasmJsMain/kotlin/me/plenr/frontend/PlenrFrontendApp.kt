@@ -41,7 +41,6 @@ class PlenrFrontendApp : Application()
                     }
                     route("/") {
                         homePage(plenrClient)
-
                     }
                     route("/admin-setup") {
                         adminSetupPage(plenrClient)
