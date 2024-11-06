@@ -5,8 +5,7 @@ import app.softwork.routingcompose.BrowserRouter
 import app.softwork.routingcompose.Router
 import dev.kilua.Application
 import dev.kilua.compose.root
-import dev.kilua.html.h1t
-import dev.kilua.html.span
+import dev.kilua.html.*
 import me.plenr.frontend.page.adminsetup.adminSetupPage
 import me.plenr.frontend.page.homePage
 import me.plenr.frontend.page.login.loginPage
@@ -32,6 +31,18 @@ class PlenrFrontendApp : Application()
                     "/"
                 else
                     "/login"
+
+                header(id = "main-header") {
+                    val header = buildString {
+                        append("Plenr")
+                        plenrClient.user?.let { user ->
+                            append(" - ${user.firstName}")
+                            if (user.isAdmin)
+                                append(" (Admin)")
+                        }
+                    }
+                    +header
+                }
 
                 BrowserRouter(initPath) {
                     val router = Router.current
