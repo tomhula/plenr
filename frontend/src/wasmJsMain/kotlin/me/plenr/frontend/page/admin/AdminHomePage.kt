@@ -17,9 +17,9 @@ fun IComponent.adminHomePage(viewModel: MainViewModel)
             router.navigate("/manage-users")
         }
     }
-    button("Arrange workouts") {
+    button("Arrange trainings") {
         onClick {
-            router.navigate("/arrange-workouts")
+            router.navigate("/arrange-trainings")
         }
     }
 

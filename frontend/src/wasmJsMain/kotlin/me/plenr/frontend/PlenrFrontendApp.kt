@@ -77,8 +77,8 @@ class PlenrFrontendApp : Application()
                             }
                         }
                     }
-                    route("/arrange-workouts") {
-                        h1t("Arrange workouts")
+                    route("/arrange-trainings") {
+                        h1t("Arrange trainings")
                         button("Go back") {
                             onClick {
                                 router.navigate("/")
