@@ -95,11 +95,16 @@ class DatabaseTrainingService(
         return query {
             val trainings = mutableMapOf<Int, TrainingWithParticipantsDto>()
 
+            val trainingsWithUserIds = TrainingParticipantTable
+                .select(TrainingParticipantTable.trainingId)
+                .where { TrainingParticipantTable.participantId eq userId }
+                .map { it[TrainingParticipantTable.trainingId] }
+
             TrainingTable
                 .join(TrainingParticipantTable, JoinType.INNER, onColumn = TrainingTable.id, otherColumn = TrainingParticipantTable.trainingId)
                 .join(UserTable, JoinType.INNER, onColumn = TrainingParticipantTable.participantId, otherColumn = UserTable.id)
                 .selectAll()
-                .where { TrainingParticipantTable.participantId eq userId }
+                .where { TrainingParticipantTable.trainingId inList trainingsWithUserIds }
                 .forEach { resultRow ->
                     val training = trainings.getOrPut(resultRow[TrainingTable.id].value) {
                         resultRow.toTrainingWithParticipantsDto(mutableListOf())
