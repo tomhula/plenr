@@ -20,6 +20,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.core)
             implementation(libs.kotlinx.rpc.core)
+            implementation(libs.kotlinx.datetime)
         }
     }
 }

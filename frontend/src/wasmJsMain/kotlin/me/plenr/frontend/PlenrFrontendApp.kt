@@ -8,6 +8,7 @@ import dev.kilua.Application
 import dev.kilua.compose.root
 import dev.kilua.html.*
 import me.plenr.frontend.page.admin.adminHomePage
+import me.plenr.frontend.page.admin.arrangeTrainingsPage
 import me.plenr.frontend.page.adminsetup.adminSetupPage
 import me.plenr.frontend.page.homePage
 import me.plenr.frontend.page.login.loginPage
@@ -69,20 +70,18 @@ class PlenrFrontendApp : Application()
                     route("/login") {
                         loginPage(viewModel)
                     }
-                    route("/manage-users"){
-                        h1t("Manager users")
-                        button("Go back") {
-                            onClick {
-                                router.navigate("/")
+                    if (viewModel.user?.isAdmin == true)
+                    {
+                        route("/manage-users") {
+                            h1t("Manager users")
+                            button("Go back") {
+                                onClick {
+                                    router.navigate("/")
+                                }
                             }
                         }
-                    }
-                    route("/arrange-trainings") {
-                        h1t("Arrange trainings")
-                        button("Go back") {
-                            onClick {
-                                router.navigate("/")
-                            }
+                        route("/arrange-trainings") {
+                            arrangeTrainingsPage(viewModel)
                         }
                     }
                     noMatch {

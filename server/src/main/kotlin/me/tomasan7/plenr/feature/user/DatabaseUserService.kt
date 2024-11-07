@@ -87,6 +87,15 @@ class DatabaseUserService(
         return query { UserTable.selectAll().where { UserTable.id eq id }.singleOrNull() }?.toUserDto()
     }
 
+    override suspend fun getAllUsers(authToken: String): List<UserDto>
+    {
+        val caller = authService.validateToken(authToken) ?: throw UnauthorizedException()
+        if (!caller.isAdmin)
+            throw UnauthorizedException("Only admins can view all users")
+
+        return query { UserTable.selectAll().map { it.toUserDto() } }
+    }
+
     override suspend fun adminExists(): Boolean
     {
         return query {

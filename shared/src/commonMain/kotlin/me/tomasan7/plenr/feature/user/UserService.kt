@@ -18,6 +18,9 @@ interface UserService : RemoteService
      */
     suspend fun getUser(id: Int, authToken: String): UserDto?
 
+    /** Allows admins to get all users. */
+    suspend fun getAllUsers(authToken: String): List<UserDto>
+
     /** Allows anyone to check if an admin account exists. */
     suspend fun adminExists(): Boolean
 

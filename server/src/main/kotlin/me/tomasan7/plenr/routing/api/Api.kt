@@ -5,6 +5,8 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.rpc.krpc.ktor.server.rpc
 import kotlinx.rpc.krpc.serialization.json.json
 import me.tomasan7.plenr.Plenr
+import me.tomasan7.plenr.feature.training.DatabaseTrainingService
+import me.tomasan7.plenr.feature.training.TrainingService
 import me.tomasan7.plenr.feature.user.DatabaseUserService
 import me.tomasan7.plenr.feature.user.UserService
 
@@ -32,6 +34,16 @@ fun Routing.apiRoute(
                 plenr.tokenGenerator,
                 plenr.mailService,
                 plenr.authService
+            ).also { runBlocking { it.createIfNotExists() } }
+        }
+
+        registerService<TrainingService> { ctx ->
+            DatabaseTrainingService(
+                ctx,
+                plenr.database,
+                serverUrl,
+                plenr.authService,
+                plenr.mailService
             ).also { runBlocking { it.createIfNotExists() } }
         }
     }

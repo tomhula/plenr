@@ -9,6 +9,7 @@ import io.ktor.http.*
 import io.ktor.util.*
 import kotlinx.browser.localStorage
 import kotlinx.browser.window
+import kotlinx.datetime.LocalDateTime
 import kotlinx.rpc.krpc.ktor.client.installRPC
 import kotlinx.rpc.krpc.ktor.client.rpc
 import kotlinx.rpc.krpc.ktor.client.rpcConfig
@@ -16,6 +17,9 @@ import kotlinx.rpc.krpc.serialization.json.json
 import kotlinx.rpc.withService
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import me.tomasan7.plenr.feature.training.CreateTrainingDto
+import me.tomasan7.plenr.feature.training.TrainingService
+import me.tomasan7.plenr.feature.training.TrainingType
 import me.tomasan7.plenr.feature.user.UserDto
 import me.tomasan7.plenr.feature.user.UserService
 
@@ -35,6 +39,7 @@ class MainViewModel
     }
     private val json = Json
     private lateinit var userService: UserService
+    private lateinit var trainingService: TrainingService
     private var authToken: String? = null
     var user: UserDto? by mutableStateOf(null)
 
@@ -43,7 +48,7 @@ class MainViewModel
 
     suspend fun init()
     {
-        userService = httpClient.rpc {
+        val ktorRpcClient = httpClient.rpc {
             url {
                 host = window.location.hostname
                 port = getCurrentPort()
@@ -55,7 +60,9 @@ class MainViewModel
                     json(json)
                 }
             }
-        }.withService<UserService>()
+        }
+        userService = ktorRpcClient.withService()
+        trainingService = ktorRpcClient.withService()
 
         authToken = localStorage.getItem(AUTH_TOKEN_STORAGE_KEY)
         user = localStorage.getItem(USER_STORAGE_KEY)?.let { json.decodeFromString(it) }
@@ -81,5 +88,28 @@ class MainViewModel
         localStorage.setItem(USER_STORAGE_KEY, json.encodeToString(user))
 
         return true
+    }
+
+    suspend fun getAllUsers(): List<UserDto>
+    {
+        if (user?.isAdmin != true)
+            return emptyList()
+        if (authToken == null)
+            return emptyList()
+
+        return userService.getAllUsers(authToken!!)
+    }
+
+    suspend fun createTraining(
+        title: String,
+        description: String,
+        startDateTime: LocalDateTime,
+        type: TrainingType,
+        lengthMinutes: Int,
+        participantIds: List<Int>
+    )
+    {
+        val createTrainingDto = CreateTrainingDto(title, description, type, startDateTime, lengthMinutes, participantIds)
+        trainingService.createTraining(createTrainingDto, authToken!!)
     }
 }
