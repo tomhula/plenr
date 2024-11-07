@@ -28,6 +28,7 @@ class DatabaseTrainingService(
 
         val trainingId = query {
             val trainingId = TrainingTable.insertAndGetId {
+                it[arrangerId] = caller.id
                 it[name] = createTrainingDto.name
                 it[description] = createTrainingDto.description
                 it[type] = createTrainingDto.type
