@@ -20,6 +20,7 @@ import kotlinx.serialization.json.Json
 import me.tomasan7.plenr.feature.training.CreateTrainingDto
 import me.tomasan7.plenr.feature.training.TrainingService
 import me.tomasan7.plenr.feature.training.TrainingType
+import me.tomasan7.plenr.feature.training.TrainingWithParticipantsDto
 import me.tomasan7.plenr.feature.user.UserDto
 import me.tomasan7.plenr.feature.user.UserService
 
@@ -111,5 +112,13 @@ class MainViewModel
     {
         val createTrainingDto = CreateTrainingDto(title, description, type, startDateTime, lengthMinutes, participantIds)
         trainingService.createTraining(createTrainingDto, authToken!!)
+    }
+
+    suspend fun getMyTrainings(): List<TrainingWithParticipantsDto>
+    {
+        if (authToken == null)
+            return emptyList()
+
+        return trainingService.getTrainingsForUser(user!!.id, authToken!!)
     }
 }

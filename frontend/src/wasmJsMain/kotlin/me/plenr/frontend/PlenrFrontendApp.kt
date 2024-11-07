@@ -3,7 +3,6 @@ package me.plenr.frontend
 import androidx.compose.runtime.*
 import app.softwork.routingcompose.BrowserRouter
 import app.softwork.routingcompose.Router
-import app.softwork.routingcompose.navigate
 import dev.kilua.Application
 import dev.kilua.compose.root
 import dev.kilua.html.*
@@ -12,7 +11,7 @@ import me.plenr.frontend.page.admin.adminHomePage
 import me.plenr.frontend.page.admin.arrangeTrainingsPage
 import me.plenr.frontend.page.admin.manageUsersPage
 import me.plenr.frontend.page.adminsetup.adminSetupPage
-import me.plenr.frontend.page.homePage
+import me.plenr.frontend.page.UserHomePage
 import me.plenr.frontend.page.login.loginPage
 import me.plenr.frontend.page.passwordsetup.passwordSetupPage
 
@@ -59,7 +58,7 @@ class PlenrFrontendApp : Application()
                         if (viewModel.user?.isAdmin == true)
                             adminHomePage(viewModel)
                         else
-                            homePage(viewModel)
+                            UserHomePage(viewModel)
                     }
                     route("/admin-setup") {
                         adminSetupPage(viewModel)
