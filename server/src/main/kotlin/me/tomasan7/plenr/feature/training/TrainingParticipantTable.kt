@@ -4,7 +4,7 @@ import me.tomasan7.plenr.feature.user.UserTable
 import org.jetbrains.exposed.sql.Table
 
 /** Many [users][UserTable] to one [training][TrainingTable] */
-object TrainingParticipantTable : Table("training_user")
+object TrainingParticipantTable : Table("training_participant")
 {
     val trainingId = reference("training_id", TrainingTable)
     val participantId = reference("participant_id", UserTable)
