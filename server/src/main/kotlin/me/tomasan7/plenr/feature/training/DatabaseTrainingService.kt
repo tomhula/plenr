@@ -95,6 +95,7 @@ class DatabaseTrainingService(
         return query {
             val trainings = mutableMapOf<Int, TrainingWithParticipantsDto>()
 
+            /* OPTIMIZE: Make this a subselect in the following select */
             val trainingsWithUserIds = TrainingParticipantTable
                 .select(TrainingParticipantTable.trainingId)
                 .where { TrainingParticipantTable.participantId eq userId }
