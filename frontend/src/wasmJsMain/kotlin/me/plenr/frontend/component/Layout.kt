@@ -18,13 +18,13 @@ fun <E : HTMLElement> ITag<E>.applyColumn(
 }
 
 @Composable
-fun <E : HTMLElement> ITag<E>.row(
-    justifyContent: JustifyContent = JustifyContent.Center,
-    alignItems: AlignItems = AlignItems.Center
+fun <E : HTMLElement> ITag<E>.applyRow(
+    justifyContent: JustifyContent = JustifyContent.Start,
+    alignItems: AlignItems = AlignItems.Start
 )
 {
     display(Display.Flex)
     flexDirection(FlexDirection.Row)
     justifyContent(justifyContent)
-    alignSelf(alignItems)
+    alignItems(alignItems)
 }

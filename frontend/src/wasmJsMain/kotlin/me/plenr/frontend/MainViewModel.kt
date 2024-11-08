@@ -69,6 +69,14 @@ class MainViewModel
         user = localStorage.getItem(USER_STORAGE_KEY)?.let { json.decodeFromString(it) }
     }
 
+    fun logout()
+    {
+        authToken = null
+        user = null
+        localStorage.removeItem(AUTH_TOKEN_STORAGE_KEY)
+        localStorage.removeItem(USER_STORAGE_KEY)
+    }
+
     suspend fun adminExists() = userService.adminExists()
 
     suspend fun createUser(user: UserDto) = userService.createUser(user, authToken)

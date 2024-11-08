@@ -1,22 +1,28 @@
 package me.plenr.frontend.page.admin
 
 import androidx.compose.runtime.*
+import app.softwork.routingcompose.Router
+import app.softwork.routingcompose.navigate
 import dev.kilua.core.IComponent
 import dev.kilua.form.InputType
+import dev.kilua.form.form
 import dev.kilua.form.select.select
-import dev.kilua.form.text.text
 import dev.kilua.html.*
+import kotlinx.browser.window
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.format
 import me.plenr.frontend.MainViewModel
 import me.plenr.frontend.component.applyColumn
+import me.plenr.frontend.component.formField
+import me.plenr.frontend.component.onSubmit
 import me.tomasan7.plenr.feature.training.TrainingType
 import me.tomasan7.plenr.feature.user.UserDto
 
 @Composable
 fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
 {
+    val router = Router.current
     val coroutineScope = rememberCoroutineScope()
 
     var state by remember { mutableStateOf(TrainingCreationFormState()) }
@@ -26,20 +32,21 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
         users = mainViewModel.getAllUsers()
     }
 
-    h2t("Arrange Trainings")
     trainingCreationForm(
         state,
-        onSubmit = { state ->
+        onSubmit = { submitState ->
             coroutineScope.launch {
                 mainViewModel.createTraining(
-                    state.title,
-                    state.description,
-                    state.startDateTime!!,
-                    TrainingType.valueOf(state.type.uppercase()),
-                    state.lengthMinutes,
-                    state.participants.map { it.id }
+                    submitState.title,
+                    submitState.description,
+                    submitState.startDateTime!!,
+                    TrainingType.valueOf(submitState.type.uppercase()),
+                    submitState.lengthMinutes,
+                    submitState.participants.map { it.id }
                 )
             }
+            window.alert("Training created")
+            state = TrainingCreationFormState()
         },
         onChange = { state = it },
         users = users
@@ -54,64 +61,54 @@ private fun IComponent.trainingCreationForm(
     onChange: (TrainingCreationFormState) -> Unit
 )
 {
-    div {
+    form(id = "arrange-training-form") {
         className("training-creation-form")
         applyColumn(alignItems = AlignItems.Center)
         rowGap(10.px)
 
-        div {
-            applyColumn()
-            label {
-                htmlFor("title")
-                +"Title"
-            }
-            text(state.title) {
-                id("title")
-                type(InputType.Text)
-                onInput { onChange(state.copy(title = this.value ?: "")) }
-            }
-        }
+        h1t("Arrange Trainings")
 
-        div {
-            applyColumn()
-            label {
-                htmlFor("description")
-                +"Description"
-            }
-            text(state.description) {
-                id("description")
-                type(InputType.Text)
-                onInput { onChange(state.copy(description = this.value ?: "")) }
-            }
-        }
+        onSubmit { onSubmit(state) }
 
-        div {
-            applyColumn()
-            label {
-                htmlFor("date")
-                +"Date"
-            }
-            text(state.startDateTime?.format(LocalDateTime.Formats.ISO) ?: "") {
-                id("date")
-                type(InputType.DatetimeLocal)
-                onChange {
-                    onChange(state.copy(startDateTime = this.value?.let { newValue ->
-                        LocalDateTime.parse(
-                            newValue,
-                            LocalDateTime.Formats.ISO
-                        )
-                    }))
+        formField(
+            inputId = "title",
+            label = "Title",
+            value = state.title,
+            required = true,
+            onChange = { onChange(state.copy(title = it)) }
+        )
+
+        formField(
+            inputId = "description",
+            label = "Description",
+            value = state.description,
+            type = InputType.Text,
+            onChange = { onChange(state.copy(description = it)) }
+        )
+
+        formField(
+            inputId = "date",
+            label = "Date",
+            value = state.startDateTime?.format(LocalDateTime.Formats.ISO) ?: "",
+            type = InputType.DatetimeLocal,
+            required = true,
+            onChange = { onChange(state.copy(startDateTime = it.let {
+                try {
+                    LocalDateTime.parse(it, LocalDateTime.Formats.ISO)
                 }
-            }
-        }
+                catch (e: Exception) {
+                    null
+                }
+            })) }
+        )
 
-        div {
+        div("form-field") {
             applyColumn()
-            label {
+            label(className = "form-field-label") {
                 htmlFor("type")
                 +"Type"
             }
-            select {
+            select(className = "form-field-input", required = true) {
                 id("type")
                 option {
                     value("dressage")
@@ -125,60 +122,43 @@ private fun IComponent.trainingCreationForm(
             }
         }
 
-        div {
-            applyColumn()
-            label {
-                htmlFor("lengthMinutes")
-                +"Length (Minutes)"
-            }
-            text(state.lengthMinutes.toString()) {
-                id("lengthMinutes")
-                type(InputType.Number)
-                attribute("min", "1")
-                onInput { onChange(state.copy(lengthMinutes = this.value?.toIntOrNull() ?: 0)) }
-            }
-        }
+        formField(
+            inputId = "length",
+            label = "Length (minutes)",
+            value = state.lengthMinutes.toString(),
+            type = InputType.Number,
+            required = true,
+            onChange = { onChange(state.copy(lengthMinutes = it.toIntOrNull() ?: 0)) }
+        )
 
-        div {
+        div(className = "form-field") {
             applyColumn()
-            label {
-                htmlFor("users")
+            label(htmlFor = "users", className = "form-field-label") {
                 +"Users"
             }
             val clients = remember(users) { users.filter { !it.isAdmin } }
             if (clients.isEmpty())
                 +"No users available"
             else
-                ul {
-                    id("users")
+                div(id = "users") {
+                    applyColumn()
+                    rowGap(10.px)
                     clients.forEach { user ->
-                        li {
+                        val selected = state.participants.contains(user)
+                        div(className = "user-card ${if (selected) "selected" else ""}") {
                             +"${user.firstName} ${user.lastName}"
-                            onClick { onChange(state.copy(participants = state.participants + user)) }
+                            onClick {
+                                if (!selected)
+                                    onChange(state.copy(participants = state.participants + user))
+                                else
+                                    onChange(state.copy(participants = state.participants - user))
+                            }
                         }
                     }
                 }
         }
 
-        div {
-            applyColumn()
-            label {
-                +"Selected Participants"
-            }
-            ul {
-                state.participants.forEach { participant ->
-                    li {
-                        +"${participant.firstName} ${participant.lastName}"
-                    }
-                }
-            }
-        }
-
-        button("Create Training") {
-            onClick {
-                onSubmit(state)
-            }
-        }
+        button("Create Training", type = ButtonType.Submit)
     }
 }
 

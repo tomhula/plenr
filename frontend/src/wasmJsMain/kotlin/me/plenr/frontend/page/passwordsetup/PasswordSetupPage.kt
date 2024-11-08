@@ -11,6 +11,7 @@ import io.ktor.http.*
 import kotlinx.coroutines.launch
 import me.plenr.frontend.MainViewModel
 import me.plenr.frontend.component.applyColumn
+import me.plenr.frontend.component.formField
 import me.plenr.frontend.component.onSubmit
 import web.window
 
@@ -43,37 +44,22 @@ fun IComponent.passwordSetupPage(mainViewModel: MainViewModel, token: String)
 
         h1t("Password Setup")
 
-        div {
-            applyColumn()
-            label {
-                htmlFor("password")
-                +"Password"
-            }
-            text(password, id = "password") {
-                onInput {
-                    password = this.value ?: ""
-                }
-                type(InputType.Password)
-            }
-        }
+        formField(
+            inputId = "password-field",
+            label = "Password",
+            value = password,
+            type = InputType.Password,
+            onChange = { password = it }
+        )
 
-        div {
-            applyColumn()
-            label {
-                htmlFor("confirm-password")
-                +"Confirm Password"
-            }
-            text(confirmPassword, id = "confirm-password") {
-                onInput {
-                    confirmPassword = this.value ?: ""
-                }
-                type(InputType.Password)
-            }
-        }
+        formField(
+            inputId = "confirm-password-field",
+            label = "Confirm Password",
+            value = confirmPassword,
+            type = InputType.Password,
+            onChange = { confirmPassword = it }
+        )
 
-        button {
-            type(ButtonType.Submit)
-            +"Set Password"
-        }
+        button("Set Password", type = ButtonType.Submit)
     }
 }

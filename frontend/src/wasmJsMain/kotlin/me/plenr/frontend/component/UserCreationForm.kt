@@ -3,73 +3,45 @@ package me.plenr.frontend.component
 import androidx.compose.runtime.Composable
 import dev.kilua.core.IComponent
 import dev.kilua.form.InputType
-import dev.kilua.form.text.text
-import dev.kilua.html.*
 import me.tomasan7.plenr.feature.user.UserDto
 
 @Composable
-fun IComponent.userCreationForm(
+fun IComponent.userCreationFormFields(
     state: UserCreationFormState,
     onChange: (UserCreationFormState) -> Unit
 )
 {
-    div {
-        className("user-creation-form")
-        applyColumn(alignItems = AlignItems.Center)
-        rowGap(10.px)
+    formField(
+        inputId = "first-name-field",
+        label = "First Name",
+        value = state.firstName,
+        type = InputType.Text,
+        onChange = { onChange(state.copy(firstName = it)) }
+    )
 
-        div {
-            applyColumn()
-            label {
-                htmlFor("first-name")
-                +"First Name"
-            }
-            text(state.firstName) {
-                id("first-name")
-                type(InputType.Text)
-                onInput { onChange(state.copy(firstName = this.value ?: "")) }
-            }
-        }
+    formField(
+        inputId = "last-name-field",
+        label = "Last Name",
+        value = state.lastName,
+        type = InputType.Text,
+        onChange = { onChange(state.copy(lastName = it)) }
+    )
 
-        div {
-            applyColumn()
-            label {
-                htmlFor("last-name")
-                +"Last Name"
-            }
-            text(state.lastName) {
-                id("last-name")
-                type(InputType.Text)
-                onInput { onChange(state.copy(lastName = this.value ?: "")) }
-            }
-        }
+    formField(
+        inputId = "email-field",
+        label = "Email",
+        value = state.email,
+        type = InputType.Email,
+        onChange = { onChange(state.copy(email = it)) }
+    )
 
-        div {
-            applyColumn()
-            label {
-                htmlFor("email")
-                +"Email"
-            }
-            text(state.email) {
-                id("email")
-                type(InputType.Email)
-                onInput { onChange(state.copy(email = this.value ?: "")) }
-            }
-        }
-
-        div {
-            applyColumn()
-            label {
-                htmlFor("phone-number")
-                +"Phone Number"
-            }
-            text(state.phoneNumber) {
-                id("phone-number")
-                type(InputType.Tel)
-                onInput { onChange(state.copy(phoneNumber = this.value ?: "")) }
-            }
-        }
-    }
+    formField(
+        inputId = "phone-number-field",
+        label = "Phone Number",
+        value = state.phoneNumber,
+        type = InputType.Tel,
+        onChange = { onChange(state.copy(phoneNumber = it)) }
+    )
 }
 
 data class UserCreationFormState(

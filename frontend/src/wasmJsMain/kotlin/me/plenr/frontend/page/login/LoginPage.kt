@@ -5,11 +5,11 @@ import app.softwork.routingcompose.Router
 import dev.kilua.core.IComponent
 import dev.kilua.form.InputType
 import dev.kilua.form.form
-import dev.kilua.form.text.text
 import dev.kilua.html.*
 import kotlinx.coroutines.launch
 import me.plenr.frontend.MainViewModel
 import me.plenr.frontend.component.applyColumn
+import me.plenr.frontend.component.formField
 import me.plenr.frontend.component.onSubmit
 
 @Composable
@@ -24,6 +24,7 @@ fun IComponent.loginPage(mainViewModel: MainViewModel)
 
     form {
         applyColumn(alignItems = AlignItems.Center)
+        rowGap(10.px)
 
         onSubmit {
             coroutineScope.launch {
@@ -33,38 +34,24 @@ fun IComponent.loginPage(mainViewModel: MainViewModel)
             }
         }
 
-        h1 {
-            +"Login"
-        }
-        div {
-            applyColumn()
-            label {
-                htmlFor("email")
-                +"Email"
-            }
-            text(id = "email") {
-                type(InputType.Email)
-                onChange {
-                    email = this.value ?: ""
-                }
-            }
-        }
-        div {
-            applyColumn()
-            label {
-                htmlFor("password")
-                +"Password"
-            }
-            text(id = "password") {
-                type(InputType.Password)
-                onChange {
-                    password = this.value ?: ""
-                }
-            }
-        }
-        button {
+        h1t("Login", "form-header")
+
+        formField(
+            inputId = "email-field",
+            label = "Email",
+            value = email,
+            type = InputType.Email,
+            onChange = { email = it }
+        )
+        formField(
+            inputId = "password-field",
+            label = "Password",
+            value = password,
+            type = InputType.Password,
+            onChange = { password = it }
+        )
+        button("Login") {
             type(ButtonType.Submit)
-            +"Login"
         }
 
         when (authenticated)

@@ -1,49 +1,61 @@
 package me.plenr.frontend.page.admin
 
 import androidx.compose.runtime.*
+import app.softwork.routingcompose.Router
+import app.softwork.routingcompose.navigate
 import dev.kilua.core.IComponent
 import dev.kilua.form.check.checkBox
-import dev.kilua.html.button
-import dev.kilua.html.div
-import dev.kilua.html.h2t
+import dev.kilua.form.form
+import dev.kilua.html.*
 import dev.kilua.html.helpers.onClickLaunch
-import dev.kilua.html.label
+import kotlinx.browser.window
+import kotlinx.coroutines.launch
 import me.plenr.frontend.MainViewModel
 import me.plenr.frontend.component.UserCreationFormState
-import me.plenr.frontend.component.userCreationForm
+import me.plenr.frontend.component.applyColumn
+import me.plenr.frontend.component.onSubmit
+import me.plenr.frontend.component.userCreationFormFields
 
 @Composable
 fun IComponent.addUserPage(viewModel: MainViewModel)
 {
+    val router = Router.current
     val coroutineScope = rememberCoroutineScope()
     var formState by remember { mutableStateOf(UserCreationFormState()) }
     var isAdmin by remember { mutableStateOf(false) }
 
-    h2t("Add User")
+    form {
+        applyColumn(alignItems = AlignItems.Center)
+        rowGap(10.px)
 
-    userCreationForm(
-        state = formState,
-        onChange = { formState = it }
-    )
-
-    div {
-        checkBox(isAdmin, id = "is-admin") {
-            onChange {
-                isAdmin = !isAdmin
+        onSubmit {
+            coroutineScope.launch {
+                viewModel.createUser(
+                    formState.toUserDto(isAdmin)
+                )
+                window.alert("User created")
+                router.navigate("/manage-users")
             }
         }
-        label {
-           htmlFor("is-admin")
-        }
-    }
 
+        h2t("Add User")
 
-    button {
-        +"Create User"
-        onClickLaunch(coroutineScope) {
-            viewModel.createUser(
-                formState.toUserDto(isAdmin)
-            )
+        userCreationFormFields(
+            state = formState,
+            onChange = { formState = it }
+        )
+
+        div(className = "form-field") {
+            checkBox(isAdmin, id = "is-admin", className = "form-field-input") {
+                onChange {
+                    isAdmin = !isAdmin
+                }
+            }
+            label(htmlFor = "is-admin-input", className = "form-field-label") {
+                +"Admin"
+            }
         }
+
+        button(label = "Create User", type = ButtonType.Submit)
     }
 }
