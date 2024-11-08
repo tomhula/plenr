@@ -8,4 +8,4 @@
 - Make sure the navigation stack actually is how it should be (go back pops and does not add)
 - Make sure to not send user contact details everywhere (entire UserDto)
 - Share as much code as possible between client and server (Constants like URLs, paths, maximum length of fields, etc.)
-- 
+- Fix database tables create only after accessing the api
