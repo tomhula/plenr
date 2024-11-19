@@ -64,7 +64,7 @@ class PlenrFrontendApp : Application()
                         router = Router.current
                         LaunchedEffect(Unit) {
                             if (!viewModel.adminExists())
-                                router!!.navigate("/admin-setup")
+                                router.navigate("/admin-setup")
                         }
                         route("/") {
                             if (viewModel.user?.isAdmin == true)
