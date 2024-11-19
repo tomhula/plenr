@@ -8,6 +8,7 @@ import kotlinx.browser.window
 import me.plenr.frontend.MainViewModel
 import me.plenr.frontend.component.applyColumn
 import me.plenr.frontend.component.applyRow
+import me.plenr.frontend.component.materialIconOutlined
 import me.tomasan7.plenr.feature.user.UserDto
 
 @Composable
@@ -74,11 +75,11 @@ fun IComponent.manageUserCard(
             )
             button(className = "icon-button") {
                 onClick { onEditClick() }
-                spant(className = "material-symbols-outlined", text = "edit")
+                materialIconOutlined("edit")
             }
             button(className = "icon-button") {
                 onClick { onDeleteClick() }
-                spant(className = "material-symbols-outlined", text = "delete")
+                materialIconOutlined("delete")
             }
         }
     }

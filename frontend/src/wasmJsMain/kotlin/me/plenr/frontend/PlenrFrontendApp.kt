@@ -3,10 +3,10 @@ package me.plenr.frontend
 import androidx.compose.runtime.*
 import app.softwork.routingcompose.BrowserRouter
 import app.softwork.routingcompose.Router
-import app.softwork.routingcompose.navigate
 import dev.kilua.Application
 import dev.kilua.compose.root
 import dev.kilua.html.*
+import me.plenr.frontend.component.materialIconOutlined
 import me.plenr.frontend.page.admin.addUserPage
 import me.plenr.frontend.page.admin.adminHomePage
 import me.plenr.frontend.page.admin.arrangeTrainingsPage
@@ -55,7 +55,7 @@ class PlenrFrontendApp : Application()
                                 router!!.navigate("/login")
                             }
 
-                            spant(className = "material-symbols-outlined", text = "logout")
+                            materialIconOutlined("logout")
                         }
                 }
 
