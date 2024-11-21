@@ -14,6 +14,7 @@ Note this documents contains only externally visible properties (no internal att
 Inherits account and has preferences.
 
 - **Preferences**
+  - Trainings a week
   - **Busy times** - Weekly periodic times, when the user is busy
   - **Notifications (Email, Phone)** - Training session arranged
     - **Training arranged** - When the user gets a training arranged by the admin
