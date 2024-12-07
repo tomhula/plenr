@@ -7,8 +7,12 @@ import kotlinx.rpc.krpc.serialization.json.json
 import me.tomasan7.plenr.Plenr
 import me.tomasan7.plenr.feature.training.DatabaseTrainingService
 import me.tomasan7.plenr.feature.training.TrainingService
+import me.tomasan7.plenr.feature.user.DatabaseTempBusyTimesService
+import me.tomasan7.plenr.feature.user.DatabaseUserPreferencesService
 import me.tomasan7.plenr.feature.user.DatabaseUserService
 import me.tomasan7.plenr.feature.user.UserService
+import me.tomasan7.plenr.feature.user.preferences.UserPreferencesService
+import me.tomasan7.plenr.feature.user.tempbusytimes.TempBusyTimesService
 
 fun Routing.apiRoute(
     plenr: Plenr
@@ -44,6 +48,22 @@ fun Routing.apiRoute(
                 serverUrl,
                 plenr.authService,
                 plenr.mailService
+            ).also { runBlocking { it.createIfNotExists() } }
+        }
+
+        registerService<UserPreferencesService> { ctx ->
+            DatabaseUserPreferencesService(
+                ctx,
+                plenr.database,
+                plenr.authService
+            ).also { runBlocking { it.createIfNotExists() } }
+        }
+
+        registerService<TempBusyTimesService> { ctx ->
+            DatabaseTempBusyTimesService(
+                plenr.database,
+                ctx,
+                plenr.authService
             ).also { runBlocking { it.createIfNotExists() } }
         }
     }
