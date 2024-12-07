@@ -50,7 +50,7 @@ fun IComponent.loginPage(mainViewModel: MainViewModel)
             type = InputType.Password,
             onChange = { password = it }
         )
-        button("Login") {
+        button("Login", className = "primary-button") {
             type(ButtonType.Submit)
         }
 

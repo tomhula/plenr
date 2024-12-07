@@ -60,6 +60,6 @@ fun IComponent.passwordSetupPage(mainViewModel: MainViewModel, token: String)
             onChange = { confirmPassword = it }
         )
 
-        button("Set Password", type = ButtonType.Submit)
+        button("Set Password", type = ButtonType.Submit, className = "primary-button")
     }
 }

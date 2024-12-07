@@ -18,12 +18,12 @@ fun IComponent.adminHomePage(viewModel: MainViewModel)
     div {
         applyColumn()
         rowGap(10.px)
-        button("Manage users") {
+        button("Manage users", className = "primary-button") {
             onClick {
                 router.navigate("/manage-users")
             }
         }
-        button("Arrange trainings") {
+        button("Arrange trainings", className = "primary-button") {
             onClick {
                 router.navigate("/arrange-trainings")
             }

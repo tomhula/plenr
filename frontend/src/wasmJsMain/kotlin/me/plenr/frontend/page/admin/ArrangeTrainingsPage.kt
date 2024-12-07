@@ -158,7 +158,7 @@ private fun IComponent.trainingCreationForm(
                 }
         }
 
-        button("Create Training", type = ButtonType.Submit)
+        button("Create Training", type = ButtonType.Submit, className = "primary-button")
     }
 }
 

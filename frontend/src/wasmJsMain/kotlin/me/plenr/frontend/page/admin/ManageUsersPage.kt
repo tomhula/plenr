@@ -45,7 +45,7 @@ fun IComponent.manageUsersPage(viewModel: MainViewModel)
             }
         }
 
-        button("Add User", id = "add-user-button") {
+        button("Add User", id = "add-user-button", className = "primary-button") {
             onClick {
                 router.navigate("/add-user")
             }

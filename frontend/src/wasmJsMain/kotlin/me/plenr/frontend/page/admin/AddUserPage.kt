@@ -56,6 +56,6 @@ fun IComponent.addUserPage(viewModel: MainViewModel)
             }
         }
 
-        button(label = "Create User", type = ButtonType.Submit)
+        button(label = "Create User", type = ButtonType.Submit, className = "primary-button")
     }
 }

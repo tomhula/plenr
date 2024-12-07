@@ -127,11 +127,18 @@ button {
     padding: 10px;
     font-size: 1em;
     color: #fff;
-    background-color: #007BFF;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+}
+
+.primary-button {
+    background-color: #5599dd;
+}
+
+.secondary-button {
+    background-color: #ccc;
 }
 
 button[type="submit"]:hover {
