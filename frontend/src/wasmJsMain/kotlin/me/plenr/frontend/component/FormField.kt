@@ -3,6 +3,7 @@ package me.plenr.frontend.component
 import androidx.compose.runtime.Composable
 import dev.kilua.core.IComponent
 import dev.kilua.form.InputType
+import dev.kilua.form.text.IText
 import dev.kilua.form.text.text
 import dev.kilua.html.div
 import dev.kilua.html.label
@@ -15,7 +16,8 @@ fun IComponent.formField(
     value: String,
     type: InputType = InputType.Text,
     required: Boolean = false,
-    onChange: (String) -> Unit
+    onChange: (String) -> Unit,
+    inputBlock: @Composable IText.() -> Unit = {}
 )
 {
     div(className = "form-field $className") {
@@ -27,6 +29,7 @@ fun IComponent.formField(
             onChange {
                 onChange(this.value ?: "")
             }
+            inputBlock()
         }
     }
 }

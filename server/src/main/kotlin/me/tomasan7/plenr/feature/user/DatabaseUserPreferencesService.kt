@@ -3,25 +3,13 @@ package me.tomasan7.plenr.feature.user
 import kotlinx.datetime.DayOfWeek
 import me.tomasan7.plenr.auth.AuthService
 import me.tomasan7.plenr.auth.UnauthorizedException
-import me.tomasan7.plenr.feature.user.UserPreferencesTable.trainingArrangedNotiEmail
-import me.tomasan7.plenr.feature.user.UserPreferencesTable.trainingArrangedNotiSms
-import me.tomasan7.plenr.feature.user.UserPreferencesTable.trainingCancelledNotiEmail
-import me.tomasan7.plenr.feature.user.UserPreferencesTable.trainingCancelledNotiSms
-import me.tomasan7.plenr.feature.user.UserPreferencesTable.trainingMovedNotiEmail
-import me.tomasan7.plenr.feature.user.UserPreferencesTable.trainingMovedNotiSms
-import me.tomasan7.plenr.feature.user.UserPreferencesTable.trainingsPerWeek
 import me.tomasan7.plenr.feature.user.preferences.PermanentBusyTimesDto
 import me.tomasan7.plenr.feature.user.preferences.UserPreferencesDto
 import me.tomasan7.plenr.feature.user.preferences.UserPreferencesService
 import me.tomasan7.plenr.feature.user.preferences.WeeklyTimeRanges
 import me.tomasan7.plenr.service.DatabaseService
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.batchInsert
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.upsert
 import kotlin.coroutines.CoroutineContext
 
 class DatabaseUserPreferencesService(
@@ -71,16 +59,7 @@ class DatabaseUserPreferencesService(
             throw UnauthorizedException("Only admins can set other users' preferences")
 
         query {
-            UserPreferencesTable.upsert(
-                UserPreferencesTable.userId,
-                trainingsPerWeek,
-                trainingArrangedNotiEmail,
-                trainingArrangedNotiSms,
-                trainingMovedNotiEmail,
-                trainingMovedNotiSms,
-                trainingCancelledNotiEmail,
-                trainingCancelledNotiSms
-            ) {
+            UserPreferencesTable.upsert {
                 it[UserPreferencesTable.userId] = userId
                 it[trainingsPerWeek] = userPreferencesDto.trainingsPerWeek
                 it[trainingArrangedNotiEmail] = userPreferencesDto.trainingArrangedNotiEmail

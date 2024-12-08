@@ -61,7 +61,7 @@ private fun IComponent.trainingCreationForm(
     onChange: (TrainingCreationFormState) -> Unit
 )
 {
-    form(id = "arrange-training-form") {
+    form(id = "arrange-training-form", className = "form") {
         className("training-creation-form")
         applyColumn(alignItems = AlignItems.Center)
         rowGap(10.px)

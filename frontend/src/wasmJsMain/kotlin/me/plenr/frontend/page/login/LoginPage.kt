@@ -22,7 +22,7 @@ fun IComponent.loginPage(mainViewModel: MainViewModel)
     var password by remember { mutableStateOf("") }
     var authenticated by remember { mutableStateOf<Boolean?>(null) }
 
-    form {
+    form(className = "form") {
         applyColumn(alignItems = AlignItems.Center)
         rowGap(10.px)
 
@@ -50,9 +50,7 @@ fun IComponent.loginPage(mainViewModel: MainViewModel)
             type = InputType.Password,
             onChange = { password = it }
         )
-        button("Login", className = "primary-button") {
-            type(ButtonType.Submit)
-        }
+        button("Login", className = "primary-button", type = ButtonType.Submit)
 
         when (authenticated)
         {

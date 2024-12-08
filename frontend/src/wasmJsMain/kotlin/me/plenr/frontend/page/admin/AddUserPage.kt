@@ -24,7 +24,7 @@ fun IComponent.addUserPage(viewModel: MainViewModel)
     var formState by remember { mutableStateOf(UserCreationFormState()) }
     var isAdmin by remember { mutableStateOf(false) }
 
-    form {
+    form(className = "form") {
         applyColumn(alignItems = AlignItems.Center)
         rowGap(10.px)
 

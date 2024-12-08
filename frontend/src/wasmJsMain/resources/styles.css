@@ -67,7 +67,7 @@ main
 }
 
 /* General form styling */
-form {
+.form {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -190,6 +190,56 @@ button[type="submit"]:hover {
 
 #arrange-training-form .user-card.selected {
     background-color: #aedae8;
+    cursor: pointer;
+}
+
+.modal-dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    max-width: 90vw;
+    max-height: 90vh;
+    background-color: #f9f9f9;
+    z-index: 1001;
+}
+
+.busy-time-range-chip {
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin: 5px;
+    display: inline-block;
+}
+
+.busy-time-range-chip:hover {
+    cursor: pointer;
+}
+
+.notifications-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.notifications-table th,
+.notifications-table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+}
+
+.notifications-table th {
+    background-color: #f3f3f3;
+}
+
+.notifications-table td input {
+    transform: scale(1.2);
     cursor: pointer;
 }
 

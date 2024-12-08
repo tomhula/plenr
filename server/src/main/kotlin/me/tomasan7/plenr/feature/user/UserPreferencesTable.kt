@@ -1,8 +1,8 @@
 package me.tomasan7.plenr.feature.user
 
-import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.Table
 
-object UserPreferencesTable: IntIdTable("user_preferences")
+object UserPreferencesTable: Table("user_preferences")
 {
     val userId = reference("user_id", UserTable)
     val trainingsPerWeek = integer("trainings_per_week")
@@ -12,4 +12,6 @@ object UserPreferencesTable: IntIdTable("user_preferences")
     val trainingMovedNotiSms = bool("training_moved_noti_sms")
     val trainingCancelledNotiEmail = bool("training_cancelled_noti_email")
     val trainingCancelledNotiSms = bool("training_cancelled_noti_sms")
+
+    override val primaryKey = PrimaryKey(userId)
 }

@@ -20,7 +20,7 @@ fun IComponent.adminSetupPage(plenrClient: MainViewModel)
     var state by remember { mutableStateOf(AdminSetupState()) }
     val coroutineScope = rememberCoroutineScope()
 
-    form {
+    form(className = "form") {
         applyColumn(alignItems = AlignItems.Center)
         rowGap(10.px)
         onSubmit {

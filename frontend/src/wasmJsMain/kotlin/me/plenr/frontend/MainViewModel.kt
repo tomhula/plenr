@@ -23,6 +23,11 @@ import me.tomasan7.plenr.feature.training.TrainingType
 import me.tomasan7.plenr.feature.training.TrainingWithParticipantsDto
 import me.tomasan7.plenr.feature.user.UserDto
 import me.tomasan7.plenr.feature.user.UserService
+import me.tomasan7.plenr.feature.user.preferences.PermanentBusyTimesDto
+import me.tomasan7.plenr.feature.user.preferences.UserPreferencesDto
+import me.tomasan7.plenr.feature.user.preferences.UserPreferencesService
+import me.tomasan7.plenr.feature.user.preferences.WeeklyTimeRanges
+import me.tomasan7.plenr.feature.user.tempbusytimes.TempBusyTimesService
 
 private const val AUTH_TOKEN_STORAGE_KEY = "authToken"
 private const val USER_STORAGE_KEY = "user"
@@ -41,6 +46,8 @@ class MainViewModel
     private val json = Json
     private lateinit var userService: UserService
     private lateinit var trainingService: TrainingService
+    private lateinit var preferencesService: UserPreferencesService
+    private lateinit var tempBusyTimesService: TempBusyTimesService
     private var authToken: String? = null
     var user: UserDto? by mutableStateOf(null)
 
@@ -64,6 +71,8 @@ class MainViewModel
         }
         userService = ktorRpcClient.withService()
         trainingService = ktorRpcClient.withService()
+        preferencesService = ktorRpcClient.withService()
+        tempBusyTimesService = ktorRpcClient.withService()
 
         authToken = localStorage.getItem(AUTH_TOKEN_STORAGE_KEY)
         user = localStorage.getItem(USER_STORAGE_KEY)?.let { json.decodeFromString(it) }
@@ -129,4 +138,20 @@ class MainViewModel
 
         return trainingService.getTrainingsForUser(user!!.id, authToken!!)
     }
+
+    suspend fun getPreferences() = preferencesService.getUserPreferences(user!!.id, authToken!!) ?: UserPreferencesDto(
+        1,
+        false, false,
+        false, false,
+        false, false,
+    )
+
+    suspend fun setPreferences(preferences: UserPreferencesDto) = preferencesService.setUserPreferences(user!!.id, preferences, authToken!!)
+
+    suspend fun getPermanentBusyTimes() = preferencesService.getPermanentBusyTimes(user!!.id, authToken!!).busyTimes
+
+    suspend fun setPermanentBusyTimes(busyTimes: WeeklyTimeRanges) = preferencesService.setPermanentBusyTimes(
+        PermanentBusyTimesDto(user!!.id, busyTimes),
+        authToken!!
+    )
 }

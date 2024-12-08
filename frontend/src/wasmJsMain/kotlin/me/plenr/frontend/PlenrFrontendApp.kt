@@ -15,6 +15,7 @@ import me.plenr.frontend.page.adminsetup.adminSetupPage
 import me.plenr.frontend.page.userHomePage
 import me.plenr.frontend.page.login.loginPage
 import me.plenr.frontend.page.passwordsetup.passwordSetupPage
+import me.plenr.frontend.page.user.userPreferencesPage
 
 class PlenrFrontendApp : Application()
 {
@@ -82,6 +83,9 @@ class PlenrFrontendApp : Application()
                         }
                         route("/login") {
                             loginPage(viewModel)
+                        }
+                        route("/preferences") {
+                            userPreferencesPage(viewModel)
                         }
                         if (viewModel.user?.isAdmin == true)
                         {

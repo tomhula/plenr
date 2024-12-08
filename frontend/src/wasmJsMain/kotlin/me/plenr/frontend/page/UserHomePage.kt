@@ -1,6 +1,7 @@
 package me.plenr.frontend.page
 
 import androidx.compose.runtime.*
+import app.softwork.routingcompose.Router
 import dev.kilua.core.IComponent
 import dev.kilua.html.*
 import me.plenr.frontend.MainViewModel
@@ -10,6 +11,7 @@ import me.tomasan7.plenr.feature.training.TrainingWithParticipantsDto
 @Composable
 fun IComponent.userHomePage(viewModel: MainViewModel)
 {
+    val router = Router.current
     var arrangedTrainings: List<TrainingWithParticipantsDto>? by remember { mutableStateOf(null) }
 
     LaunchedEffect(Unit) {
@@ -19,6 +21,12 @@ fun IComponent.userHomePage(viewModel: MainViewModel)
     div {
         applyColumn()
         rowGap(10.px)
+
+        button("Preferences", className = "primary-button") {
+            onClick {
+                router.navigate("/preferences")
+            }
+        }
 
         // TODO: This will be a calendar view
         h2t("My trainings:", className = "user-trainings-header")

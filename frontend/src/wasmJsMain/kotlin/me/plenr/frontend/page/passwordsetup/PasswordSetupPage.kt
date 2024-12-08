@@ -27,7 +27,7 @@ fun IComponent.passwordSetupPage(mainViewModel: MainViewModel, token: String)
     var confirmPassword by remember { mutableStateOf("") }
 
 
-    form {
+    form(className = "form") {
         applyColumn(alignItems = AlignItems.Center)
         onSubmit {
             if (password != confirmPassword)
