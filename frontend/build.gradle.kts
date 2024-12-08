@@ -29,7 +29,7 @@ kotlin {
     
     sourceSets {
         wasmJsMain.dependencies {
-            implementation(libs.kotlinx.html.wasmJs)
+            // implementation(libs.kotlinx.html.wasmJs)
             implementation(libs.kilua.wasmJs)
             implementation(libs.kilua.routing.wasmJs)
             implementation(libs.ktor.client.js)
