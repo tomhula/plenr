@@ -112,7 +112,7 @@ fun IComponent.userPreferencesPage(viewModel: MainViewModel)
         div(className = "form-field") {
             applyColumn()
             label(className = "form-field-label") {
-                +"Permanent busy times"
+                +"Notifications"
             }
 
             table(className = "notifications-table") {
