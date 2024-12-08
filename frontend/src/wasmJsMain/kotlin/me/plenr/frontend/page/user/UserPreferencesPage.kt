@@ -4,6 +4,7 @@ import androidx.compose.runtime.*
 import app.softwork.routingcompose.Router
 import dev.kilua.core.IComponent
 import dev.kilua.form.InputType
+import dev.kilua.form.check.checkBox
 import dev.kilua.form.form
 import dev.kilua.form.text.text
 import dev.kilua.html.*
@@ -165,15 +166,13 @@ private fun IComponent.notificationsTableRow(
     tr {
         th { +label }
         td {
-            text(type = InputType.Checkbox) {
-                element.checked = email
-                onChange { onEmailChange(this.element.checked) }
+            checkBox(value = email) {
+                onChange { onEmailChange(this.value) }
             }
         }
         td {
-            text(type = InputType.Checkbox) {
-                element.checked = sms
-                onChange { onSmsChange(this.element.checked) }
+            checkBox(value = sms) {
+                onChange { onSmsChange(this.value) }
             }
         }
     }
