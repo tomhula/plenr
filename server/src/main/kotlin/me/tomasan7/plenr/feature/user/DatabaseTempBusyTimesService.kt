@@ -8,7 +8,7 @@ import me.tomasan7.plenr.service.DatabaseService
 import me.tomasan7.plenr.util.LocalDateTimePeriod
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.selectAll
 import kotlin.coroutines.CoroutineContext
 
@@ -44,12 +44,10 @@ class DatabaseTempBusyTimesService(
         val caller = authService.validateToken(authToken) ?: throw UnauthorizedException()
 
         query {
-            periods.forEach { period ->
-                TempBusyTimeTable.insert {
-                    it[TempBusyTimeTable.userId] = caller.id
-                    it[start] = period.start
-                    it[end] = period.end
-                }
+            TempBusyTimeTable.batchInsert(periods) { period ->
+                this[TempBusyTimeTable.userId] = caller.id
+                this[TempBusyTimeTable.start] = period.start
+                this[TempBusyTimeTable.end] = period.end
             }
         }
     }
