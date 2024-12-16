@@ -60,6 +60,7 @@ class MainViewModel
             url {
                 host = window.location.hostname
                 port = getCurrentPort()
+                protocol = if (window.location.protocol == "https:") URLProtocol.WSS else URLProtocol.WS
                 encodedPath = "/api"
             }
 
