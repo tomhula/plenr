@@ -2,7 +2,7 @@ package me.tomasan7.plenr.config
 
 /**
  * A [ConfigManager] that reads environment variables to override the primary [ConfigManager].
- * Overrides server.host, server.port, database.url, database.user, database.password, smtp.host, smtp.port, smtp.username, smtp.password.
+ * Overrides server.host, server.port, server.url, database.url, database.user, database.password, smtp.host, smtp.port, smtp.username, smtp.password.
  */
 class EnvVarConfigManager(
     private val primaryConfigManager: ConfigManager
@@ -21,7 +21,8 @@ class EnvVarConfigManager(
     {
         val host = EnvVars.SERVER_HOST.get() ?: primary.host
         val port = EnvVars.SERVER_PORT.get()?.toIntOrNull() ?: primary.port
-        return primary.copy(host = host, port = port)
+        val url = EnvVars.SERVER_URL.get() ?: primary.url
+        return primary.copy(host = host, port = port, url = url)
     }
 
     private fun overrideDatabase(primary: Config.Database): Config.Database
@@ -49,6 +50,7 @@ class EnvVarConfigManager(
         {
             const val SERVER_HOST = "PLENR_SERVER_HOST"
             const val SERVER_PORT = "PLENR_SERVER_PORT"
+            const val SERVER_URL = "PLENR_SERVER_URL"
 
             const val DATABASE_URL = "PLENR_DATABASE_URL"
             const val DATABASE_USER = "PLENR_DATABASE_USER"
