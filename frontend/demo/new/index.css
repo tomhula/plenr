@@ -1,0 +1,80 @@
+* {
+    box-sizing: border-box;
+}
+
+#chart {
+    margin-top: 100px; /*TODO: REMOVE*/
+    margin-left: 100px; /*TODO: REMOVE*/
+
+    width: 1000px;
+    height: 100px;
+    white-space: nowrap;
+}
+.table-row-header-text {
+    font-weight: bold;
+    pointer-events: none;
+}
+
+.events-row {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    border: solid 1px whitesmoke;
+}
+
+.time-axis {
+    height: 30px;
+    position: relative;
+    overflow-x: clip;
+}
+
+.time-tick {
+    position: absolute;
+}
+
+.time-tick-line {
+    width: 2px;
+    background-color: whitesmoke;
+    position: absolute;
+    z-index: -1;
+}
+
+.time-tick-label {
+    position: relative;
+    color: grey;
+}
+
+.event {
+    position: absolute;
+    height: 100%;
+    bottom: 0;
+    transform-origin: left bottom;
+}
+
+.event:hover {
+    filter: grayscale(50%);
+}
+
+.x-axis {
+    display: flex;
+    position: absolute;
+    top: 100%; /* Position it below the chart */
+    left: 0;
+    width: 100%;
+    height: 20px; /* Height of the x-axis labels */
+}
+
+.x-axis-label {
+    flex: 1;
+    text-align: center;
+}
+
+.tooltip {
+    position: absolute;
+    padding: 5px;
+    background-color: #fff;
+    border: 1px solid #000;
+    display: none;
+    pointer-events: none;
+}
