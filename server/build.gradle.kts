@@ -40,6 +40,12 @@ tasks {
     }
 }
 
+ktor {
+    fatJar {
+        archiveFileName = rootProject.name + ".jar"
+    }
+}
+
 dependencies {
     implementation(projects.shared)
 
