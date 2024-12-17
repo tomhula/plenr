@@ -77,6 +77,18 @@ function clampMin(number, min)
     return number < min ? min : number
 }
 
+/** @return max if number is greater than max, else number */
+function clampMax(number, max)
+{
+    return number > max ? max : number
+}
+
+/** @return number clamped between min and max */
+function clamp(number, min, max)
+{
+    return clampMin(clampMax(number, max), min)
+}
+
 function foreachIndexed(arr, fun)
 {
     for (let i = 0; i < arr.length; i++)
