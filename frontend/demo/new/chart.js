@@ -75,7 +75,7 @@ class Chart
         document.body.appendChild(zoomEle)
 
         this.chart.addEventListener("mousemove", e => {
-            const mouseRelative = this.getLocalXPos(e.clientX)
+            const mouseRelative = this.#getLocalXPos(e.clientX)
             const result = this.#localXPosToTime(mouseRelative)
             chartTimeMousePos.innerText = `Time: ${Math.floor(result)}min`
             chartRelativeMousePos.innerText = `Chart relative pixels: ${Math.floor(mouseRelative)}px`
@@ -432,7 +432,7 @@ class Chart
         this.chart.addEventListener("mousemove", (event) => {
             if (!this.#shadowState.dragging)
                 return
-            const localXPos = this.getLocalXPos(event.clientX)
+            const localXPos = this.#getLocalXPos(event.clientX)
             const time = this.#localXPosToTime(localXPos)
             if (time < this.#shadowState.dragStart)
             {
@@ -452,7 +452,7 @@ class Chart
                 return
             event.preventDefault()
             this.#shadowState.dragging = true
-            const time = this.#localXPosToTime(this.getLocalXPos(event.clientX))
+            const time = this.#localXPosToTime(this.#getLocalXPos(event.clientX))
             this.#shadowState.start = time
             this.#shadowState.dragStart = time
             this.#shadowState.duration = 0
@@ -473,7 +473,7 @@ class Chart
         return Math.round((this.pan + localXPos) / this.zoom)
     }
 
-    getLocalXPos(globalXPos)
+    #getLocalXPos(globalXPos)
     {
         return globalXPos - this.#chartAreaLeft
     }
