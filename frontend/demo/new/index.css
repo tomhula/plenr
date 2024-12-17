@@ -43,7 +43,9 @@
 
 .event {
     position: absolute;
-    height: 100%;
+    height: 90%;
+    top: 50%;
+    transform: translateY(-50%);
     bottom: 0;
     transform-origin: left bottom;
 }
@@ -59,4 +61,12 @@
     border: 1px solid #000;
     display: none;
     pointer-events: none;
+}
+
+.shadow {
+    position: absolute;
+    top: 30px;
+    border-radius: 5px;
+    height: 40px;
+    background-color: #dadada;
 }

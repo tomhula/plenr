@@ -11,7 +11,10 @@ class Chart
             offsetX: 10,
             offsetY: 10
         },
-        onEventClick: (event, clickEvent) => {}
+        onEventClick: (eventEle, clickEvent) => {
+        },
+        onNewEvent: (event) => {
+        }
     }
 
     chart = undefined
@@ -25,6 +28,10 @@ class Chart
 
     #chartAreaResizeObserver = undefined
     #chartAreaWidth = undefined
+    #chartAreaIntersectionObserver = undefined
+    #chartAreaLeft = undefined
+
+    #shadowState = {dragging: false, dragStart: null, start: null, duration: null, element: null}
 
     constructor(chart, events, options)
     {
@@ -46,7 +53,8 @@ class Chart
         this.#initTimeAxis()
         this.#handleUserPanZoomInputs()
         this.#updateEvents()
-        this.#createTooltip()
+        // this.#createTooltip()
+        this.#handleCreateNewEvent()
         /* Fixes the zoom if it is initially out of bounds */
         this.#zoom(0, this.#getChartAreaWidth() / 2)
     }
@@ -67,9 +75,8 @@ class Chart
         document.body.appendChild(zoomEle)
 
         this.chart.addEventListener("mousemove", e => {
-            const chartArea = this.chart
-            const mouseRelative = e.clientX - chartArea.getBoundingClientRect().x
-            const result = (this.pan + mouseRelative) / this.zoom
+            const mouseRelative = this.getLocalXPos(e.clientX)
+            const result = this.#localXPosToTime(mouseRelative)
             chartTimeMousePos.innerText = `Time: ${Math.floor(result)}min`
             chartRelativeMousePos.innerText = `Chart relative pixels: ${Math.floor(mouseRelative)}px`
             isMouseInView.innerText = `Mouse in view: ${this.#isTimeInView(result)}`
@@ -235,7 +242,7 @@ class Chart
         this.#updateTimeAxis()
     }
 
-    /** Updates/creates/removes event's element based on whether it is in view or not */
+    /** Updates event's element based on whether it is in view or not */
     #updateEvent(event)
     {
         const isInView = this.#isEventInView(event)
@@ -243,22 +250,10 @@ class Chart
 
         if (isInView)
         {
-            if (event.__eventEle === undefined)
-            {
-                eventEle = this.#newEventEle(event)
-                this.#eventsRow.appendChild(eventEle)
-            }
-
-            const position = event.start * this.zoom - this.pan
-            eventEle.style.transform = `translateX(${position}px) scaleX(${this.zoom})`
-        }
-        else
-        {
-            if (eventEle !== undefined)
-            {
-                eventEle.remove()
-                delete event.__eventEle
-            }
+            let start = event.start.absoluteMinutes
+            const position = start * this.zoom - this.pan
+            eventEle.style.width = event.duration * this.zoom + "px"
+            eventEle.style.left = position + "px"
         }
 
         return isInView
@@ -281,9 +276,11 @@ class Chart
     #isEventInView(event)
     {
         const timeRangeInView = this.#getTimeRangeInView()
+        const start = event.start.absoluteMinutes
+        const end = start + event.duration
 
-        return this.#isTimeInView(event.start) || this.#isTimeInView(event.end)
-            || (event.start < timeRangeInView.start && event.end > timeRangeInView.end)
+        return this.#isTimeInView(start) || this.#isTimeInView(end)
+            || (start < timeRangeInView.start && end > timeRangeInView.end)
     }
 
     #getChartAreaWidth()
@@ -294,32 +291,6 @@ class Chart
         const chartArea = this.chart
         this.#chartAreaWidth = chartArea.clientWidth
         return this.#chartAreaWidth
-    }
-
-    #newEventEle(event)
-    {
-        const eventEle = newElement("div", "event")
-        /* Set here, since we then scale the element using transforms */
-        const timeDuration = event.end - event.start
-        eventEle.style.width = timeDuration + "px"
-        eventEle.style.backgroundColor = "red"
-
-        eventEle.__event = event
-        event.__eventEle = eventEle
-
-        eventEle.addEventListener("mouseover", e => {
-            this.#tooltip.style.display = "block"
-            this.#tooltip.innerText = (event.end - event.start) + "min"
-        })
-        eventEle.addEventListener("mousemove", e => {
-            this.#tooltip.style.left = `${e.pageX + this.options.tooltip.offsetX}px`
-            this.#tooltip.style.top = `${e.pageY + this.options.tooltip.offsetY}px`
-        })
-        eventEle.addEventListener("mouseout", e => {
-            this.#tooltip.style.display = "none"
-        })
-
-        return eventEle
     }
 
     #handleUserPanZoomInputs()
@@ -410,9 +381,30 @@ class Chart
         })
     }
 
-    #addEvent(event)
+    addEvent(eventEle, start, duration)
     {
+        let event = {start, duration: duration}
+        eventEle.classList.add("event")
+        event.__eventEle = eventEle
+        eventEle.__event = event
+
+        eventEle.addEventListener("click", e => {
+            this.options.onEventClick(eventEle, e)
+        })
+
+        // eventEle.addEventListener("mouseover", e => {
+        //     this.#tooltip.style.display = "block"
+        //     this.#tooltip.innerText = (eventEle.end - eventEle.start) + "min"
+        // })
+        // eventEle.addEventListener("mousemove", e => {
+        //     this.#tooltip.style.left = `${e.pageX + this.options.tooltip.offsetX}px`
+        //     this.#tooltip.style.top = `${e.pageY + this.options.tooltip.offsetY}px`
+        // })
+        // eventEle.addEventListener("mouseout", e => {
+        //     this.#tooltip.style.display = "none"
+        // })
         this.#events.push(event)
+        this.#eventsRow.appendChild(eventEle)
         this.#updateEvent(event)
     }
 
@@ -421,7 +413,84 @@ class Chart
         this.#chartAreaResizeObserver = new ResizeObserver(entries => {
             this.#chartAreaWidth = entries[0].contentRect.width
         })
+        this.#chartAreaIntersectionObserver = new IntersectionObserver(entries => {
+            this.#chartAreaLeft = entries[0].boundingClientRect.left
+        })
         // const chartArea = this.chart.querySelector(".events-row")
         this.#chartAreaResizeObserver.observe(this.chart)
+        this.#chartAreaIntersectionObserver.observe(this.chart)
+    }
+
+    #handleCreateNewEvent()
+    {
+        this.chart.addEventListener("mousemove", (event) => {
+            if (!this.#shadowState.dragging)
+                return
+            const localXPos = this.getLocalXPos(event.clientX)
+            const time = this.#localXPosToTime(localXPos)
+            if (time < this.#shadowState.dragStart)
+            {
+                this.#shadowState.start = time
+                this.#shadowState.duration = this.#shadowState.dragStart - time
+            }
+            else if (time > this.#shadowState.dragStart)
+            {
+                this.#shadowState.start = this.#shadowState.dragStart
+                this.#shadowState.duration = time - this.#shadowState.start
+            }
+
+            this.#updateShadow()
+        })
+        this.chart.addEventListener("mousedown", (event) => {
+            if (event.button !== 0)
+                return
+            event.preventDefault()
+            this.#shadowState.dragging = true
+            const time = this.#localXPosToTime(this.getLocalXPos(event.clientX))
+            this.#shadowState.start = time
+            this.#shadowState.dragStart = time
+            this.#shadowState.duration = 0
+        })
+        this.chart.addEventListener("mouseup", () => {
+            this.#shadowState.dragging = false
+            if (this.#shadowState.duration > 0)
+            {
+                const event = {start: this.#shadowState.start, duration: this.#shadowState.duration}
+                this.options.onNewEvent(event)
+            }
+            this.#updateShadow()
+        })
+    }
+
+    #localXPosToTime(localXPos)
+    {
+        return Math.round((this.pan + localXPos) / this.zoom)
+    }
+
+    getLocalXPos(globalXPos)
+    {
+        return globalXPos - this.#chartAreaLeft
+    }
+
+    #updateShadow()
+    {
+        if (this.#shadowState.dragging && this.#shadowState.element === null)
+        {
+            this.#shadowState.element = newElement("div", "shadow")
+            this.#eventsRow.appendChild(this.#shadowState.element)
+        }
+        else if (!this.#shadowState.dragging && this.#shadowState.element !== null)
+        {
+            this.#shadowState.element.remove()
+            this.#shadowState.element = null
+        }
+
+        if (!this.#shadowState.dragging)
+            return
+
+        const start = this.#shadowState.start * this.zoom - this.pan
+        const duration = this.#shadowState.duration
+        this.#shadowState.element.style.left = start + "px"
+        this.#shadowState.element.style.width = duration * this.zoom + "px"
     }
 }
