@@ -308,7 +308,10 @@ class Chart
             {
                 e.preventDefault()
                 this.#panState.spaceDown = false
-                this.chart.style.removeProperty("cursor")
+                if (this.#panState.panning)
+                    this.chart.style.cursor = "grabbing"
+                else
+                     this.chart.style.removeProperty("cursor")
             }
         })
 
@@ -320,7 +323,7 @@ class Chart
 
             e.preventDefault()
             this.chart.style.cursor = "grabbing"
-            this.#panState = {panning: true, lastX: e.clientX, lastY: e.clientY}
+            this.#panState = {...this.#panState, panning: true, lastX: e.clientX, lastY: e.clientY}
         })
 
         this.chart.addEventListener("mouseup", e => {
@@ -330,7 +333,10 @@ class Chart
                 return
 
             e.preventDefault()
-            this.chart.style.removeProperty("cursor")
+            if (this.#panState.spaceDown)
+                this.chart.style.cursor = "grab"
+            else
+                this.chart.style.removeProperty("cursor")
             this.#panState.panning = false
         })
 
@@ -442,7 +448,7 @@ class Chart
             this.#updateShadow()
         })
         this.chart.addEventListener("mousedown", (event) => {
-            if (event.button !== 0)
+            if (event.button !== 0 || this.#panState.spaceDown )
                 return
             event.preventDefault()
             this.#shadowState.dragging = true
