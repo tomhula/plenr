@@ -250,7 +250,7 @@ class Chart
 
         if (isInView)
         {
-            let start = event.start.absoluteMinutes
+            let start = event.start
             const position = start * this.zoom - this.pan
             eventEle.style.width = event.duration * this.zoom + "px"
             eventEle.style.left = position + "px"
@@ -276,7 +276,7 @@ class Chart
     #isEventInView(event)
     {
         const timeRangeInView = this.#getTimeRangeInView()
-        const start = event.start.absoluteMinutes
+        const start = event.start
         const end = start + event.duration
 
         return this.#isTimeInView(start) || this.#isTimeInView(end)
@@ -389,7 +389,7 @@ class Chart
 
     addEvent(eventEle, start, duration)
     {
-        let event = {start, duration: duration}
+        let event = {start: start.absoluteMinutes, duration: duration}
         eventEle.classList.add("event")
         event.__eventEle = eventEle
         eventEle.__event = event
