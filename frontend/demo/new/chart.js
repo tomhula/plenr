@@ -33,10 +33,9 @@ class Chart
 
     #shadowState = {dragging: false, dragStart: null, start: null, duration: null, element: null}
 
-    constructor(chart, events, options)
+    constructor(chart, options)
     {
         this.chart = chart
-        this.#events = events
         this.options = {...Chart.#defaultOptions, ...options}
 
         this.zoom = this.options.initialZoom
