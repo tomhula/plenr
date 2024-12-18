@@ -18,4 +18,9 @@ class Week(date: LocalDate)
     operator fun contains(date: LocalDate) = date in dateRange
 
     operator fun contains(dateTime: LocalDateTime) = dateTime.date in this
+
+    companion object
+    {
+        fun current() = Week(Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date)
+    }
 }
