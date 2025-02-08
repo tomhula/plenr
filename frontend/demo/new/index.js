@@ -3,7 +3,13 @@ let randomElement = arr => arr[randomIndex(arr)]
 let randomIndex = arr => randomInt(arr.length)
 
 const chartEle = document.querySelector("#chart")
-let chart = new Chart(chartEle, [], {zoomFactor: 0.1, initialZoom: 1, minTimeTickDistancePixels: 100})
+let options = {
+    zoomFactor: 0.1,
+    initialZoom: 1,
+    minTimeTickDistancePixels: 100,
+    onEventClick: (eventEle, clickEvent) => { console.log(eventEle.innerText) },
+}
+let chart = new Chart(chartEle, options)
 
 const trainingEle = document.createElement("div")
 trainingEle.innerText = "Training"
