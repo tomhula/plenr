@@ -82,7 +82,6 @@ class Plenr : ConfigManager
         val dbConfig = config.database
         database = Database.connect(
             url = dbConfig.url,
-            driver = dbConfig.driver,
             user = dbConfig.user,
             password = dbConfig.password
         )

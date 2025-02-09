@@ -21,7 +21,6 @@ data class Config(
     @Serializable
     data class Database(
         val url: String = "jdbc:mysql://localhost:3306/plenr",
-        val driver: String = "com.mysql.cj.jdbc.Driver",
         val user: String = "root",
         val password: String = ""
     )
