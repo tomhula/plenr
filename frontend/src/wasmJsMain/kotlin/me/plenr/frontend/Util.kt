@@ -1,6 +1,6 @@
 package me.plenr.frontend
 
-import kotlinx.browser.window
+import web.window
 
 fun getCurrentPort() = if (window.location.port.isNotEmpty())
     window.location.port.toInt()

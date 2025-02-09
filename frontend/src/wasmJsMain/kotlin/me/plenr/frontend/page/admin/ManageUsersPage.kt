@@ -4,12 +4,12 @@ import androidx.compose.runtime.*
 import app.softwork.routingcompose.Router
 import dev.kilua.core.IComponent
 import dev.kilua.html.*
-import kotlinx.browser.window
 import me.plenr.frontend.MainViewModel
 import me.plenr.frontend.component.applyColumn
 import me.plenr.frontend.component.applyRow
 import me.plenr.frontend.component.materialIconOutlined
 import me.tomasan7.plenr.feature.user.UserDto
+import web.window
 
 @Composable
 fun IComponent.manageUsersPage(viewModel: MainViewModel)

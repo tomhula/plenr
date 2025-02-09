@@ -8,7 +8,6 @@ import dev.kilua.form.check.checkBox
 import dev.kilua.form.form
 import dev.kilua.form.text.text
 import dev.kilua.html.*
-import kotlinx.browser.window
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
@@ -24,6 +23,7 @@ import me.tomasan7.plenr.feature.user.preferences.UserPreferencesDto
 import me.tomasan7.plenr.feature.user.preferences.WeeklyTimeRanges
 import me.tomasan7.plenr.util.rangeTo
 import web.document
+import web.window
 
 @Composable
 fun IComponent.userPreferencesPage(viewModel: MainViewModel)

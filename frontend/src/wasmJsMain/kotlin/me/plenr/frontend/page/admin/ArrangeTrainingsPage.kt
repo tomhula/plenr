@@ -2,13 +2,11 @@ package me.plenr.frontend.page.admin
 
 import androidx.compose.runtime.*
 import app.softwork.routingcompose.Router
-import app.softwork.routingcompose.navigate
 import dev.kilua.core.IComponent
 import dev.kilua.form.InputType
 import dev.kilua.form.form
 import dev.kilua.form.select.select
 import dev.kilua.html.*
-import kotlinx.browser.window
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.format
@@ -18,6 +16,7 @@ import me.plenr.frontend.component.formField
 import me.plenr.frontend.component.onSubmit
 import me.tomasan7.plenr.feature.training.TrainingType
 import me.tomasan7.plenr.feature.user.UserDto
+import web.window
 
 @Composable
 fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)

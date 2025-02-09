@@ -7,15 +7,12 @@ import io.ktor.client.*
 import io.ktor.client.engine.js.*
 import io.ktor.http.*
 import io.ktor.util.*
-import kotlinx.browser.localStorage
-import kotlinx.browser.window
 import kotlinx.datetime.LocalDateTime
-import kotlinx.rpc.krpc.ktor.client.installRPC
+import kotlinx.rpc.krpc.ktor.client.installKrpc
 import kotlinx.rpc.krpc.ktor.client.rpc
 import kotlinx.rpc.krpc.ktor.client.rpcConfig
 import kotlinx.rpc.krpc.serialization.json.json
 import kotlinx.rpc.withService
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import me.tomasan7.plenr.feature.training.CreateTrainingDto
 import me.tomasan7.plenr.feature.training.TrainingService
@@ -28,6 +25,8 @@ import me.tomasan7.plenr.feature.user.preferences.UserPreferencesDto
 import me.tomasan7.plenr.feature.user.preferences.UserPreferencesService
 import me.tomasan7.plenr.feature.user.preferences.WeeklyTimeRanges
 import me.tomasan7.plenr.feature.user.tempbusytimes.TempBusyTimesService
+import web.localStorage
+import web.window
 
 private const val AUTH_TOKEN_STORAGE_KEY = "authToken"
 private const val USER_STORAGE_KEY = "user"
@@ -41,7 +40,7 @@ class MainViewModel
         /*install(ContentNegotiation) {
             json()
         }*/
-        installRPC()
+        installKrpc()
     }
     private val json = Json
     private lateinit var userService: UserService

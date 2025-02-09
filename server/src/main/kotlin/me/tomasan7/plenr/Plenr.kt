@@ -5,7 +5,7 @@ import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import kotlinx.coroutines.runBlocking
-import kotlinx.rpc.krpc.ktor.server.RPC
+import kotlinx.rpc.krpc.ktor.server.Krpc
 import me.tomasan7.plenr.auth.AuthService
 import me.tomasan7.plenr.auth.BasicAuthService
 import me.tomasan7.plenr.config.Config
@@ -14,7 +14,9 @@ import me.tomasan7.plenr.config.EnvVarConfigManager
 import me.tomasan7.plenr.config.JsonFileConfigManager
 import me.tomasan7.plenr.mail.MailService
 import me.tomasan7.plenr.mail.SmtpMailService
-import me.tomasan7.plenr.module.*
+import me.tomasan7.plenr.module.configureContentNegotiation
+import me.tomasan7.plenr.module.configureExceptionHandling
+import me.tomasan7.plenr.module.configureRouting
 import me.tomasan7.plenr.security.*
 import org.jetbrains.exposed.sql.Database
 import java.nio.file.Path
@@ -104,7 +106,7 @@ class Plenr : ConfigManager
 
     private fun Application.module()
     {
-        install(RPC)
+        install(Krpc)
         configureContentNegotiation()
         configureExceptionHandling()
         configureRouting(this@Plenr, Url(config.server.url).fullPath.removeSuffix("/"))
