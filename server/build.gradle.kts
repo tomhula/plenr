@@ -7,7 +7,7 @@ plugins {
 }
 
 application {
-    mainClass.set("me.tomasan7.plenr.MainKt")
+    mainClass.set("cz.tomashula.plenr.MainKt")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=${extra["io.ktor.development"] ?: "false"}")
 }
 
