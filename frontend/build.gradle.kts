@@ -25,13 +25,14 @@ kotlin {
         browser {
             commonWebpackConfig {
                 outputFileName = "main.bundle.js"
-                sourceMaps = false
-                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
-                    static = (static ?: mutableListOf()).apply {
-                        // Serve sources to debug inside browser
-                        add(project.projectDir.path)
-                    }
-                }
+                sourceMaps = true
+                // https://kilua.gitbook.io/kilua-guide/1.-getting-started-1/debugging
+                // devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
+                //     static = (static ?: mutableListOf()).apply {
+                //         // Serve sources to debug inside browser
+                //         add(project.projectDir.path)
+                //     }
+                // }
             }
         }
         binaries.executable()
