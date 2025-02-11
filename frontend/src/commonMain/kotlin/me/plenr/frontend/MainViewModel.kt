@@ -58,7 +58,7 @@ class MainViewModel
         val ktorRpcClient = httpClient.rpc {
             url {
                 host = window.location.hostname
-                port = getCurrentPort()
+                port = getCurrentPort().let { if (it == 3000) 8080 else it } /* Webpack dev server detection */
                 protocol = if (window.location.protocol == "https:") URLProtocol.WSS else URLProtocol.WS
                 encodedPath = "/api"
             }

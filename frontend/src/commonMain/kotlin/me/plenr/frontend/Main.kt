@@ -6,6 +6,7 @@ fun main()
 {
     startApplication(
         ::PlenrFrontendApp,
+        webpackHot(),
         BootstrapModule,
         BootstrapCssModule,
         JetpackModule,
@@ -14,3 +15,5 @@ fun main()
         RsupProgressModule
     )
 }
+
+expect fun webpackHot(): Hot?

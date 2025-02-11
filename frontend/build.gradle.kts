@@ -9,17 +9,27 @@ plugins {
 }
 
 kotlin {
+    js(IR) {
+        useEsModules()
+        browser {
+            commonWebpackConfig {
+                outputFileName = "main.bundle.js"
+                sourceMaps = false
+            }
+        }
+        binaries.executable()
+    }
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
-        moduleName = "plenr"
+        useEsModules()
         browser {
-            val projectDirPath = project.projectDir.path
             commonWebpackConfig {
-                outputFileName = "${rootProject.name}.js"
+                outputFileName = "main.bundle.js"
+                sourceMaps = false
                 devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
                     static = (static ?: mutableListOf()).apply {
                         // Serve sources to debug inside browser
-                        add(projectDirPath)
+                        add(project.projectDir.path)
                     }
                 }
             }
@@ -28,21 +38,19 @@ kotlin {
     }
     
     sourceSets {
-        wasmJsMain.dependencies {
-            implementation(libs.kilua.wasmJs)
-            implementation(libs.kilua.routing.wasmJs)
-            implementation(libs.kilua.jetpack.wasmJs)
-            implementation(libs.kilua.imask.wasmJs)
-            implementation(libs.kilua.bootstrap.wasmJs)
-            implementation(libs.kilua.toastify.wasmJs)
-            implementation(libs.kilua.tempus.dominus.wasmJs)
-            implementation(libs.kilua.rsup.progress.wasmJs)
-            implementation(libs.ktor.client.js)
-            implementation(libs.ktor.client.content.negotiation.wasmJs)
-            implementation(libs.ktor.serialization.kotlinx.json)
-        }
         commonMain.dependencies {
             implementation(projects.shared)
+
+            implementation(libs.kilua)
+            implementation(libs.kilua.routing)
+            implementation(libs.kilua.jetpack)
+            implementation(libs.kilua.imask)
+            implementation(libs.kilua.bootstrap)
+            implementation(libs.kilua.toastify)
+            implementation(libs.kilua.tempus.dominus)
+            implementation(libs.kilua.rsup.progress)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
 
             implementation(libs.ktor.client.js)
             implementation(libs.kotlinx.rpc.krpc.client)
