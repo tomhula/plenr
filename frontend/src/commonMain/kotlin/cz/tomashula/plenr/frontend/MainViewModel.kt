@@ -44,7 +44,7 @@ class MainViewModel
     }
     private val json = Json
     private lateinit var userService: UserService
-    private lateinit var trainingService: cz.tomashula.plenr.feature.training.TrainingService
+    private lateinit var trainingService: TrainingService
     private lateinit var preferencesService: UserPreferencesService
     private lateinit var tempBusyTimesService: TempBusyTimesService
     private var authToken: String? = null
