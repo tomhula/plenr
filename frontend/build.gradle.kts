@@ -29,9 +29,14 @@ kotlin {
     
     sourceSets {
         wasmJsMain.dependencies {
-            // implementation(libs.kotlinx.html.wasmJs)
             implementation(libs.kilua.wasmJs)
             implementation(libs.kilua.routing.wasmJs)
+            implementation(libs.kilua.jetpack.wasmJs)
+            implementation(libs.kilua.imask.wasmJs)
+            implementation(libs.kilua.bootstrap.wasmJs)
+            implementation(libs.kilua.toastify.wasmJs)
+            implementation(libs.kilua.tempus.dominus.wasmJs)
+            implementation(libs.kilua.rsup.progress.wasmJs)
             implementation(libs.ktor.client.js)
             implementation(libs.ktor.client.content.negotiation.wasmJs)
             implementation(libs.ktor.serialization.kotlinx.json)

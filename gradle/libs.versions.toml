@@ -22,9 +22,14 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 # UI
-kotlinx-html-wasmJs = { module = "org.jetbrains.kotlinx:kotlinx-html-wasm-js", version.ref = "kotlinx-html" }
 kilua-wasmJs = { module = "dev.kilua:kilua-wasm-js", version.ref = "kilua" }
 kilua-routing-wasmJs = { module = "dev.kilua:kilua-routing-wasm-js", version.ref = "kilua" }
+kilua-jetpack-wasmJs = { module = "dev.kilua:kilua-jetpack-wasm-js", version.ref = "kilua" }
+kilua-imask-wasmJs = { module = "dev.kilua:kilua-imask-wasm-js", version.ref = "kilua" }
+kilua-bootstrap-wasmJs = { module = "dev.kilua:kilua-bootstrap-wasm-js", version.ref = "kilua" }
+kilua-toastify-wasmJs = { module = "dev.kilua:kilua-toastify-wasm-js", version.ref = "kilua" }
+kilua-tempus-dominus-wasmJs = { module = "dev.kilua:kilua-tempus-dominus-wasm-js", version.ref = "kilua" }
+kilua-rsup-progress-wasmJs = { module = "dev.kilua:kilua-rsup-progress-wasm-js", version.ref = "kilua" }
 # Logging
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 # CLI
