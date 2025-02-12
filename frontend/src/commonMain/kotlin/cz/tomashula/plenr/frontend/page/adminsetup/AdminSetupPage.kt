@@ -4,14 +4,20 @@ import androidx.compose.runtime.*
 import app.softwork.routingcompose.Router
 import cz.tomashula.plenr.feature.user.UserDto
 import cz.tomashula.plenr.frontend.MainViewModel
-import cz.tomashula.plenr.frontend.component.*
+import cz.tomashula.plenr.frontend.component.bsForm
+import cz.tomashula.plenr.frontend.component.bsFormInput
+import cz.tomashula.plenr.frontend.component.bsInvalidFeedback
+import cz.tomashula.plenr.frontend.component.bsLabelledFormField
+import dev.kilua.KiluaScope
 import dev.kilua.core.IComponent
-import dev.kilua.form.*
-import dev.kilua.form.text.text
+import dev.kilua.form.ImaskOptions
+import dev.kilua.form.InputType
+import dev.kilua.form.PatternMask
 import dev.kilua.html.*
 import dev.kilua.modal.alert
 import dev.kilua.panel.flexPanel
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.serialization.Serializable
 
 @Composable
@@ -78,7 +84,12 @@ fun IComponent.adminSetupPage(plenrClient: MainViewModel)
                 }
             }
 
-            bsButton(label = "Create", type = ButtonType.Submit, className = "mt-2")
+            bsButton(label = "Create", type = ButtonType.Submit, className = "mt-3")
+
+            // Dynamic validation
+            stateFlow.onEach {
+                this.validate()
+            }.launchIn(KiluaScope)
         }
     }
 }
