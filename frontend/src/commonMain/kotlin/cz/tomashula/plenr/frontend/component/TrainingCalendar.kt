@@ -74,7 +74,7 @@ private fun IComponent.weekSelector(
         0 -> "This week"
         1 -> "Next week"
         -1 -> "Last week"
-        else -> week.relative(weekDifference).toString(dateFormat)
+        else -> week.toString(dateFormat)
     }
 
     Row(
