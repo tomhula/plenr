@@ -110,8 +110,8 @@ private fun IComponent.trainingCalendarDay(
 }
 
 private val dateFormat = LocalDate.Format {
-    dayOfMonth(padding = Padding.ZERO)
+    dayOfMonth()
     char('.')
-    monthNumber(padding = Padding.ZERO)
+    monthNumber()
     char('.')
 }
