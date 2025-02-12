@@ -4,9 +4,8 @@ import androidx.compose.runtime.*
 import app.softwork.routingcompose.Router
 import cz.tomashula.plenr.feature.user.UserDto
 import cz.tomashula.plenr.frontend.MainViewModel
-import cz.tomashula.plenr.frontend.component.onSubmit
+import cz.tomashula.plenr.frontend.component.*
 import dev.kilua.core.IComponent
-import dev.kilua.externals.console
 import dev.kilua.form.*
 import dev.kilua.form.text.text
 import dev.kilua.html.*
@@ -19,7 +18,6 @@ import kotlinx.serialization.Serializable
 fun IComponent.adminSetupPage(plenrClient: MainViewModel)
 {
     val router = Router.current
-    val coroutineScope = rememberCoroutineScope()
 
     var submitted by remember { mutableStateOf(false) }
 
@@ -30,65 +28,55 @@ fun IComponent.adminSetupPage(plenrClient: MainViewModel)
     ) {
         h1t("Admin Setup")
 
-        form<AdminSetupForm>(className = "needs-validation") {
+        if (submitted)
+            alert(
+                caption = "Admin account created",
+                content = "Check your email to set your password.",
+                callback = { router.navigate("/login") }
+            )
+
+        bsForm<AdminSetupForm>(
+            onSubmitValid = { form ->
+                plenrClient.createUser(form.toUserDto(true))
+                submitted = true
+            }
+        ) {
             maxWidth(330.px)
-            val validation by validationStateFlow.collectAsState()
 
-            if (submitted)
-                alert(
-                    caption = "Admin account created",
-                    content = "Check your email to set your password.",
-                    callback = { router.navigate("/login") }
-                )
-
-            onSubmit {
-                coroutineScope.launch {
-                    val isValid = this@form.validate()
-                    this@form.className = "was-validated"
-                    if (isValid)
-                    {
-                        plenrClient.createUser(this@form.getData().toUserDto(true))
-                        submitted = true
-                    }
+            div("mt-2") {
+                bsLabelledFormField("First Name") {
+                    bsFormInput(it, AdminSetupForm::firstName)
                 }
             }
 
             div("mt-2") {
-                fieldWithLabel("First Name", "form-label") {
-                    text(required = true, id = it, className = "form-control") {
-                        bind(AdminSetupForm::firstName)
-                    }
+                bsLabelledFormField("Last Name") {
+                    bsFormInput(id = it, AdminSetupForm::lastName)
                 }
             }
 
             div("mt-2") {
-                fieldWithLabel("Last Name", "form-label") {
-                    text(required = true, id = it, className = "form-control") {
-                        bind(AdminSetupForm::lastName)
-                    }
-                }
-            }
-
-            div("mt-2") {
-                fieldWithLabel("Email", "form-label", wrapperClassName = "input-group") {
+                bsLabelledFormField("Email", wrapperClassName = "input-group") {
                     spant("@", className = "input-group-text", id = "inputGroupPrepend")
-                    text(required = true, id = it, className = "form-control", type = InputType.Email) {
+                    bsFormInput(it, AdminSetupForm::email, type = InputType.Email) {
                         ariaDescribedby("inputGroupPrepend")
-                        bind(AdminSetupForm::email)
                     }
                 }
             }
 
             div("mt-2") {
-                fieldWithLabel("Phone Number", "form-label") { inputId ->
-                    text(required = true, id = inputId, className = "form-control", placeholder = "+000 000 000 000") {
-                        bind(AdminSetupForm::phoneNumber) { it.value?.length == 16 }
+                bsLabelledFormField("Phone Number") { inputId ->
+                    bsFormInput(
+                        id = inputId,
+                        bindKey = AdminSetupForm::phoneNumber,
+                        validator = { it.value?.length == 16 },
+                        placeholder = "+000 000 000 000"
+                    ) {
                         maskOptions = ImaskOptions(pattern = PatternMask("{+}000{ }000{ }000{ }000"))
                     }
-                    divt(className = "invalid-feedback", text = "Phone number must be in this format: +000 000 000 000")
+                    bsInvalidFeedback("Phone number must be in this format: +000 000 000 000")
                 }
             }
-            /* WrapperClassName makes the input and invalid-feedback wrapped, which is needed for the invalid-feedback to work */
 
             bsButton(label = "Create", type = ButtonType.Submit, className = "mt-2")
         }
