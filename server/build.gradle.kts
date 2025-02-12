@@ -29,7 +29,7 @@ tasks {
     }
 
     compileKotlin {
-        dependsOn(compileFrontendDev)
+        // dependsOn(compileFrontendDev)
     }
 }
 
