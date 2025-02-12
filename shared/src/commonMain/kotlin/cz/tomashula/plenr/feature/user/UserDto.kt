@@ -12,3 +12,6 @@ data class UserDto(
     val isActive: Boolean,
     val isAdmin: Boolean,
 )
+{
+    val fullName = "$firstName $lastName"
+}

@@ -16,9 +16,16 @@ import cz.tomashula.plenr.frontend.page.login.loginPage
 import cz.tomashula.plenr.frontend.page.passwordsetup.passwordSetupPage
 import cz.tomashula.plenr.frontend.page.user.userPreferencesPage
 import cz.tomashula.plenr.frontend.page.userHomePage
+import dev.kilua.core.IComponent
+import dev.kilua.useModule
 
 class PlenrFrontendApp : Application()
 {
+    init
+    {
+        useModule(Logo)
+    }
+
     override fun start(state: String?)
     {
         root("root") {
@@ -39,28 +46,17 @@ class PlenrFrontendApp : Application()
                 else
                     "/login"
 
-                header(id = "main-header") {
-                    val header = buildString {
-                        append("Plenr")
-                        viewModel.user?.let { user ->
-                            append(" - ${user.firstName} ${user.lastName}")
-                            if (user.isAdmin)
-                                append(" (Admin)")
-                        }
-                    }
-                    +header
-                    if (viewModel.isLoggedIn)
-                        button(className = "icon-button logout-button") {
-                            onClick {
-                                viewModel.logout()
-                                router!!.navigate("/login")
-                            }
-
-                            materialIconOutlined("logout")
-                        }
-                }
+                if (viewModel.isLoggedIn)
+                    plenrHeader(
+                        userName = viewModel.user?.fullName ?: "Unknown User",
+                        isAdmin = viewModel.user?.isAdmin == true,
+                        onUnavailableDaysClick = { router?.navigate("/unavailable-days") },
+                        onPreferencesClick = { router?.navigate("/preferences") },
+                        onLogoutClick = { viewModel.logout() }
+                    )
 
                 main {
+                    style("margin", "50px 100px")
                     BrowserRouter(initPath) {
                         router = Router.current
                         LaunchedEffect(Unit) {
@@ -108,6 +104,58 @@ class PlenrFrontendApp : Application()
             else
             {
                 span("spinner")
+            }
+        }
+    }
+
+    @Composable
+    private fun IComponent.plenrHeader(
+        userName: String,
+        isAdmin: Boolean,
+        onUnavailableDaysClick: () -> Unit = {},
+        onPreferencesClick: () -> Unit = {},
+        onLogoutClick: () -> Unit = {}
+    )
+    {
+        @Composable
+        fun IComponent.dropDownItem(
+            text: String,
+            onClick: () -> Unit
+        )
+        {
+            li {
+                link(className = "dropdown-item") {
+                    role("button")
+                    onClick {
+                        onClick()
+                    }
+                    +text
+                }
+            }
+        }
+
+        header(className = "d-flex justify-content-between align-items-center mx-5") {
+            img(Logo.url)
+            spant(userName)
+            div("dropdown") {
+                materialIconOutlined("account_circle") {
+                    attribute("data-bs-toggle", "dropdown")
+                }
+                ul("dropdown-menu") {
+                    if (!isAdmin)
+                        dropDownItem(
+                            text = "Unavailable Days",
+                            onClick = onUnavailableDaysClick
+                        )
+                    dropDownItem(
+                        text = "Preferences",
+                        onClick = onPreferencesClick
+                    )
+                    dropDownItem(
+                        text = "Log out",
+                        onClick = onLogoutClick
+                    )
+                }
             }
         }
     }
