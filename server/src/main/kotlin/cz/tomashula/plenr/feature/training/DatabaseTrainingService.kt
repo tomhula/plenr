@@ -14,34 +14,34 @@ class DatabaseTrainingService(
     override val coroutineContext: CoroutineContext,
     database: Database,
     serverUrl: String,
-    private val authService: cz.tomashula.plenr.auth.AuthService,
+    private val authService: AuthService,
     private val mailService: MailService
-): cz.tomashula.plenr.feature.training.TrainingService, DatabaseService(database,
-    cz.tomashula.plenr.feature.training.TrainingTable,
-    cz.tomashula.plenr.feature.training.TrainingParticipantTable
+): TrainingService, DatabaseService(database,
+    TrainingTable,
+    TrainingParticipantTable
 )
 {
     private val serverUrl = serverUrl.removeSuffix("/")
 
-    override suspend fun createTraining(createTrainingDto: cz.tomashula.plenr.feature.training.CreateTrainingDto, authToken: String): Int
+    override suspend fun createTraining(createTrainingDto: CreateTrainingDto, authToken: String): Int
     {
         val caller = authService.validateToken(authToken) ?: throw UnauthorizedException()
         if (!caller.isAdmin)
             throw UnauthorizedException("Only admins can create new trainings")
 
         val trainingId = query {
-            val trainingId = cz.tomashula.plenr.feature.training.TrainingTable.insertAndGetId {
-                it[cz.tomashula.plenr.feature.training.TrainingTable.arrangerId] = caller.id
-                it[cz.tomashula.plenr.feature.training.TrainingTable.name] = createTrainingDto.name
-                it[cz.tomashula.plenr.feature.training.TrainingTable.description] = createTrainingDto.description
-                it[cz.tomashula.plenr.feature.training.TrainingTable.type] = createTrainingDto.type
-                it[cz.tomashula.plenr.feature.training.TrainingTable.startDateTime] = createTrainingDto.startDateTime
-                it[cz.tomashula.plenr.feature.training.TrainingTable.lengthMinutes] = createTrainingDto.lengthMinutes
+            val trainingId = TrainingTable.insertAndGetId {
+                it[arrangerId] = caller.id
+                it[name] = createTrainingDto.name
+                it[description] = createTrainingDto.description
+                it[type] = createTrainingDto.type
+                it[startDateTime] = createTrainingDto.startDateTime
+                it[lengthMinutes] = createTrainingDto.lengthMinutes
             }.value
 
-            cz.tomashula.plenr.feature.training.TrainingParticipantTable.batchInsert(createTrainingDto.participantIds) { participantId ->
-                this[cz.tomashula.plenr.feature.training.TrainingParticipantTable.trainingId] = trainingId
-                this[cz.tomashula.plenr.feature.training.TrainingParticipantTable.participantId] = participantId
+            TrainingParticipantTable.batchInsert(createTrainingDto.participantIds) { participantId ->
+                this[TrainingParticipantTable.trainingId] = trainingId
+                this[TrainingParticipantTable.participantId] = participantId
             }
 
             trainingId
@@ -64,21 +64,21 @@ class DatabaseTrainingService(
         return trainingId
     }
 
-    override suspend fun getAllTrainings(authToken: String): List<cz.tomashula.plenr.feature.training.TrainingWithParticipantsDto>
+    override suspend fun getAllTrainings(authToken: String): List<TrainingWithParticipantsDto>
     {
         val caller = authService.validateToken(authToken) ?: throw UnauthorizedException()
         if (!caller.isAdmin)
             throw UnauthorizedException("Only admins can see all trainings")
 
         return query {
-            val trainings = mutableMapOf<Int, cz.tomashula.plenr.feature.training.TrainingWithParticipantsDto>()
+            val trainings = mutableMapOf<Int, TrainingWithParticipantsDto>()
 
-            cz.tomashula.plenr.feature.training.TrainingTable
-                .join(cz.tomashula.plenr.feature.training.TrainingParticipantTable, JoinType.INNER, onColumn = cz.tomashula.plenr.feature.training.TrainingTable.id, otherColumn = cz.tomashula.plenr.feature.training.TrainingParticipantTable.trainingId)
-                .join(UserTable, JoinType.INNER, onColumn = cz.tomashula.plenr.feature.training.TrainingParticipantTable.participantId, otherColumn = UserTable.id)
+            TrainingTable
+                .join(TrainingParticipantTable, JoinType.INNER, onColumn = TrainingTable.id, otherColumn = TrainingParticipantTable.trainingId)
+                .join(UserTable, JoinType.INNER, onColumn = TrainingParticipantTable.participantId, otherColumn = UserTable.id)
                 .selectAll()
                 .forEach { resultRow ->
-                    val training = trainings.getOrPut(resultRow[cz.tomashula.plenr.feature.training.TrainingTable.id].value) {
+                    val training = trainings.getOrPut(resultRow[TrainingTable.id].value) {
                         resultRow.toTrainingWithParticipantsDto(mutableListOf())
                     }
                     val participant = resultRow.toUserDto()
@@ -89,28 +89,28 @@ class DatabaseTrainingService(
         }
     }
 
-    override suspend fun getTrainingsForUser(userId: Int, authToken: String): List<cz.tomashula.plenr.feature.training.TrainingWithParticipantsDto>
+    override suspend fun getTrainingsForUser(userId: Int, authToken: String): List<TrainingWithParticipantsDto>
     {
         val caller = authService.validateToken(authToken) ?: throw UnauthorizedException()
         if (caller.id != userId && !caller.isAdmin)
             throw UnauthorizedException("You can only see your own trainings")
 
         return query {
-            val trainings = mutableMapOf<Int, cz.tomashula.plenr.feature.training.TrainingWithParticipantsDto>()
+            val trainings = mutableMapOf<Int, TrainingWithParticipantsDto>()
 
             /* OPTIMIZE: Make this a subselect in the following select */
-            val trainingsWithUserIds = cz.tomashula.plenr.feature.training.TrainingParticipantTable
-                .select(cz.tomashula.plenr.feature.training.TrainingParticipantTable.trainingId)
-                .where { cz.tomashula.plenr.feature.training.TrainingParticipantTable.participantId eq userId }
-                .map { it[cz.tomashula.plenr.feature.training.TrainingParticipantTable.trainingId] }
+            val trainingsWithUserIds = TrainingParticipantTable
+                .select(TrainingParticipantTable.trainingId)
+                .where { TrainingParticipantTable.participantId eq userId }
+                .map { it[TrainingParticipantTable.trainingId] }
 
-            cz.tomashula.plenr.feature.training.TrainingTable
-                .join(cz.tomashula.plenr.feature.training.TrainingParticipantTable, JoinType.INNER, onColumn = cz.tomashula.plenr.feature.training.TrainingTable.id, otherColumn = cz.tomashula.plenr.feature.training.TrainingParticipantTable.trainingId)
-                .join(UserTable, JoinType.INNER, onColumn = cz.tomashula.plenr.feature.training.TrainingParticipantTable.participantId, otherColumn = UserTable.id)
+            TrainingTable
+                .join(TrainingParticipantTable, JoinType.INNER, onColumn = TrainingTable.id, otherColumn = TrainingParticipantTable.trainingId)
+                .join(UserTable, JoinType.INNER, onColumn = TrainingParticipantTable.participantId, otherColumn = UserTable.id)
                 .selectAll()
-                .where { cz.tomashula.plenr.feature.training.TrainingParticipantTable.trainingId inList trainingsWithUserIds }
+                .where { TrainingParticipantTable.trainingId inList trainingsWithUserIds }
                 .forEach { resultRow ->
-                    val training = trainings.getOrPut(resultRow[cz.tomashula.plenr.feature.training.TrainingTable.id].value) {
+                    val training = trainings.getOrPut(resultRow[TrainingTable.id].value) {
                         resultRow.toTrainingWithParticipantsDto(mutableListOf())
                     }
                     val participant = resultRow.toUserDto()
