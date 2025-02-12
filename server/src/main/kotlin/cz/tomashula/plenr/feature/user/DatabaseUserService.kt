@@ -20,7 +20,7 @@ class DatabaseUserService(
     private val passwordHasher: PasswordHasher,
     private val tokenGenerator: TokenGenerator,
     private val mailService: MailService,
-    private val authService: cz.tomashula.plenr.auth.AuthService
+    private val authService: AuthService
 ) : UserService, DatabaseService(database, UserTable, UserActivationTable)
 {
     private val serverUrl = serverUrl.removeSuffix("/")

@@ -30,7 +30,7 @@ class Plenr : ConfigManager
     internal lateinit var passwordValidator: PasswordValidator
     internal lateinit var passwordHasher: PasswordHasher
     internal lateinit var tokenGenerator: TokenGenerator
-    internal lateinit var authService: cz.tomashula.plenr.auth.AuthService
+    internal lateinit var authService: AuthService
 
     lateinit var mailService: MailService
 

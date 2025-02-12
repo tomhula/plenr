@@ -11,7 +11,7 @@ interface TempBusyTimesService : RemoteService
      * Allows users to get their temporary busy times for a given period.
      * Allows admins to get temporary busy times for any user for a given period.
      */
-    suspend fun getTempBusyTimesForPeriod(userId: Int, period: LocalDateTimePeriod, authToken: String): cz.tomashula.plenr.feature.user.tempbusytimes.TempBusyTimes
+    suspend fun getTempBusyTimesForPeriod(userId: Int, period: LocalDateTimePeriod, authToken: String): TempBusyTimes
 
     /**
      * Allows users to add temporary busy times.

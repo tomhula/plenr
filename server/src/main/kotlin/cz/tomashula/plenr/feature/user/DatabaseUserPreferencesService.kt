@@ -15,7 +15,7 @@ import kotlin.coroutines.CoroutineContext
 class DatabaseUserPreferencesService(
     override val coroutineContext: CoroutineContext,
     database: Database,
-    private val authService: cz.tomashula.plenr.auth.AuthService
+    private val authService: AuthService
 ) : UserPreferencesService, DatabaseService(database, UserPreferencesTable, PermanentBusyTimeTable, TempBusyTimeTable)
 {
     private fun ResultRow.toUserPreferencesDto() = UserPreferencesDto(

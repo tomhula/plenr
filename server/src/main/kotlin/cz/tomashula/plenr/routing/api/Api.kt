@@ -41,8 +41,8 @@ fun Routing.apiRoute(
             ).also { runBlocking { it.createIfNotExists() } }
         }
 
-        registerService<cz.tomashula.plenr.feature.training.TrainingService> { ctx ->
-            cz.tomashula.plenr.feature.training.DatabaseTrainingService(
+        registerService<TrainingService> { ctx ->
+            DatabaseTrainingService(
                 ctx,
                 plenr.database,
                 serverUrl,

@@ -15,7 +15,7 @@ import org.jetbrains.exposed.sql.selectAll
 class BasicAuthService(
     database: Database,
     private val passwordHasher: PasswordHasher
-) : cz.tomashula.plenr.auth.AuthService, DatabaseService(database, UserTable)
+) : AuthService, DatabaseService(database, UserTable)
 {
     private suspend fun checkAuth(email: String, password: String): UserDto?
     {

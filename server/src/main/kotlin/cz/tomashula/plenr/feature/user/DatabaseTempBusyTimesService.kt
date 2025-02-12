@@ -15,10 +15,10 @@ import kotlin.coroutines.CoroutineContext
 class DatabaseTempBusyTimesService(
     private val database: Database,
     override val coroutineContext: CoroutineContext,
-    private val authService: cz.tomashula.plenr.auth.AuthService
+    private val authService: AuthService
 ) : DatabaseService(database), TempBusyTimesService
 {
-    override suspend fun getTempBusyTimesForPeriod(userId: Int, period: LocalDateTimePeriod, authToken: String): cz.tomashula.plenr.feature.user.tempbusytimes.TempBusyTimes
+    override suspend fun getTempBusyTimesForPeriod(userId: Int, period: LocalDateTimePeriod, authToken: String): TempBusyTimes
     {
         val caller = authService.validateToken(authToken) ?: throw UnauthorizedException()
 
@@ -35,7 +35,7 @@ class DatabaseTempBusyTimesService(
                     LocalDateTimePeriod(it[TempBusyTimeTable.start], it[TempBusyTimeTable.end])
                 }.toSet()
 
-            cz.tomashula.plenr.feature.user.tempbusytimes.TempBusyTimes(userId, period, periods)
+            TempBusyTimes(userId, period, periods)
         }
     }
 
