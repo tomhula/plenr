@@ -4,10 +4,7 @@ import androidx.compose.runtime.*
 import app.softwork.routingcompose.Router
 import cz.tomashula.plenr.feature.user.UserDto
 import cz.tomashula.plenr.frontend.MainViewModel
-import cz.tomashula.plenr.frontend.component.bsForm
-import cz.tomashula.plenr.frontend.component.bsFormInput
-import cz.tomashula.plenr.frontend.component.bsInvalidFeedback
-import cz.tomashula.plenr.frontend.component.bsLabelledFormField
+import cz.tomashula.plenr.frontend.component.*
 import dev.kilua.KiluaScope
 import dev.kilua.core.IComponent
 import dev.kilua.form.ImaskOptions
@@ -32,7 +29,9 @@ fun IComponent.adminSetupPage(plenrClient: MainViewModel)
         alignItems = AlignItems.Center,
         flexDirection = FlexDirection.Column,
     ) {
-        h1t("Admin Setup", className = "mb-5 mt-5")
+        h1t("Admin Setup", className = "mb-5 mt-5") {
+            textAlign(TextAlign.Center)
+        }
 
         if (submitted)
             alert(
@@ -41,7 +40,7 @@ fun IComponent.adminSetupPage(plenrClient: MainViewModel)
                 callback = { router.navigate("/login") }
             )
 
-        bsForm<AdminSetupForm>(
+        bsValidatedForm<AdminSetupForm>(
             onSubmitValid = { form ->
                 plenrClient.createUser(form.toUserDto(true))
                 submitted = true
@@ -62,8 +61,7 @@ fun IComponent.adminSetupPage(plenrClient: MainViewModel)
             }
 
             div("mt-2") {
-                bsLabelledFormField("Email", wrapperClassName = "input-group") {
-                    spant("@", className = "input-group-text", id = "inputGroupPrepend")
+                bsLabelledFormField("Email") {
                     bsFormInput(it, AdminSetupForm::email, type = InputType.Email) {
                         ariaDescribedby("inputGroupPrepend")
                     }

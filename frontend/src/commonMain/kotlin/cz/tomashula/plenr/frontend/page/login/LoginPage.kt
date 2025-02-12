@@ -8,54 +8,57 @@ import dev.kilua.form.form
 import dev.kilua.html.*
 import kotlinx.coroutines.launch
 import cz.tomashula.plenr.frontend.MainViewModel
-import cz.tomashula.plenr.frontend.component.applyColumn
-import cz.tomashula.plenr.frontend.component.formField
-import cz.tomashula.plenr.frontend.component.onSubmit
+import cz.tomashula.plenr.frontend.component.*
+import dev.kilua.panel.flexPanel
+import kotlinx.serialization.Serializable
 
 @Composable
 fun IComponent.loginPage(mainViewModel: MainViewModel)
 {
-    val coroutineScope = rememberCoroutineScope()
     val router = Router.current
-
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
     var authenticated by remember { mutableStateOf<Boolean?>(null) }
 
-    form(className = "form") {
-        applyColumn(alignItems = AlignItems.Center)
-        rowGap(10.px)
+    flexPanel(
+        justifyContent = JustifyContent.Center,
+        alignItems = AlignItems.Center,
+        flexDirection = FlexDirection.Column,
+    ) {
+        h1t("Login", className = "mb-5 mt-5") {
+            textAlign(TextAlign.Center)
+        }
 
-        onSubmit {
-            coroutineScope.launch {
-                authenticated = mainViewModel.login(email, password)
+        bsForm<LoginForm>(
+            onSubmit = { data, _, _ ->
+                authenticated = mainViewModel.login(data.email!!, data.password!!)
                 if (authenticated == true)
                     router.navigate("/")
             }
-        }
+        ) {
+            div("mt-2") {
+                bsLabelledFormField("Email") {
+                    bsFormInput(it, LoginForm::email, type = InputType.Email)
+                }
+            }
 
-        h1t("Login", "form-header")
+            div("mt-2") {
+                bsLabelledFormField("Password") {
+                    bsFormInput(it, LoginForm::password, type = InputType.Password)
+                }
+            }
 
-        formField(
-            inputId = "email-field",
-            label = "Email",
-            value = email,
-            type = InputType.Email,
-            onChange = { email = it }
-        )
-        formField(
-            inputId = "password-field",
-            label = "Password",
-            value = password,
-            type = InputType.Password,
-            onChange = { password = it }
-        )
-        button("Login", className = "primary-button", type = ButtonType.Submit)
+            bsButton("Login", type = ButtonType.Submit, className = "mt-3")
 
-        when (authenticated)
-        {
-            false -> p { +"Incorrect credentials" }
-            else -> Unit
+            when (authenticated)
+            {
+                false -> p { +"Incorrect credentials" }
+                else -> Unit
+            }
         }
     }
 }
+
+@Serializable
+private data class LoginForm(
+    val email: String? = null,
+    val password: String? = null
+)
