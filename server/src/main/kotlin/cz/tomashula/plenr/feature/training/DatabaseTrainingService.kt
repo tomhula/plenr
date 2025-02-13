@@ -29,7 +29,7 @@ class DatabaseTrainingService(
         if (!caller.isAdmin)
             throw UnauthorizedException("Only admins can create new trainings")
 
-        val trainingId = query {
+        val trainingId = dbQuery {
             val trainingId = TrainingTable.insertAndGetId {
                 it[arrangerId] = caller.id
                 it[name] = createTrainingDto.name
@@ -47,7 +47,7 @@ class DatabaseTrainingService(
             trainingId
         }
 
-        val participantsEmails = query {
+        val participantsEmails = dbQuery {
             UserTable
                 .select(UserTable.email)
                 .where { UserTable.id inList createTrainingDto.participantIds }
@@ -70,7 +70,7 @@ class DatabaseTrainingService(
         if (!caller.isAdmin)
             throw UnauthorizedException("Only admins can see all trainings")
 
-        return query {
+        return dbQuery {
             val trainings = mutableMapOf<Int, TrainingWithParticipantsDto>()
 
             TrainingTable
@@ -95,7 +95,7 @@ class DatabaseTrainingService(
         if (caller.id != userId && !caller.isAdmin)
             throw UnauthorizedException("You can only see your own trainings")
 
-        return query {
+        return dbQuery {
             val trainings = mutableMapOf<Int, TrainingWithParticipantsDto>()
 
             /* OPTIMIZE: Make this a subselect in the following select */

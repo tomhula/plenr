@@ -25,7 +25,7 @@ class DatabaseTempBusyTimesService(
         if (caller.id != userId && !caller.isAdmin)
             throw UnauthorizedException("You can only view your own user data")
 
-        return query {
+        return dbQuery {
             val periods = TempBusyTimeTable.selectAll()
                 .where {
                     (TempBusyTimeTable.userId eq userId) and
@@ -43,7 +43,7 @@ class DatabaseTempBusyTimesService(
     {
         val caller = authService.validateToken(authToken) ?: throw UnauthorizedException()
 
-        query {
+        dbQuery {
             TempBusyTimeTable.batchInsert(periods) { period ->
                 this[TempBusyTimeTable.userId] = caller.id
                 this[TempBusyTimeTable.start] = period.start

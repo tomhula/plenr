@@ -21,7 +21,7 @@ class BasicAuthService(
     {
         val passwordHash = passwordHasher.hash(password)
 
-        return query {
+        return dbQuery {
             UserTable
                 .selectAll()
                 .where { UserTable.email eq email and (UserTable.passwordHash eq passwordHash) }

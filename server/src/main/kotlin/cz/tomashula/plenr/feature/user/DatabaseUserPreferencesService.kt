@@ -38,7 +38,7 @@ class DatabaseUserPreferencesService(
         if (caller.id != userId && !caller.isAdmin)
             throw UnauthorizedException("Only admins can get other users' preferences")
 
-        return query {
+        return dbQuery {
             /* OPTIMIZE: Add limit = 1 to all queries where only one result is expected */
             UserPreferencesTable.selectAll()
                 .where { UserPreferencesTable.userId eq userId }
@@ -58,7 +58,7 @@ class DatabaseUserPreferencesService(
         if (caller.id != userId && !caller.isAdmin)
             throw UnauthorizedException("Only admins can set other users' preferences")
 
-        query {
+        dbQuery {
             UserPreferencesTable.upsert {
                 it[UserPreferencesTable.userId] = userId
                 it[trainingsPerWeek] = userPreferencesDto.trainingsPerWeek
@@ -84,7 +84,7 @@ class DatabaseUserPreferencesService(
 
         val weeklyTimeRangesBuilder = WeeklyTimeRanges.builder()
 
-        query {
+        dbQuery {
             PermanentBusyTimeTable.selectAll()
                 .where { PermanentBusyTimeTable.userId eq userId }
                 .forEach { row ->
@@ -105,7 +105,7 @@ class DatabaseUserPreferencesService(
     {
         val caller = authService.validateToken(authToken) ?: throw UnauthorizedException()
 
-        query {
+        dbQuery {
             PermanentBusyTimeTable.deleteWhere { PermanentBusyTimeTable.userId eq caller.id }
 
             for (dayOfWeek in DayOfWeek.entries)

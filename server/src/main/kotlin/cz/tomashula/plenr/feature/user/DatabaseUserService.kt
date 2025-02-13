@@ -46,7 +46,7 @@ class DatabaseUserService(
 
         val activationToken = tokenGenerator.generate(32)
 
-        val userId = query {
+        val userId = dbQuery {
             val userId = UserTable.insertAndGetId {
                 it[firstName] = newUser.firstName
                 it[lastName] = newUser.lastName
@@ -84,7 +84,7 @@ class DatabaseUserService(
         if (caller.id != id && !caller.isAdmin)
             throw UnauthorizedException("You can only view your own user data")
 
-        return query { UserTable.selectAll().where { UserTable.id eq id }.singleOrNull() }?.toUserDto()
+        return dbQuery { UserTable.selectAll().where { UserTable.id eq id }.singleOrNull() }?.toUserDto()
     }
 
     override suspend fun getAllUsers(authToken: String): List<UserDto>
@@ -93,12 +93,12 @@ class DatabaseUserService(
         if (!caller.isAdmin)
             throw UnauthorizedException("Only admins can view all users")
 
-        return query { UserTable.selectAll().map { it.toUserDto() } }
+        return dbQuery { UserTable.selectAll().map { it.toUserDto() } }
     }
 
     override suspend fun adminExists(): Boolean
     {
-        return query {
+        return dbQuery {
             UserTable.select(UserTable.id).where { UserTable.isAdmin eq true }.limit(1).singleOrNull()
         } != null
     }
@@ -109,7 +109,7 @@ class DatabaseUserService(
         check(passwordValidator.validate(password).isEmpty()) { "Invalid password" }
 
         val passwordHash = passwordHasher.hash(password)
-        query {
+        dbQuery {
             UserTable.join(UserActivationTable, JoinType.INNER).update({ UserActivationTable.token eq token }) {
                 it[UserTable.passwordHash] = passwordHash
             }
