@@ -7,16 +7,28 @@ import dev.kilua.form.InputType
 import dev.kilua.form.form
 import dev.kilua.form.select.select
 import dev.kilua.html.*
-import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.format
 import cz.tomashula.plenr.frontend.MainViewModel
 import cz.tomashula.plenr.frontend.component.applyColumn
 import cz.tomashula.plenr.frontend.component.formField
 import cz.tomashula.plenr.frontend.component.onSubmit
-import cz.tomashula.plenr.feature.training.TrainingType
 import cz.tomashula.plenr.feature.user.UserDto
-import web.window
+import cz.tomashula.plenr.frontend.component.materialIconOutlined
+import cz.tomashula.plenr.util.now
+import dev.kilua.compose.foundation.layout.Arrangement
+import dev.kilua.compose.foundation.layout.Column
+import dev.kilua.compose.foundation.layout.Row
+import dev.kilua.compose.ui.Alignment
+import dev.kilua.utils.cast
+import dev.kilua.utils.toJsAny
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.format.char
+import kotlinx.datetime.minus
+import kotlinx.datetime.plus
+import web.dom.CanvasTextAlign
+import web.dom.CanvasTextBaseline
 
 @Composable
 fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
@@ -24,32 +36,35 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
     val router = Router.current
     val coroutineScope = rememberCoroutineScope()
 
-    var state by remember { mutableStateOf(TrainingCreationFormState()) }
     var users by remember { mutableStateOf(emptyList<UserDto>()) }
+    var state by remember { mutableStateOf(TrainingCreationFormState()) }
 
     LaunchedEffect(Unit) {
         users = mainViewModel.getAllUsers()
     }
 
-    trainingCreationForm(
-        state,
-        onSubmit = { submitState ->
-            coroutineScope.launch {
-                mainViewModel.createTraining(
-                    submitState.title,
-                    submitState.description,
-                    submitState.startDateTime!!,
-                    TrainingType.valueOf(submitState.type.uppercase()),
-                    submitState.lengthMinutes,
-                    submitState.participants.map { it.id }
-                )
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        h1t("Arrange trainings", className = "mb-5") {
+            textAlign(TextAlign.Center)
+        }
+
+        val topOffset = 20
+
+        div {
+            position(Position.Relative)
+
+            timetableBackground(600, 1800, topOffset, Color("#c6c6c6dd"))
+
+            div {
+                position(Position.Absolute)
+                top(topOffset.px)
+                height(100.perc)
+                width(100.perc)
             }
-            window.alert("Training created")
-            state = TrainingCreationFormState()
-        },
-        onChange = { state = it },
-        users = users
-    )
+        }
+    }
 }
 
 @Composable
@@ -158,6 +173,84 @@ private fun IComponent.trainingCreationForm(
 
         button("Create Training", type = ButtonType.Submit, className = "primary-button")
     }
+}
+
+@Composable
+fun IComponent.timetableBackground(
+    height: Int,
+    width: Int,
+    topOffset: Int,
+    color: Color
+)
+{
+    canvas(
+        canvasWidth = width,
+        canvasHeight = height,
+    ) {
+        val ctx = context2D!!
+
+        // TODO: This may be recalled during every recomposition. Make sure it is only called once.
+        val canvasWidth = this.canvasWidth!!
+        val canvasHeight = this.canvasHeight!!
+
+        ctx.fillStyle = color.value.toJsAny()
+        ctx.strokeStyle = color.value.toJsAny()
+        ctx.textAlign = "right".cast<CanvasTextAlign>()
+        ctx.textBaseline = "middle".cast<CanvasTextBaseline>()
+
+        val totalLines = 24
+        val spacing = canvasHeight / totalLines
+
+        for (i in 0..23)
+        {
+            val y = topOffset + i * spacing
+            ctx.beginPath()
+            ctx.moveTo(0.0, y + 0.5)
+            ctx.lineTo(canvasWidth.toDouble() - 20, y.toDouble())
+            ctx.stroke()
+            ctx.fillText(i.toString().padStart(2, '0'), canvasWidth.toDouble() - 5, y.toDouble(), maxWidth = 20.0)
+        }
+    }
+}
+
+@Composable
+private fun IComponent.daySelector(
+    day: LocalDate,
+    onDayChange: (LocalDate) -> Unit
+)
+{
+    val dayDifference = day.minus(LocalDate.now()).days
+    val text = when (dayDifference)
+    {
+        -1 -> "Yesterday"
+        0 -> "Today"
+        1 -> "Tomorrow"
+        2 -> "Day After Tomorrow"
+        else -> day.dayOfWeek.name.lowercase().replaceFirstChar { it.uppercase() } + " " + day.format(dateFormat)
+    }
+
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(16.px)
+    ) {
+        materialIconOutlined("chevron_left") {
+            onClick {
+                onDayChange(day.plus(-1, DateTimeUnit.DAY))
+            }
+        }
+        bt(text)
+        materialIconOutlined("chevron_right") {
+            onClick {
+                onDayChange(day.plus(1, DateTimeUnit.DAY))
+            }
+        }
+    }
+}
+
+private val dateFormat = LocalDate.Format {
+    monthNumber()
+    char('.')
+    dayOfMonth()
+    char('.')
 }
 
 private data class TrainingCreationFormState(
