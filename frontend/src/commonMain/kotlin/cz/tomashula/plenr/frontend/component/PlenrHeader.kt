@@ -6,6 +6,7 @@ import dev.kilua.core.IComponent
 import dev.kilua.html.AlignItems
 import dev.kilua.html.Background
 import dev.kilua.html.Color
+import dev.kilua.html.FontWeight
 import dev.kilua.html.JustifyContent
 import dev.kilua.html.Position
 import dev.kilua.html.div
@@ -14,6 +15,7 @@ import dev.kilua.html.img
 import dev.kilua.html.li
 import dev.kilua.html.link
 import dev.kilua.html.perc
+import dev.kilua.html.rem
 import dev.kilua.html.spant
 import dev.kilua.html.ul
 import dev.kilua.panel.hPanel
@@ -64,7 +66,10 @@ fun IComponent.plenrHeader(
                 width(100.perc)
                 height(100.perc)
 
-                spant(title)
+                spant(title) {
+                    fontSize(1.3.rem)
+                    fontWeight(FontWeight.Bold)
+                }
             }
 
             div("dropdown") {
