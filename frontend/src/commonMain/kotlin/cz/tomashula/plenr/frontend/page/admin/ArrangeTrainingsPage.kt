@@ -257,11 +257,6 @@ fun IComponent.timetableBackground(
         canvasWidth = width,
         canvasHeight = height,
     ) {
-        /* Important. If not set, inline-block baseline alignment behavior adds extra 5px */
-        // display(Display.Block)
-        width(width.px)
-        height(height.px)
-
         val ctx = context2D!!
 
         // TODO: This may be recalled during every recomposition. Make sure it is only called once.
@@ -272,6 +267,7 @@ fun IComponent.timetableBackground(
         ctx.strokeStyle = color.value.toJsAny()
         ctx.textAlign = "center".cast<CanvasTextAlign>()
         ctx.textBaseline = "middle".cast<CanvasTextBaseline>()
+        ctx.font = "20px " + ctx.font.split(" ").last()
 
         val totalLines = 24
         val spacing = canvasWidth / totalLines
