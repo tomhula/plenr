@@ -7,7 +7,7 @@ import cz.tomashula.plenr.feature.user.UserDto
 @Serializable
 data class TrainingWithParticipantsDto(
     val id: Int,
-    val arrangerId: Int,
+    val arranger: UserDto,
     val name: String,
     val description: String,
     val type: TrainingType,
