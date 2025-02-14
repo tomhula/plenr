@@ -19,8 +19,8 @@ interface TrainingService : RemoteService
      * If both are null, all trainings are returned.
      */
     suspend fun getAllTrainings(
-        from: LocalDateTime?,
-        to: LocalDateTime?,
+        from: LocalDateTime? = null,
+        to: LocalDateTime? = null,
         authToken: String
     ): List<TrainingWithParticipantsDto>
 
@@ -32,8 +32,8 @@ interface TrainingService : RemoteService
      */
     suspend fun getTrainingsForUser(
         userId: Int,
-        from: LocalDateTime?,
-        to: LocalDateTime?,
+        from: LocalDateTime? = null,
+        to: LocalDateTime? = null,
         authToken: String
     ): List<TrainingWithParticipantsDto>
 }
