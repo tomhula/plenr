@@ -22,6 +22,7 @@ import dev.kilua.compose.foundation.layout.Column
 import dev.kilua.compose.foundation.layout.Row
 import dev.kilua.compose.ui.Alignment
 import dev.kilua.html.helpers.TagStyleFun.Companion.background
+import dev.kilua.panel.hPanel
 import dev.kilua.panel.vPanel
 import dev.kilua.utils.cast
 import dev.kilua.utils.toJsAny
@@ -303,16 +304,24 @@ private fun IComponent.daySelector(
         else -> day.dayOfWeek.name.lowercase().replaceFirstChar { it.uppercase() } + " " + day.format(dateFormat)
     }
 
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(16.px)
+    hPanel(
+        alignItems = AlignItems.Center,
+        justifyContent = JustifyContent.SpaceBetween
     ) {
+        style("user-select", "none")
+        fontSize(1.5.rem)
+        width(370.px)
         materialIconOutlined("chevron_left") {
+            fontSize(3.rem)
+            cursor(Cursor.Pointer)
             onClick {
                 onDayChange(day.plus(-1, DateTimeUnit.DAY))
             }
         }
         bt(text)
         materialIconOutlined("chevron_right") {
+            fontSize(3.rem)
+            cursor(Cursor.Pointer)
             onClick {
                 onDayChange(day.plus(1, DateTimeUnit.DAY))
             }
