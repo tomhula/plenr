@@ -131,6 +131,19 @@ class MainViewModel
         trainingService.arrangeTrainings(listOf(createTrainingDto), authToken!!)
     }
 
+    suspend fun getAllTrainingsAdmin(
+        from: LocalDateTime? = null,
+        to: LocalDateTime? = null
+    ): List<TrainingWithParticipantsDto>
+    {
+        if (authToken == null)
+            return emptyList()
+        else if (user?.isAdmin != true)
+            return emptyList()
+
+        return trainingService.getAllTrainings(from, to, authToken!!)
+    }
+
     suspend fun getMyTrainings(): List<TrainingWithParticipantsDto>
     {
         if (authToken == null)

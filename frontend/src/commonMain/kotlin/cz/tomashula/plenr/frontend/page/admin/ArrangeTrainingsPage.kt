@@ -2,6 +2,7 @@ package cz.tomashula.plenr.frontend.page.admin
 
 import androidx.compose.runtime.*
 import app.softwork.routingcompose.Router
+import cz.tomashula.plenr.feature.training.TrainingWithParticipantsDto
 import dev.kilua.core.IComponent
 import dev.kilua.form.InputType
 import dev.kilua.form.form
@@ -20,8 +21,8 @@ import dev.kilua.compose.foundation.layout.Arrangement
 import dev.kilua.compose.foundation.layout.Column
 import dev.kilua.compose.foundation.layout.Row
 import dev.kilua.compose.ui.Alignment
-import dev.kilua.externals.tempusDominusLocales
-import dev.kilua.form.time.richDateTime
+import dev.kilua.html.helpers.TagStyleFun.Companion.background
+import dev.kilua.panel.vPanel
 import dev.kilua.utils.cast
 import dev.kilua.utils.toJsAny
 import kotlinx.datetime.DateTimeUnit
@@ -32,6 +33,8 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import web.dom.CanvasTextAlign
 import web.dom.CanvasTextBaseline
+import kotlin.collections.getValue
+import kotlin.collections.setValue
 
 @Composable
 fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
@@ -40,9 +43,18 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
 
     var users by remember { mutableStateOf(emptyList<UserDto>()) }
     var selectedDay by remember { mutableStateOf(LocalDate.now()) }
+    var trainings = remember { mutableStateMapOf<LocalDate, List<TrainingWithParticipantsDto>>() }
 
     LaunchedEffect(Unit) {
         users = mainViewModel.getAllUsers()
+    }
+
+    LaunchedEffect(selectedDay) {
+        if (trainings[selectedDay] == null)
+            trainings[selectedDay] = mainViewModel.getAllTrainingsAdmin(
+                from = selectedDay.atTime(0, 0),
+                to = selectedDay.atTime(23, 59)
+            ).also { println(it) }
     }
 
     Column(
@@ -62,15 +74,41 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
         div {
             position(Position.Relative)
 
-            timetableBackground(600, 1800, topOffset, Color("#c6c6c6dd"))
+            timetableBackground(1800, 1800, topOffset, Color("#c6c6c6dd"))
 
+            /* Overlay */
             div {
                 position(Position.Absolute)
                 top(topOffset.px)
                 height(100.perc)
                 width(100.perc)
+
+                for (training in trainings[selectedDay] ?: emptyList())
+                    training(training)
             }
         }
+    }
+}
+
+@Composable
+private fun IDiv.training(
+    training: TrainingWithParticipantsDto
+)
+{
+    val totalMinutes = 24 * 60f
+    val startMinute = training.startDateTime.hour * 60 + training.startDateTime.minute
+    val durationMinutes = training.lengthMinutes
+
+    vPanel {
+        position(Position.Absolute)
+        top((startMinute / totalMinutes * 100).perc)
+        height((durationMinutes / totalMinutes * 100).perc)
+
+        background(Color.Bisque)
+
+        spant(training.name)
+        spant(training.type.toString())
+        spant(training.description)
     }
 }
 
@@ -112,14 +150,18 @@ private fun IComponent.trainingCreationForm(
             value = state.startDateTime?.format(LocalDateTime.Formats.ISO) ?: "",
             type = InputType.DatetimeLocal,
             required = true,
-            onChange = { onChange(state.copy(startDateTime = it.let {
-                try {
-                    LocalDateTime.parse(it, LocalDateTime.Formats.ISO)
-                }
-                catch (e: Exception) {
-                    null
-                }
-            })) }
+            onChange = {
+                onChange(state.copy(startDateTime = it.let {
+                    try
+                    {
+                        LocalDateTime.parse(it, LocalDateTime.Formats.ISO)
+                    }
+                    catch (e: Exception)
+                    {
+                        null
+                    }
+                }))
+            }
         )
 
         div("form-field") {
@@ -194,6 +236,9 @@ fun IComponent.timetableBackground(
         canvasWidth = width,
         canvasHeight = height,
     ) {
+        /* Important. If not set, inline-block baseline alignment behavior adds extra 5px */
+        display(Display.Block)
+
         val ctx = context2D!!
 
         // TODO: This may be recalled during every recomposition. Make sure it is only called once.
