@@ -27,10 +27,15 @@ import dev.kilua.utils.cast
 import dev.kilua.utils.toJsAny
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
+import kotlinx.datetime.format.DateTimeFormat
+import kotlinx.datetime.format.Padding
 import kotlinx.datetime.format.char
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
 import web.dom.CanvasTextAlign
 import web.dom.CanvasTextBaseline
 
@@ -88,6 +93,12 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
     }
 }
 
+private val localDateTimeFormat = LocalDateTime.Format {
+    hour(Padding.ZERO)
+    char(':')
+    minute(Padding.ZERO)
+}
+
 @Composable
 private fun IDiv.training(
     training: TrainingWithParticipantsDto
@@ -101,9 +112,16 @@ private fun IDiv.training(
         position(Position.Absolute)
         left((startMinute / totalMinutes * 100).perc)
         width((durationMinutes / totalMinutes * 100).perc)
+        padding(5.px)
+        val timeZone = TimeZone.currentSystemDefault()
+        val startTimeStr = training.startDateTime.format(localDateTimeFormat)
+        val endTimeStr = training.startDateTime.toInstant(timeZone).plus(durationMinutes, DateTimeUnit.MINUTE).toLocalDateTime(
+            timeZone
+        ).format(localDateTimeFormat)
 
         borderRadius(5.px)
         background(Color.Bisque)
+        title("$startTimeStr - $endTimeStr")
 
         spant(training.name)
         spant(training.type.toString())
