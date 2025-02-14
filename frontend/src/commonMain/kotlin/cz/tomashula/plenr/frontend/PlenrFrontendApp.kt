@@ -50,6 +50,7 @@ class PlenrFrontendApp : Application()
                 if (viewModel.isLoggedIn)
                     plenrHeader(
                         title = router?.currentPath?.path?.title() ?: "",
+                        username = viewModel.user?.fullName ?: "Unknown User",
                         isAdmin = viewModel.user?.isAdmin == true,
                         onUnavailableDaysClick = { router?.navigate(Route.UNAVAILABLE_DAYS) },
                         onPreferencesClick = { router?.navigate(Route.PREFERENCES) },
