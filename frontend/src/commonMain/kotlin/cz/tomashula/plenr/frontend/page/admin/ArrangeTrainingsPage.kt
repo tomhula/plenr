@@ -33,8 +33,6 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import web.dom.CanvasTextAlign
 import web.dom.CanvasTextBaseline
-import kotlin.collections.getValue
-import kotlin.collections.setValue
 
 @Composable
 fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
@@ -65,17 +63,18 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
             onDayChange = { selectedDay = it }
         )
 
-        val topOffset = 20
+        val leftOffset = 20
 
         div {
             position(Position.Relative)
 
-            timetableBackground(1800, 1800, topOffset, Color("#c6c6c6dd"))
+            timetableBackground(300, 1800, leftOffset, Color("#c6c6c6dd"))
 
             /* Overlay */
             div {
                 position(Position.Absolute)
-                top(topOffset.px)
+                top(0.px)
+                left(leftOffset.px)
                 height(100.perc)
                 width(100.perc)
 
@@ -97,8 +96,8 @@ private fun IDiv.training(
 
     vPanel {
         position(Position.Absolute)
-        top((startMinute / totalMinutes * 100).perc)
-        height((durationMinutes / totalMinutes * 100).perc)
+        left((startMinute / totalMinutes * 100).perc)
+        width((durationMinutes / totalMinutes * 100).perc)
 
         background(Color.Bisque)
 
@@ -224,7 +223,7 @@ private fun IComponent.trainingCreationForm(
 fun IComponent.timetableBackground(
     height: Int,
     width: Int,
-    topOffset: Int,
+    leftOffset: Int,
     color: Color
 )
 {
@@ -243,20 +242,20 @@ fun IComponent.timetableBackground(
 
         ctx.fillStyle = color.value.toJsAny()
         ctx.strokeStyle = color.value.toJsAny()
-        ctx.textAlign = "right".cast<CanvasTextAlign>()
+        ctx.textAlign = "center".cast<CanvasTextAlign>()
         ctx.textBaseline = "middle".cast<CanvasTextBaseline>()
 
         val totalLines = 24
-        val spacing = canvasHeight / totalLines
+        val spacing = canvasWidth / totalLines
 
         for (i in 0..23)
         {
-            val y = topOffset + i * spacing
+            val x = leftOffset + i * spacing
             ctx.beginPath()
-            ctx.moveTo(0.0, y + 0.5)
-            ctx.lineTo(canvasWidth.toDouble() - 20, y.toDouble())
+            ctx.moveTo(x + 0.5, 0.0)
+            ctx.lineTo(x.toDouble(), canvasHeight.toDouble() - 20)
             ctx.stroke()
-            ctx.fillText(i.toString().padStart(2, '0'), canvasWidth.toDouble() - 5, y.toDouble(), maxWidth = 20.0)
+            ctx.fillText(i.toString().padStart(2, '0'), x.toDouble(), canvasHeight.toDouble() - 5, maxWidth = 20.0)
         }
     }
 }
