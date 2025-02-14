@@ -63,20 +63,23 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
             onDayChange = { selectedDay = it }
         )
 
-        val leftOffset = 20
-
         div {
+            marginTop(20.px)
             position(Position.Relative)
+            overflowX(Overflow.Auto)
+            alignSelf(AlignItems.Stretch)
 
-            timetableBackground(300, 1800, leftOffset, Color("#c6c6c6dd"))
+            val timetableHeight = 300
+            val timetableWidth = 3000
+
+            timetableBackground(timetableHeight, timetableWidth, Color("#c6c6c6dd"))
 
             /* Overlay */
             div {
                 position(Position.Absolute)
                 top(0.px)
-                left(leftOffset.px)
-                height(100.perc)
-                width(100.perc)
+                height(timetableHeight.px)
+                width(timetableWidth.px)
 
                 for (training in trainings[selectedDay] ?: emptyList())
                     training(training)
@@ -99,6 +102,7 @@ private fun IDiv.training(
         left((startMinute / totalMinutes * 100).perc)
         width((durationMinutes / totalMinutes * 100).perc)
 
+        borderRadius(5.px)
         background(Color.Bisque)
 
         spant(training.name)
@@ -223,7 +227,6 @@ private fun IComponent.trainingCreationForm(
 fun IComponent.timetableBackground(
     height: Int,
     width: Int,
-    leftOffset: Int,
     color: Color
 )
 {
@@ -232,7 +235,9 @@ fun IComponent.timetableBackground(
         canvasHeight = height,
     ) {
         /* Important. If not set, inline-block baseline alignment behavior adds extra 5px */
-        display(Display.Block)
+        // display(Display.Block)
+        width(width.px)
+        height(height.px)
 
         val ctx = context2D!!
 
@@ -250,12 +255,12 @@ fun IComponent.timetableBackground(
 
         for (i in 0..23)
         {
-            val x = leftOffset + i * spacing
+            val x = i * spacing
             ctx.beginPath()
             ctx.moveTo(x + 0.5, 0.0)
-            ctx.lineTo(x.toDouble(), canvasHeight.toDouble() - 20)
+            ctx.lineTo(x.toDouble(), canvasHeight.toDouble() - 35)
             ctx.stroke()
-            ctx.fillText(i.toString().padStart(2, '0'), x.toDouble(), canvasHeight.toDouble() - 5, maxWidth = 20.0)
+            ctx.fillText(i.toString().padStart(2, '0'), x.toDouble(), canvasHeight.toDouble() - 20, maxWidth = 20.0)
         }
     }
 }
