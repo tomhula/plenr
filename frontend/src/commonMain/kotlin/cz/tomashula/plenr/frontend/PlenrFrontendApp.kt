@@ -3,10 +3,7 @@ package cz.tomashula.plenr.frontend
 import androidx.compose.runtime.*
 import app.softwork.routingcompose.BrowserRouter
 import app.softwork.routingcompose.Router
-import dev.kilua.Application
-import dev.kilua.compose.root
-import dev.kilua.html.*
-import cz.tomashula.plenr.frontend.component.materialIconOutlined
+import cz.tomashula.plenr.frontend.component.plenrHeader
 import cz.tomashula.plenr.frontend.page.admin.addUserPage
 import cz.tomashula.plenr.frontend.page.admin.adminHomePage
 import cz.tomashula.plenr.frontend.page.admin.arrangeTrainingsPage
@@ -16,11 +13,11 @@ import cz.tomashula.plenr.frontend.page.login.loginPage
 import cz.tomashula.plenr.frontend.page.passwordsetup.passwordSetupPage
 import cz.tomashula.plenr.frontend.page.user.userPreferencesPage
 import cz.tomashula.plenr.frontend.page.userHomePage
-import dev.kilua.compose.foundation.layout.Arrangement
-import dev.kilua.compose.foundation.layout.Row
-import dev.kilua.compose.ui.Alignment
-import dev.kilua.core.IComponent
-import dev.kilua.panel.hPanel
+import dev.kilua.Application
+import dev.kilua.compose.root
+import dev.kilua.html.h1t
+import dev.kilua.html.main
+import dev.kilua.html.span
 import dev.kilua.useModule
 
 class PlenrFrontendApp : Application()
@@ -52,7 +49,7 @@ class PlenrFrontendApp : Application()
 
                 if (viewModel.isLoggedIn)
                     plenrHeader(
-                        userName = viewModel.user?.fullName ?: "Unknown User",
+                        title = viewModel.user?.fullName ?: "Unknown User",
                         isAdmin = viewModel.user?.isAdmin == true,
                         onUnavailableDaysClick = { router?.navigate("/unavailable-days") },
                         onPreferencesClick = { router?.navigate("/preferences") },
@@ -108,79 +105,6 @@ class PlenrFrontendApp : Application()
             else
             {
                 span("spinner")
-            }
-        }
-    }
-
-    @Composable
-    private fun IComponent.plenrHeader(
-        userName: String,
-        isAdmin: Boolean,
-        onUnavailableDaysClick: () -> Unit = {},
-        onPreferencesClick: () -> Unit = {},
-        onLogoutClick: () -> Unit = {}
-    )
-    {
-        @Composable
-        fun IComponent.dropDownItem(
-            text: String,
-            onClick: () -> Unit
-        )
-        {
-            li {
-                link(className = "dropdown-item") {
-                    role("button")
-                    onClick {
-                        onClick()
-                    }
-                    +text
-                }
-            }
-        }
-
-        header {
-            width(100.perc)
-            background(Background(Color("#f8f9fa")))
-            style("padding", "10px 20px")
-
-            hPanel(
-                justifyContent = JustifyContent.SpaceBetween,
-                alignItems = AlignItems.Center,
-            ) {
-                position(Position.Relative)
-                img(Logo.url)
-
-                hPanel(
-                    justifyContent = JustifyContent.Center,
-                    alignItems = AlignItems.Center,
-                ) {
-                    position(Position.Absolute)
-                    width(100.perc)
-                    height(100.perc)
-
-                    spant(userName)
-                }
-
-                div("dropdown") {
-                    materialIconOutlined("account_circle") {
-                        attribute("data-bs-toggle", "dropdown")
-                    }
-                    ul("dropdown-menu") {
-                        if (!isAdmin)
-                            dropDownItem(
-                                text = "Unavailable Days",
-                                onClick = onUnavailableDaysClick
-                            )
-                        dropDownItem(
-                            text = "Preferences",
-                            onClick = onPreferencesClick
-                        )
-                        dropDownItem(
-                            text = "Log out",
-                            onClick = onLogoutClick
-                        )
-                    }
-                }
             }
         }
     }
