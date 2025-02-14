@@ -1,6 +1,7 @@
 package cz.tomashula.plenr.frontend.component
 
 import androidx.compose.runtime.Composable
+import cz.tomashula.plenr.feature.user.UserDto
 import cz.tomashula.plenr.frontend.Logo
 import dev.kilua.compose.foundation.layout.Arrangement
 import dev.kilua.compose.foundation.layout.Row
@@ -31,8 +32,7 @@ import dev.kilua.panel.hPanel
 @Composable
 fun IComponent.plenrHeader(
     title: String,
-    username: String,
-    isAdmin: Boolean,
+    user: UserDto?,
     onUnavailableDaysClick: () -> Unit = {},
     onPreferencesClick: () -> Unit = {},
     onLogoutClick: () -> Unit = {}
@@ -81,36 +81,38 @@ fun IComponent.plenrHeader(
                 }
             }
 
-            div("dropdown") {
-                hPanel(
-                    alignItems = AlignItems.Center,
-                ) {
-                    attribute("data-bs-toggle", "dropdown")
-                    style {
-                        pClass("hover") {
-                            cursor(Cursor.Pointer)
+            user?.let { user ->
+                div("dropdown") {
+                    hPanel(
+                        alignItems = AlignItems.Center,
+                    ) {
+                        attribute("data-bs-toggle", "dropdown")
+                        style {
+                            pClass("hover") {
+                                cursor(Cursor.Pointer)
+                            }
                         }
-                    }
 
-                    spant(username) {
-                        marginRight(16.px)
+                        spant(user.fullName) {
+                            marginRight(16.px)
+                        }
+                        materialIconOutlined("account_circle")
                     }
-                    materialIconOutlined("account_circle")
-                }
-                ul("dropdown-menu") {
-                    if (!isAdmin)
+                    ul("dropdown-menu") {
+                        if (!user.isAdmin)
+                            dropDownItem(
+                                text = "Unavailable Days",
+                                onClick = onUnavailableDaysClick
+                            )
                         dropDownItem(
-                            text = "Unavailable Days",
-                            onClick = onUnavailableDaysClick
+                            text = "Preferences",
+                            onClick = onPreferencesClick
                         )
-                    dropDownItem(
-                        text = "Preferences",
-                        onClick = onPreferencesClick
-                    )
-                    dropDownItem(
-                        text = "Log out",
-                        onClick = onLogoutClick
-                    )
+                        dropDownItem(
+                            text = "Log out",
+                            onClick = onLogoutClick
+                        )
+                    }
                 }
             }
         }

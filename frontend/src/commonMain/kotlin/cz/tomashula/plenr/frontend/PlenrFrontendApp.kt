@@ -15,9 +15,11 @@ import cz.tomashula.plenr.frontend.page.user.userPreferencesPage
 import cz.tomashula.plenr.frontend.page.userHomePage
 import dev.kilua.Application
 import dev.kilua.compose.root
+import dev.kilua.html.Color
 import dev.kilua.html.h1t
 import dev.kilua.html.main
-import dev.kilua.html.span
+import dev.kilua.progress.Progress
+import dev.kilua.progress.ProgressOptions
 import dev.kilua.useModule
 
 class PlenrFrontendApp : Application()
@@ -32,85 +34,83 @@ class PlenrFrontendApp : Application()
         root("root") {
             val viewModel = remember { MainViewModel() }
             var router by remember { mutableStateOf<Router?>(null) }
-
-            var initialized by remember { mutableStateOf(false) }
+            var loading by remember { mutableStateOf(true) }
+            val progress = remember { Progress(ProgressOptions(color = Color("#2e98d1"))) }
 
             LaunchedEffect(Unit) {
                 viewModel.init()
-                initialized = true
+                loading = false
             }
 
-            if (initialized)
-            {
-                val initPath = if (viewModel.isLoggedIn)
-                    Route.HOME
+            LaunchedEffect(loading) {
+                if (loading)
+                    progress.start()
                 else
-                    Route.LOGIN
+                    progress.end()
+            }
 
-                if (viewModel.isLoggedIn)
-                    plenrHeader(
-                        title = router?.currentPath?.path?.title() ?: "",
-                        username = viewModel.user?.fullName ?: "Unknown User",
-                        isAdmin = viewModel.user?.isAdmin == true,
-                        onUnavailableDaysClick = { router?.navigate(Route.UNAVAILABLE_DAYS) },
-                        onPreferencesClick = { router?.navigate(Route.PREFERENCES) },
-                        onLogoutClick = { viewModel.logout() }
-                    )
+            plenrHeader(
+                title = router?.currentPath?.path?.title() ?: "",
+                user = viewModel.user,
+                onUnavailableDaysClick = { router?.navigate(Route.UNAVAILABLE_DAYS) },
+                onPreferencesClick = { router?.navigate(Route.PREFERENCES) },
+                onLogoutClick = { viewModel.logout() }
+            )
 
-                main {
-                    style("margin", "24px 100px")
-                    BrowserRouter(initPath) {
-                        router = Router.current
-                        LaunchedEffect(Unit) {
-                            if (!viewModel.adminExists())
-                                router!!.navigate(Route.ADMIN_SETUP)
-                        }
-                        route(Route.HOME) {
-                            if (viewModel.user?.isAdmin == true)
-                                adminHomePage(viewModel)
-                            else
-                                userHomePage(viewModel)
-                        }
-                        route(Route.ADMIN_SETUP) {
-                            adminSetupPage(viewModel)
-                        }
-                        route(Route.SET_PASSWORD) {
-                            string { token ->
-                                passwordSetupPage(viewModel, token)
-                            }
-                        }
-                        route(Route.LOGIN) {
-                            loginPage(viewModel)
-                        }
-                        route(Route.PREFERENCES) {
-                            userPreferencesPage(viewModel)
-                        }
+            if (loading)
+                return@root
+
+            val initPath = if (viewModel.user == null) Route.LOGIN else Route.HOME
+
+            main {
+                style("margin", "24px 100px")
+                BrowserRouter(initPath) {
+                    router = Router.current
+                    LaunchedEffect(Unit) {
+                        if (!viewModel.adminExists())
+                            router!!.navigate(Route.ADMIN_SETUP)
+                    }
+                    route(Route.HOME) {
                         if (viewModel.user?.isAdmin == true)
-                        {
-                            route(Route.MANAGE_USERS) {
-                                manageUsersPage(viewModel)
-                            }
-                            route(Route.ARRANGE_TRAININGS) {
-                                arrangeTrainingsPage(viewModel)
-                            }
-                            route(Route.ADD_USER) {
-                                addUserPage(viewModel)
-                            }
-                        }
-                        noMatch {
-                            h1t(text = "Not Found")
+                            adminHomePage(viewModel)
+                        else
+                            userHomePage(viewModel)
+                    }
+                    route(Route.ADMIN_SETUP) {
+                        adminSetupPage(viewModel)
+                    }
+                    route(Route.SET_PASSWORD) {
+                        string { token ->
+                            passwordSetupPage(viewModel, token)
                         }
                     }
+                    route(Route.LOGIN) {
+                        loginPage(viewModel)
+                    }
+                    route(Route.PREFERENCES) {
+                        userPreferencesPage(viewModel)
+                    }
+                    if (viewModel.user?.isAdmin == true)
+                    {
+                        route(Route.MANAGE_USERS) {
+                            manageUsersPage(viewModel)
+                        }
+                        route(Route.ARRANGE_TRAININGS) {
+                            arrangeTrainingsPage(viewModel)
+                        }
+                        route(Route.ADD_USER) {
+                            addUserPage(viewModel)
+                        }
+                    }
+                    noMatch {
+                        h1t(text = "Not Found")
+                    }
                 }
-            }
-            else
-            {
-                span("spinner")
             }
         }
     }
 
-    private fun String.title() = when(this)
+    private fun String.title() = when (this)
     {
         // CONSIDER: Declaring each route's title along with the route
         Route.HOME -> "Home"
