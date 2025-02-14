@@ -27,7 +27,6 @@ fun IComponent.loginPage(mainViewModel: MainViewModel)
         bsForm<LoginForm>(
             onSubmit = { data, _, _ ->
                 authenticated = mainViewModel.login(data.email!!, data.password!!)
-                println("HO")
                 if (authenticated == true)
                     router.navigate(Route.HOME)
             }
