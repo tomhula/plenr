@@ -92,9 +92,18 @@ class DatabaseTrainingService(
             val arrangerAlias = UserTable.alias("arranger")
             val participantAlias = UserTable.alias("participant")
 
-            val q = (TrainingTable innerJoin arrangerAlias)
+            val q = TrainingTable
+                .innerJoin(
+                    otherTable = arrangerAlias,
+                    onColumn = { TrainingTable.arrangerId },
+                    otherColumn = { arrangerAlias[UserTable.id] }
+                )
                 .leftJoin(TrainingParticipantTable)
-                .leftJoin(participantAlias) { TrainingParticipantTable.participantId eq participantAlias[UserTable.id] }
+                .leftJoin(
+                    otherTable = participantAlias,
+                    onColumn = { TrainingParticipantTable.participantId },
+                    otherColumn = { participantAlias[UserTable.id] }
+                )
                 .selectAll()
 
             from?.let {
