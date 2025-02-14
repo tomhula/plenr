@@ -20,10 +20,13 @@ import dev.kilua.compose.foundation.layout.Arrangement
 import dev.kilua.compose.foundation.layout.Column
 import dev.kilua.compose.foundation.layout.Row
 import dev.kilua.compose.ui.Alignment
+import dev.kilua.externals.tempusDominusLocales
+import dev.kilua.form.time.richDateTime
 import dev.kilua.utils.cast
 import dev.kilua.utils.toJsAny
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.atTime
 import kotlinx.datetime.format.char
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
@@ -34,10 +37,9 @@ import web.dom.CanvasTextBaseline
 fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
 {
     val router = Router.current
-    val coroutineScope = rememberCoroutineScope()
 
     var users by remember { mutableStateOf(emptyList<UserDto>()) }
-    var state by remember { mutableStateOf(TrainingCreationFormState()) }
+    var selectedDay by remember { mutableStateOf(LocalDate.now()) }
 
     LaunchedEffect(Unit) {
         users = mainViewModel.getAllUsers()
@@ -49,6 +51,11 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
         h1t("Arrange trainings", className = "mb-5") {
             textAlign(TextAlign.Center)
         }
+
+        daySelector(
+            day = selectedDay,
+            onDayChange = { selectedDay = it }
+        )
 
         val topOffset = 20
 
