@@ -113,19 +113,23 @@ private fun IDiv.training(
         left((startMinute / totalMinutes * 100).perc)
         width((durationMinutes / totalMinutes * 100).perc)
         padding(5.px)
+        fontSize(0.8.rem)
+        borderRadius(5.px)
+        cursor(Cursor.Pointer)
+        background(Color.Bisque)
+
         val timeZone = TimeZone.currentSystemDefault()
         val startTimeStr = training.startDateTime.format(localDateTimeFormat)
         val endTimeStr = training.startDateTime.toInstant(timeZone).plus(durationMinutes, DateTimeUnit.MINUTE).toLocalDateTime(
             timeZone
         ).format(localDateTimeFormat)
 
-        borderRadius(5.px)
-        background(Color.Bisque)
         title("$startTimeStr - $endTimeStr")
 
-        spant(training.name)
-        spant(training.type.toString())
-        spant(training.description)
+        spant(training.name) {
+            fontWeight(FontWeight.Bold)
+        }
+        spant(training.type.name.lowercase())
     }
 }
 
