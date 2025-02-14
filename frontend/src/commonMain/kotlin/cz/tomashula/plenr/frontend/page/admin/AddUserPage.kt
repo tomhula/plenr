@@ -8,6 +8,7 @@ import dev.kilua.form.form
 import dev.kilua.html.*
 import kotlinx.coroutines.launch
 import cz.tomashula.plenr.frontend.MainViewModel
+import cz.tomashula.plenr.frontend.Route
 import cz.tomashula.plenr.frontend.component.UserCreationFormState
 import cz.tomashula.plenr.frontend.component.applyColumn
 import cz.tomashula.plenr.frontend.component.onSubmit
@@ -32,7 +33,7 @@ fun IComponent.addUserPage(viewModel: MainViewModel)
                     formState.toUserDto(isAdmin)
                 )
                 window.alert("User created")
-                router.navigate("/manage-users")
+                router.navigate(Route.MANAGE_USERS)
             }
         }
 

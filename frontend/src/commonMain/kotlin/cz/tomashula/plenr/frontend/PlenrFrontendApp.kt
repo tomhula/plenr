@@ -2,6 +2,7 @@ package cz.tomashula.plenr.frontend
 
 import androidx.compose.runtime.*
 import app.softwork.routingcompose.BrowserRouter
+import app.softwork.routingcompose.Path
 import app.softwork.routingcompose.Router
 import cz.tomashula.plenr.frontend.component.plenrHeader
 import cz.tomashula.plenr.frontend.page.admin.addUserPage
@@ -43,16 +44,16 @@ class PlenrFrontendApp : Application()
             if (initialized)
             {
                 val initPath = if (viewModel.isLoggedIn)
-                    "/"
+                    Route.HOME
                 else
-                    "/login"
+                    Route.LOGIN
 
                 if (viewModel.isLoggedIn)
                     plenrHeader(
                         title = viewModel.user?.fullName ?: "Unknown User",
                         isAdmin = viewModel.user?.isAdmin == true,
-                        onUnavailableDaysClick = { router?.navigate("/unavailable-days") },
-                        onPreferencesClick = { router?.navigate("/preferences") },
+                        onUnavailableDaysClick = { router?.navigate(Route.UNAVAILABLE_DAYS) },
+                        onPreferencesClick = { router?.navigate(Route.PREFERENCES) },
                         onLogoutClick = { viewModel.logout() }
                     )
 
@@ -62,37 +63,37 @@ class PlenrFrontendApp : Application()
                         router = Router.current
                         LaunchedEffect(Unit) {
                             if (!viewModel.adminExists())
-                                router.navigate("/admin-setup")
+                                router.navigate(Route.ADMIN_SETUP)
                         }
-                        route("/") {
+                        route(Route.HOME) {
                             if (viewModel.user?.isAdmin == true)
                                 adminHomePage(viewModel)
                             else
                                 userHomePage(viewModel)
                         }
-                        route("/admin-setup") {
+                        route(Route.ADMIN_SETUP) {
                             adminSetupPage(viewModel)
                         }
-                        route("/set-password") {
+                        route(Route.SET_PASSWORD) {
                             string { token ->
                                 passwordSetupPage(viewModel, token)
                             }
                         }
-                        route("/login") {
+                        route(Route.LOGIN) {
                             loginPage(viewModel)
                         }
-                        route("/preferences") {
+                        route(Route.PREFERENCES) {
                             userPreferencesPage(viewModel)
                         }
                         if (viewModel.user?.isAdmin == true)
                         {
-                            route("/manage-users") {
+                            route(Route.MANAGE_USERS) {
                                 manageUsersPage(viewModel)
                             }
-                            route("/arrange-trainings") {
+                            route(Route.ARRANGE_TRAININGS) {
                                 arrangeTrainingsPage(viewModel)
                             }
-                            route("/add-user") {
+                            route(Route.ADD_USER) {
                                 addUserPage(viewModel)
                             }
                         }

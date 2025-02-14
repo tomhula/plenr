@@ -21,6 +21,7 @@ import cz.tomashula.plenr.frontend.component.materialIconOutlined
 import cz.tomashula.plenr.frontend.component.onSubmit
 import cz.tomashula.plenr.feature.user.preferences.UserPreferencesDto
 import cz.tomashula.plenr.feature.user.preferences.WeeklyTimeRanges
+import cz.tomashula.plenr.frontend.Route
 import cz.tomashula.plenr.util.rangeTo
 import web.document
 import web.window
@@ -74,7 +75,7 @@ fun IComponent.userPreferencesPage(viewModel: MainViewModel)
                 val permanentBusyTimes = async { viewModel.setPermanentBusyTimes(permanentBusyTimes!!) }
                 awaitAll(preferences, permanentBusyTimes)
                 window.alert("Preferences saved")
-                router.navigate("/")
+                router.navigate(Route.HOME)
             }
         }
 

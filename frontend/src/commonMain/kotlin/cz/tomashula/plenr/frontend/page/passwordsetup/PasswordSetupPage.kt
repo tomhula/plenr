@@ -10,6 +10,7 @@ import dev.kilua.html.*
 import io.ktor.http.*
 import kotlinx.coroutines.launch
 import cz.tomashula.plenr.frontend.MainViewModel
+import cz.tomashula.plenr.frontend.Route
 import cz.tomashula.plenr.frontend.component.applyColumn
 import cz.tomashula.plenr.frontend.component.formField
 import cz.tomashula.plenr.frontend.component.onSubmit
@@ -38,7 +39,7 @@ fun IComponent.passwordSetupPage(mainViewModel: MainViewModel, token: String)
 
             coroutineScope.launch {
                 mainViewModel.setPassword(tokenUrlDecoded, password)
-                router.navigate("/login")
+                router.navigate(Route.LOGIN)
             }
         }
 

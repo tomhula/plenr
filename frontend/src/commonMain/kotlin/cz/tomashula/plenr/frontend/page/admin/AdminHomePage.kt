@@ -8,6 +8,7 @@ import dev.kilua.html.div
 import dev.kilua.html.h2t
 import dev.kilua.html.px
 import cz.tomashula.plenr.frontend.MainViewModel
+import cz.tomashula.plenr.frontend.Route
 import cz.tomashula.plenr.frontend.component.applyColumn
 import dev.kilua.compose.foundation.layout.Arrangement
 import dev.kilua.compose.foundation.layout.Column
@@ -25,12 +26,12 @@ fun IComponent.adminHomePage(viewModel: MainViewModel)
         ) {
             bsButton("Manage users") {
                 onClick {
-                    router.navigate("/manage-users")
+                    router.navigate(Route.MANAGE_USERS)
                 }
             }
             bsButton("Arrange trainings") {
                 onClick {
-                    router.navigate("/arrange-trainings")
+                    router.navigate(Route.ARRANGE_TRAININGS)
                 }
             }
         }

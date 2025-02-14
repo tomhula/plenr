@@ -7,6 +7,7 @@ import dev.kilua.html.*
 import cz.tomashula.plenr.frontend.MainViewModel
 import cz.tomashula.plenr.frontend.component.applyColumn
 import cz.tomashula.plenr.feature.training.TrainingWithParticipantsDto
+import cz.tomashula.plenr.frontend.Route
 
 @Composable
 fun IComponent.userHomePage(viewModel: MainViewModel)
@@ -24,7 +25,7 @@ fun IComponent.userHomePage(viewModel: MainViewModel)
 
         button("Preferences", className = "primary-button") {
             onClick {
-                router.navigate("/preferences")
+                router.navigate(Route.PREFERENCES)
             }
         }
 

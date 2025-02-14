@@ -8,6 +8,7 @@ import dev.kilua.form.form
 import dev.kilua.html.*
 import kotlinx.coroutines.launch
 import cz.tomashula.plenr.frontend.MainViewModel
+import cz.tomashula.plenr.frontend.Route
 import cz.tomashula.plenr.frontend.component.*
 import dev.kilua.panel.flexPanel
 import kotlinx.serialization.Serializable
@@ -32,7 +33,7 @@ fun IComponent.loginPage(mainViewModel: MainViewModel)
                 authenticated = mainViewModel.login(data.email!!, data.password!!)
                 println("HO")
                 if (authenticated == true)
-                    router.navigate("/")
+                    router.navigate(Route.HOME)
             }
         ) {
             div("mt-2") {

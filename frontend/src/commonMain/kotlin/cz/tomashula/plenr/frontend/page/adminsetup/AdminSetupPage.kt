@@ -4,6 +4,7 @@ import androidx.compose.runtime.*
 import app.softwork.routingcompose.Router
 import cz.tomashula.plenr.feature.user.UserDto
 import cz.tomashula.plenr.frontend.MainViewModel
+import cz.tomashula.plenr.frontend.Route
 import cz.tomashula.plenr.frontend.component.*
 import dev.kilua.KiluaScope
 import dev.kilua.core.IComponent
@@ -37,7 +38,7 @@ fun IComponent.adminSetupPage(plenrClient: MainViewModel)
             alert(
                 caption = "Admin account created",
                 content = "Check your email to set your password.",
-                callback = { router.navigate("/login") }
+                callback = { router.navigate(Route.LOGIN) }
             )
 
         bsValidatedForm<AdminSetupForm>(

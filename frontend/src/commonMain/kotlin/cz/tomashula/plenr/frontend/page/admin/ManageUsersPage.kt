@@ -2,13 +2,14 @@ package cz.tomashula.plenr.frontend.page.admin
 
 import androidx.compose.runtime.*
 import app.softwork.routingcompose.Router
-import dev.kilua.core.IComponent
-import dev.kilua.html.*
+import cz.tomashula.plenr.feature.user.UserDto
 import cz.tomashula.plenr.frontend.MainViewModel
+import cz.tomashula.plenr.frontend.Route
 import cz.tomashula.plenr.frontend.component.applyColumn
 import cz.tomashula.plenr.frontend.component.applyRow
 import cz.tomashula.plenr.frontend.component.materialIconOutlined
-import cz.tomashula.plenr.feature.user.UserDto
+import dev.kilua.core.IComponent
+import dev.kilua.html.*
 import web.window
 
 @Composable
@@ -47,7 +48,7 @@ fun IComponent.manageUsersPage(viewModel: MainViewModel)
 
         button("Add User", id = "add-user-button", className = "primary-button") {
             onClick {
-                router.navigate("/add-user")
+                router.navigate(Route.ADD_USER)
             }
         }
     }
