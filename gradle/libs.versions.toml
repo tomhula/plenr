@@ -6,13 +6,12 @@ kotlinx-datetime = "0.6.1"
 ktor = "3.0.3"
 logback = "1.5.16"
 clikt = "5.0.2"
-kotlinx-html = "0.12.0"
-compose = "1.7.3"
+compose = "1.8.0-alpha02"
 kilua = "0.0.19"
 mysql = "9.2.0"
 exposed = "0.59.0"
 commons-email = "2.0.0-M1"
-kotlinx-rpc = "0.5.0"
+kotlinx-rpc = "0.5.1"
 
 [libraries]
 # Kotlin
@@ -22,9 +21,14 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 # UI
-kotlinx-html-wasmJs = { module = "org.jetbrains.kotlinx:kotlinx-html-wasm-js", version.ref = "kotlinx-html" }
-kilua-wasmJs = { module = "dev.kilua:kilua-wasm-js", version.ref = "kilua" }
-kilua-routing-wasmJs = { module = "dev.kilua:kilua-routing-wasm-js", version.ref = "kilua" }
+kilua = { module = "dev.kilua:kilua", version.ref = "kilua" }
+kilua-routing = { module = "dev.kilua:kilua-routing", version.ref = "kilua" }
+kilua-jetpack = { module = "dev.kilua:kilua-jetpack", version.ref = "kilua" }
+kilua-imask = { module = "dev.kilua:kilua-imask", version.ref = "kilua" }
+kilua-bootstrap = { module = "dev.kilua:kilua-bootstrap", version.ref = "kilua" }
+kilua-toastify = { module = "dev.kilua:kilua-toastify", version.ref = "kilua" }
+kilua-tempus-dominus = { module = "dev.kilua:kilua-tempus-dominus", version.ref = "kilua" }
+kilua-rsup-progress = { module = "dev.kilua:kilua-rsup-progress", version.ref = "kilua" }
 # Logging
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 # CLI
@@ -38,7 +42,7 @@ ktor-server-websockets = { module = "io.ktor:ktor-server-websockets", version.re
 ktor-server-auth = { module = "io.ktor:ktor-server-auth", version.ref = "ktor" }
 ktor-server-auth-jwt = { module = "io.ktor:ktor-server-auth-jwt", version.ref = "ktor" }
 ktor-client-js = { module = "io.ktor:ktor-client-js", version.ref = "ktor" }
-ktor-client-content-negotiation-wasmJs = { module = "io.ktor:ktor-client-content-negotiation-wasm-js", version.ref = "ktor" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 # RPC
 kotlinx-rpc-core = { module = "org.jetbrains.kotlinx:kotlinx-rpc-core", version.ref = "kotlinx-rpc" }

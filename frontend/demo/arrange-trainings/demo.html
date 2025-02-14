@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+        }
+
+        canvas {
+            position: relative;
+        }
+
+        .training {
+            background: blue;
+            width: 100px;
+        }
+
+    </style>
+</head>
+<body>
+<canvas id="canvas" height="600" width="1800"></canvas>
+<script>
+    function initCanvas(canvas, topOffset, totalLines, spacing)
+    {
+        const ctx = canvas.getContext("2d")
+
+
+        ctx.font = "12px Arial"
+
+        ctx.fillStyle = "#c6c6c6dd"
+        ctx.textAlign = "right"
+        ctx.textBaseline = "middle"
+        for (let i = 0; i < totalLines; i++)
+        {
+            const y = i * spacing + topOffset
+            ctx.strokeStyle = "#c6c6c6dd"
+            ctx.beginPath()
+            ctx.moveTo(0, y + 0.5)
+            ctx.lineTo(canvas.width - 20, y)
+            ctx.stroke()
+            ctx.fillText(i.toString(), canvas.width, y)
+        }
+    }
+    const canvas = document.getElementById("canvas")
+    const topOffset = 20
+    const totalLines = 24
+    const spacing = canvas.height / totalLines
+    initCanvas(canvas, topOffset, totalLines, spacing)
+
+    const trainingStart = 6
+    const trainingDuration = 180
+
+    const trainingEle = document.createElement("div")
+    trainingEle.classList.add("training")
+    trainingEle.style.position = "absolute"
+    trainingEle.style.top = (topOffset + trainingStart * spacing) + "px"
+    trainingEle.style.height = (trainingDuration/60 * spacing) + "px"
+
+    function addPerson()
+    {
+        const availableStart = 14
+        const availableEnd = 21
+
+        const personTimeRange = document.createElement("div")
+        personTimeRange.style.position = "absolute"
+        personTimeRange.style.top = (topOffset + availableStart * spacing) + "px"
+        personTimeRange.style.height = ((availableEnd - availableStart) * spacing) + "px"
+        personTimeRange.style.width = "10px"
+        personTimeRange.style.background = "red"
+        personTimeRange.style.borderRadius = "5px"
+
+        document.body.appendChild(personTimeRange)
+    }
+
+    addPerson()
+    document.body.appendChild(trainingEle)
+
+</script>
+</body>
+</html>
