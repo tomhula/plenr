@@ -2,7 +2,6 @@ package cz.tomashula.plenr.frontend
 
 import androidx.compose.runtime.*
 import app.softwork.routingcompose.BrowserRouter
-import app.softwork.routingcompose.Path
 import app.softwork.routingcompose.Router
 import cz.tomashula.plenr.frontend.component.plenrHeader
 import cz.tomashula.plenr.frontend.page.admin.addUserPage
@@ -32,7 +31,7 @@ class PlenrFrontendApp : Application()
     {
         root("root") {
             val viewModel = remember { MainViewModel() }
-            var router: Router? = null
+            var router by remember { mutableStateOf<Router?>(null) }
 
             var initialized by remember { mutableStateOf(false) }
 
@@ -50,7 +49,7 @@ class PlenrFrontendApp : Application()
 
                 if (viewModel.isLoggedIn)
                     plenrHeader(
-                        title = viewModel.user?.fullName ?: "Unknown User",
+                        title = router?.currentPath?.path?.title() ?: "",
                         isAdmin = viewModel.user?.isAdmin == true,
                         onUnavailableDaysClick = { router?.navigate(Route.UNAVAILABLE_DAYS) },
                         onPreferencesClick = { router?.navigate(Route.PREFERENCES) },
@@ -63,7 +62,7 @@ class PlenrFrontendApp : Application()
                         router = Router.current
                         LaunchedEffect(Unit) {
                             if (!viewModel.adminExists())
-                                router.navigate(Route.ADMIN_SETUP)
+                                router!!.navigate(Route.ADMIN_SETUP)
                         }
                         route(Route.HOME) {
                             if (viewModel.user?.isAdmin == true)
@@ -108,6 +107,21 @@ class PlenrFrontendApp : Application()
                 span("spinner")
             }
         }
+    }
+
+    private fun String.title() = when(this)
+    {
+        // CONSIDER: Declaring each route's title along with the route
+        Route.HOME -> "Home"
+        Route.ADMIN_SETUP -> "Admin Setup"
+        Route.SET_PASSWORD -> "Set Password"
+        Route.LOGIN -> "Login"
+        Route.UNAVAILABLE_DAYS -> "Unavailable Days"
+        Route.PREFERENCES -> "Preferences"
+        Route.ARRANGE_TRAININGS -> "Arrange Trainings"
+        Route.MANAGE_USERS -> "Manage Users"
+        Route.ADD_USER -> "Add User"
+        else -> ""
     }
 
     /* To retain state during hot reload, this function can return anything (e.g. state serialized to json)
