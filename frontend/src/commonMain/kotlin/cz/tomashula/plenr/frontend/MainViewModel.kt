@@ -128,7 +128,7 @@ class MainViewModel
     )
     {
         val createTrainingDto = CreateTrainingDto(title, description, type, startDateTime, lengthMinutes, participantIds)
-        trainingService.createTraining(createTrainingDto, authToken!!)
+        trainingService.arrangeTrainings(listOf(createTrainingDto), authToken!!)
     }
 
     suspend fun getMyTrainings(): List<TrainingWithParticipantsDto>
@@ -136,7 +136,7 @@ class MainViewModel
         if (authToken == null)
             return emptyList()
 
-        return trainingService.getTrainingsForUser(user!!.id, authToken!!)
+        return trainingService.getTrainingsForUser(user!!.id, null, null, authToken!!)
     }
 
     suspend fun getPreferences() = preferencesService.getUserPreferences(user!!.id, authToken!!) ?: UserPreferencesDto(
