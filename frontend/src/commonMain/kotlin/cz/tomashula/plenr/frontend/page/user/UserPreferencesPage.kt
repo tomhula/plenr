@@ -79,8 +79,6 @@ fun IComponent.userPreferencesPage(viewModel: MainViewModel)
             }
         }
 
-        h2t("Preferences")
-
         formField(
             inputId = "trainings-per-week",
             label = "Trainings per week",
