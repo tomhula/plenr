@@ -62,7 +62,6 @@ fun IComponent.userPreferencesPage(viewModel: MainViewModel)
 
             button("Add", className = "primary-button", type = ButtonType.Submit)
         }
-
     }
 
     form(className = "form") {
