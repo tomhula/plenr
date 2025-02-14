@@ -2,6 +2,7 @@ package cz.tomashula.plenr.frontend.page.admin
 
 import androidx.compose.runtime.*
 import app.softwork.routingcompose.Router
+import cz.tomashula.plenr.feature.training.TrainingType
 import cz.tomashula.plenr.feature.training.TrainingWithParticipantsDto
 import dev.kilua.core.IComponent
 import dev.kilua.form.InputType
@@ -15,22 +16,25 @@ import cz.tomashula.plenr.frontend.component.applyColumn
 import cz.tomashula.plenr.frontend.component.formField
 import cz.tomashula.plenr.frontend.component.onSubmit
 import cz.tomashula.plenr.feature.user.UserDto
+import cz.tomashula.plenr.frontend.component.bsModalDialog
 import cz.tomashula.plenr.frontend.component.materialIconOutlined
 import cz.tomashula.plenr.util.now
-import dev.kilua.compose.foundation.layout.Arrangement
 import dev.kilua.compose.foundation.layout.Column
-import dev.kilua.compose.foundation.layout.Row
 import dev.kilua.compose.ui.Alignment
+import dev.kilua.externals.Bootstrap
 import dev.kilua.html.helpers.TagStyleFun.Companion.background
+import dev.kilua.modal.Modal
+import dev.kilua.modal.ModalSize
+import dev.kilua.modal.modal
 import dev.kilua.panel.hPanel
 import dev.kilua.panel.vPanel
 import dev.kilua.utils.cast
+import dev.kilua.utils.isDom
 import dev.kilua.utils.toJsAny
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
-import kotlinx.datetime.format.DateTimeFormat
 import kotlinx.datetime.format.Padding
 import kotlinx.datetime.format.char
 import kotlinx.datetime.minus
@@ -39,15 +43,43 @@ import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import web.dom.CanvasTextAlign
 import web.dom.CanvasTextBaseline
+import web.dom.events.Event
+import web.window
+
+private data class TrainingView(
+    val edited: Boolean,
+    val created: Boolean,
+    val training: TrainingWithParticipantsDto
+)
+
+private fun TrainingWithParticipantsDto.toTrainingView(
+    edited: Boolean = false,
+    created: Boolean = false
+) = TrainingView(edited, created, this)
+
+private fun newTraining(
+    dateTime: LocalDateTime,
+    arranger: UserDto
+) = TrainingWithParticipantsDto(
+    id =  -1,
+    arranger = arranger,
+    name = "",
+    description = "",
+    type = TrainingType.DRESSAGE,
+    startDateTime = dateTime,
+    lengthMinutes = 60,
+    participants = emptyList()
+)
 
 @Composable
 fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
 {
-    val router = Router.current
-
     var users by remember { mutableStateOf(emptyList<UserDto>()) }
     var selectedDay by remember { mutableStateOf(LocalDate.now()) }
-    var trainings = remember { mutableStateMapOf<LocalDate, List<TrainingWithParticipantsDto>>() }
+    var trainings = remember { mutableStateMapOf<LocalDate, List<TrainingView>>() }
+    var currentDialogTraining by remember { mutableStateOf<TrainingWithParticipantsDto?>(null) }
+    /* Whether the current dialog is editing a training or creating a new one */
+    var currentDialogTrainingEdit by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         users = mainViewModel.getAllUsers()
@@ -58,8 +90,18 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
             trainings[selectedDay] = mainViewModel.getAllTrainingsAdmin(
                 from = selectedDay.atTime(0, 0),
                 to = selectedDay.atTime(23, 59)
-            ).also { println(it) }
+            ).map(TrainingWithParticipantsDto::toTrainingView)
     }
+
+    trainingDialog(
+        shown = currentDialogTraining != null,
+        edit = currentDialogTrainingEdit,
+        training = currentDialogTraining ?: newTraining(selectedDay.atTime(12, 0), mainViewModel.user!!),
+        onSave = {
+            window.alert("SAVE")
+        },
+        onDismiss = { currentDialogTraining = null }
+    )
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -88,9 +130,38 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
                 width(timetableWidth.px)
 
                 for (training in trainings[selectedDay] ?: emptyList())
-                    training(training)
+                    training(
+                        trainingView = training,
+                        onEdit = { currentDialogTraining = it; currentDialogTrainingEdit = true }
+                    )
             }
         }
+    }
+}
+
+@Composable
+private fun IComponent.trainingDialog(
+    shown: Boolean,
+    edit: Boolean,
+    training: TrainingWithParticipantsDto,
+    onSave: (TrainingWithParticipantsDto) -> Unit,
+    onDismiss: () -> Unit
+)
+{
+    bsModalDialog(
+        shown = shown,
+        title = if (edit) "Edit Training" else "Create Training",
+        onDismiss = onDismiss,
+        footer = {
+            bsButton("Cancel", style = ButtonStyle.BtnSecondary) {
+                onClick { onDismiss() }
+            }
+            bsButton("Save", style = ButtonStyle.BtnPrimary) {
+                onClick { onSave(training) }
+            }
+        }
+    ) {
+        divt("Content")
     }
 }
 
@@ -102,9 +173,11 @@ private val localDateTimeFormat = LocalDateTime.Format {
 
 @Composable
 private fun IDiv.training(
-    training: TrainingWithParticipantsDto
+    trainingView: TrainingView,
+    onEdit: (TrainingWithParticipantsDto) -> Unit = {},
 )
 {
+    val training = trainingView.training
     val totalMinutes = 24 * 60f
     val startMinute = training.startDateTime.hour * 60 + training.startDateTime.minute
     val durationMinutes = training.lengthMinutes
@@ -117,7 +190,10 @@ private fun IDiv.training(
         fontSize(0.8.rem)
         borderRadius(5.px)
         cursor(Cursor.Pointer)
+        onClick { onEdit(training) }
         background(Color.Bisque)
+        if (trainingView.edited || trainingView.created)
+            border(Border(2.px, BorderStyle.Dashed, Color.Black))
 
         val timeZone = TimeZone.currentSystemDefault()
         val startTimeStr = training.startDateTime.format(localDateTimeFormat)
