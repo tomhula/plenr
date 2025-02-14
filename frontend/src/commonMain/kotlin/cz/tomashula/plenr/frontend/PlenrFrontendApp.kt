@@ -58,7 +58,7 @@ class PlenrFrontendApp : Application()
                     )
 
                 main {
-                    style("margin", "50px 100px")
+                    style("margin", "24px 100px")
                     BrowserRouter(initPath) {
                         router = Router.current
                         LaunchedEffect(Unit) {
