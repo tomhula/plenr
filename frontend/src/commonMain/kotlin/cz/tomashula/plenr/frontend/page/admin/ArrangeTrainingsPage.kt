@@ -60,10 +60,6 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        h1t("Arrange trainings", className = "mb-5") {
-            textAlign(TextAlign.Center)
-        }
-
         daySelector(
             day = selectedDay,
             onDayChange = { selectedDay = it }

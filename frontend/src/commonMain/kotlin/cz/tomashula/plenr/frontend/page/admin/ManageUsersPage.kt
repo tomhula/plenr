@@ -25,7 +25,6 @@ fun IComponent.manageUsersPage(viewModel: MainViewModel)
     div {
         applyColumn()
         rowGap(10.px)
-        h2t("Manage Users")
 
         pt("Users:")
         if (allUsersExceptMe == null)

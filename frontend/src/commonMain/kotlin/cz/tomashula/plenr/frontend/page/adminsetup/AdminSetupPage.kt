@@ -30,10 +30,6 @@ fun IComponent.adminSetupPage(plenrClient: MainViewModel)
         alignItems = AlignItems.Center,
         flexDirection = FlexDirection.Column,
     ) {
-        h1t("Admin Setup", className = "mb-5 mt-5") {
-            textAlign(TextAlign.Center)
-        }
-
         if (submitted)
             alert(
                 caption = "Admin account created",

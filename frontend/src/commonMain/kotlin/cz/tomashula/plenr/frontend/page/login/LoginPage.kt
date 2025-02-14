@@ -24,10 +24,6 @@ fun IComponent.loginPage(mainViewModel: MainViewModel)
         alignItems = AlignItems.Center,
         flexDirection = FlexDirection.Column,
     ) {
-        h1t("Login", className = "mb-5 mt-5") {
-            textAlign(TextAlign.Center)
-        }
-
         bsForm<LoginForm>(
             onSubmit = { data, _, _ ->
                 authenticated = mainViewModel.login(data.email!!, data.password!!)

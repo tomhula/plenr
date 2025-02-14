@@ -37,8 +37,6 @@ fun IComponent.addUserPage(viewModel: MainViewModel)
             }
         }
 
-        h2t("Add User")
-
         userCreationFormFields(
             state = formState,
             onChange = { formState = it }
