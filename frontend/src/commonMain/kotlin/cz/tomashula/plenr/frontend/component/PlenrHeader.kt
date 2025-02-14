@@ -87,11 +87,7 @@ fun IComponent.plenrHeader(
                         alignItems = AlignItems.Center,
                     ) {
                         attribute("data-bs-toggle", "dropdown")
-                        style {
-                            pClass("hover") {
-                                cursor(Cursor.Pointer)
-                            }
-                        }
+                        cursor(Cursor.Pointer)
 
                         spant(user.fullName) {
                             marginRight(16.px)
