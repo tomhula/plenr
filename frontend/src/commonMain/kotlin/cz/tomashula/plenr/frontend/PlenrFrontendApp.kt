@@ -16,7 +16,11 @@ import cz.tomashula.plenr.frontend.page.login.loginPage
 import cz.tomashula.plenr.frontend.page.passwordsetup.passwordSetupPage
 import cz.tomashula.plenr.frontend.page.user.userPreferencesPage
 import cz.tomashula.plenr.frontend.page.userHomePage
+import dev.kilua.compose.foundation.layout.Arrangement
+import dev.kilua.compose.foundation.layout.Row
+import dev.kilua.compose.ui.Alignment
 import dev.kilua.core.IComponent
+import dev.kilua.panel.hPanel
 import dev.kilua.useModule
 
 class PlenrFrontendApp : Application()
@@ -134,27 +138,48 @@ class PlenrFrontendApp : Application()
             }
         }
 
-        header(className = "d-flex justify-content-between align-items-center mx-5") {
-            img(Logo.url)
-            spant(userName)
-            div("dropdown") {
-                materialIconOutlined("account_circle") {
-                    attribute("data-bs-toggle", "dropdown")
+        header {
+            width(100.perc)
+            background(Background(Color("#f8f9fa")))
+            style("padding", "10px 20px")
+
+            hPanel(
+                justifyContent = JustifyContent.SpaceBetween,
+                alignItems = AlignItems.Center,
+            ) {
+                position(Position.Relative)
+                img(Logo.url)
+
+                hPanel(
+                    justifyContent = JustifyContent.Center,
+                    alignItems = AlignItems.Center,
+                ) {
+                    position(Position.Absolute)
+                    width(100.perc)
+                    height(100.perc)
+
+                    spant(userName)
                 }
-                ul("dropdown-menu") {
-                    if (!isAdmin)
+
+                div("dropdown") {
+                    materialIconOutlined("account_circle") {
+                        attribute("data-bs-toggle", "dropdown")
+                    }
+                    ul("dropdown-menu") {
+                        if (!isAdmin)
+                            dropDownItem(
+                                text = "Unavailable Days",
+                                onClick = onUnavailableDaysClick
+                            )
                         dropDownItem(
-                            text = "Unavailable Days",
-                            onClick = onUnavailableDaysClick
+                            text = "Preferences",
+                            onClick = onPreferencesClick
                         )
-                    dropDownItem(
-                        text = "Preferences",
-                        onClick = onPreferencesClick
-                    )
-                    dropDownItem(
-                        text = "Log out",
-                        onClick = onLogoutClick
-                    )
+                        dropDownItem(
+                            text = "Log out",
+                            onClick = onLogoutClick
+                        )
+                    }
                 }
             }
         }
