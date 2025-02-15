@@ -7,6 +7,7 @@ import dev.kilua.form.*
 import dev.kilua.form.text.IText
 import cz.tomashula.plenr.frontend.component.onSubmit as onFormSubmit
 import dev.kilua.form.text.text
+import dev.kilua.html.data
 import dev.kilua.html.divt
 import kotlinx.coroutines.launch
 import web.dom.events.Event
@@ -50,6 +51,25 @@ inline fun <reified T : Any> IComponent.bsForm(
 }
 
 @Composable
+inline fun <reified T : Any> IComponent.bsFormRef(
+    className: String? = null,
+    noinline onSubmit: suspend (data: T, form: Form<T>, event: Event) -> Unit,
+    crossinline content: @Composable Form<T>.() -> Unit
+): Form<T>
+{
+    val coroutineScope = rememberCoroutineScope()
+
+    return formRef<T>(className = className) {
+        onFormSubmit { event ->
+            coroutineScope.launch {
+                onSubmit(this@formRef.getData(), this@formRef, event)
+            }
+        }
+        content()
+    }
+}
+
+@Composable
 inline fun IComponent.bsLabelledFormField(
     label: String,
     wrapperClassName: String? = null,
@@ -69,8 +89,31 @@ inline fun <K : Any> Form<K>.bsFormInput(
     id: String? = null,
     bindKey: KProperty1<K, String?>,
     type: InputType = InputType.Text,
+    value: String? = null,
     placeholder: String? = null,
+    required: Boolean = true,
     noinline validator: ((StringFormControl) -> Boolean)? = null,
+    crossinline content: @Composable IText.() -> Unit = {}
+)
+{
+    bsFormInput(
+        id = id,
+        type = type,
+        value = value,
+        placeholder = placeholder,
+        required = required
+    ) {
+        bind(bindKey, validator)
+        content()
+    }
+}
+
+@Composable
+inline fun IComponent.bsFormInput(
+    id: String? = null,
+    type: InputType = InputType.Text,
+    value: String? = null,
+    placeholder: String? = null,
     required: Boolean = true,
     crossinline content: @Composable IText.() -> Unit = {}
 )
@@ -80,9 +123,9 @@ inline fun <K : Any> Form<K>.bsFormInput(
         className = "form-control",
         type = type,
         required = required,
-        placeholder = placeholder
+        placeholder = placeholder,
+        value = value
     ) {
-        bind(bindKey, validator)
         content()
     }
 }
