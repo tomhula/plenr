@@ -1,35 +1,30 @@
 package cz.tomashula.plenr.frontend.page.admin
 
 import androidx.compose.runtime.*
-import app.softwork.routingcompose.Router
 import cz.tomashula.plenr.feature.training.TrainingType
 import cz.tomashula.plenr.feature.training.TrainingWithParticipantsDto
 import dev.kilua.core.IComponent
-import dev.kilua.form.InputType
-import dev.kilua.form.form
-import dev.kilua.form.select.select
 import dev.kilua.html.*
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.format
 import cz.tomashula.plenr.frontend.MainViewModel
-import cz.tomashula.plenr.frontend.component.applyColumn
-import cz.tomashula.plenr.frontend.component.formField
-import cz.tomashula.plenr.frontend.component.onSubmit
 import cz.tomashula.plenr.feature.user.UserDto
+import cz.tomashula.plenr.frontend.component.bsFormInput
+import cz.tomashula.plenr.frontend.component.bsFormRef
+import cz.tomashula.plenr.frontend.component.bsLabelledFormField
 import cz.tomashula.plenr.frontend.component.bsModalDialog
 import cz.tomashula.plenr.frontend.component.materialIconOutlined
 import cz.tomashula.plenr.util.now
 import dev.kilua.compose.foundation.layout.Column
 import dev.kilua.compose.ui.Alignment
-import dev.kilua.externals.Bootstrap
+import dev.kilua.form.Form
+import dev.kilua.form.InputType
+import dev.kilua.form.select.select
+import dev.kilua.form.time.richDateTime
 import dev.kilua.html.helpers.TagStyleFun.Companion.background
-import dev.kilua.modal.Modal
-import dev.kilua.modal.ModalSize
-import dev.kilua.modal.modal
 import dev.kilua.panel.hPanel
 import dev.kilua.panel.vPanel
 import dev.kilua.utils.cast
-import dev.kilua.utils.isDom
 import dev.kilua.utils.toJsAny
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
@@ -41,10 +36,9 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import kotlinx.serialization.Serializable
 import web.dom.CanvasTextAlign
 import web.dom.CanvasTextBaseline
-import web.dom.events.Event
-import web.window
 
 private data class TrainingView(
     val edited: Boolean,
@@ -97,8 +91,16 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
         shown = currentDialogTraining != null,
         edit = currentDialogTrainingEdit,
         training = currentDialogTraining ?: newTraining(selectedDay.atTime(12, 0), mainViewModel.user!!),
-        onSave = {
-            window.alert("SAVE")
+        users = users,
+        onSave = { saveTraining ->
+            val originalTraining = currentDialogTraining!!
+            val originalDate = originalTraining.startDateTime.date
+            val saveDate = saveTraining.startDateTime.date
+            trainings[originalDate] = trainings[originalDate]!!.filterNot { it.training.id == originalTraining.id }
+            trainings[saveDate] = trainings[saveDate]!! + saveTraining.toTrainingView(created = !currentDialogTrainingEdit, edited = currentDialogTrainingEdit)
+
+            println(saveTraining)
+            currentDialogTraining = null
         },
         onDismiss = { currentDialogTraining = null }
     )
@@ -144,10 +146,20 @@ private fun IComponent.trainingDialog(
     shown: Boolean,
     edit: Boolean,
     training: TrainingWithParticipantsDto,
+    users: List<UserDto>,
     onSave: (TrainingWithParticipantsDto) -> Unit,
     onDismiss: () -> Unit
 )
 {
+    var form: Form<TrainingForm>? = null
+    var participants by remember(training) { mutableStateOf(training.participants) }
+    val participantsAlphabetically by derivedStateOf {
+        participants.sortedBy { it.fullName }
+    }
+    val usersAlphabetically by derivedStateOf {
+        users.sortedBy { it.fullName }
+    }
+
     bsModalDialog(
         shown = shown,
         title = if (edit) "Edit Training" else "Create Training",
@@ -157,11 +169,71 @@ private fun IComponent.trainingDialog(
                 onClick { onDismiss() }
             }
             bsButton("Save", style = ButtonStyle.BtnPrimary) {
-                onClick { onSave(training) }
+                onClick {
+                    form?.let { onSave(it.getData().toTrainingWithParticipantsDto(training.arranger)) }
+                }
             }
         }
     ) {
-        divt("Content")
+        form = bsFormRef<TrainingForm>(
+            onSubmit = { data, _, _ ->
+                onSave(data.toTrainingWithParticipantsDto(training.arranger))
+            }
+        ) {
+            setData(training.toTrainingForm())
+
+            LaunchedEffect(participants) {
+                setData(getData().copy(participants = participants.toSet()))
+            }
+
+            bsLabelledFormField("Name") {
+                bsFormInput(it, TrainingForm::name)
+            }
+            bsLabelledFormField("Description") {
+                bsFormInput(it, TrainingForm::description)
+            }
+            bsLabelledFormField("Type") {
+                select(id = it, className = "form-select") {
+                    option(label = TrainingType.DRESSAGE.name.lowercase(), value = TrainingType.DRESSAGE.name)
+                    option(label = TrainingType.PARKOUR.name.lowercase(), value = TrainingType.PARKOUR.name)
+                    bindCustom(TrainingForm::type)
+                }
+            }
+            bsLabelledFormField("Start") {
+                richDateTime(id = it, format = "dd.MM.yyyy HH:mm") {
+                    bind(TrainingForm::startDateTime)
+                }
+            }
+            bsLabelledFormField("Length in minutes") {
+                bsFormInput(it, type = InputType.Number) {
+                    bindCustom(TrainingForm::lengthMinutes)
+                }
+            }
+            bsLabelledFormField("Participants") {
+                bsFormInput(id = it, required = false) {
+                    list("usersList")
+                    onInput { event ->
+                        val value = this@bsFormInput.value ?: return@onInput
+                        val user = users.find { it.fullName == value.trim() }
+                        if (user != null)
+                        {
+                            this@bsFormInput.value = ""
+                            participants = participants + user
+                        }
+                    }
+                }
+                datalist(id = "usersList") {
+                    for (user in usersAlphabetically)
+                        option(label = user.fullName, value = user.fullName)
+                }
+                for (participant in participantsAlphabetically)
+                    divt(participant.fullName) {
+                        onClick {
+                            participants = participants - participant
+                        }
+                    }
+            }
+        }
     }
 }
 
@@ -207,118 +279,6 @@ private fun IDiv.training(
             fontWeight(FontWeight.Bold)
         }
         spant(training.type.name.lowercase())
-    }
-}
-
-@Composable
-private fun IComponent.trainingCreationForm(
-    state: TrainingCreationFormState,
-    users: List<UserDto>,
-    onSubmit: (TrainingCreationFormState) -> Unit,
-    onChange: (TrainingCreationFormState) -> Unit
-)
-{
-    form(id = "arrange-training-form", className = "form") {
-        applyColumn(alignItems = AlignItems.Center)
-        rowGap(10.px)
-
-        h1t("Arrange Trainings")
-
-        onSubmit { onSubmit(state) }
-
-        formField(
-            inputId = "title",
-            label = "Title",
-            value = state.title,
-            required = true,
-            onChange = { onChange(state.copy(title = it)) }
-        )
-
-        formField(
-            inputId = "description",
-            label = "Description",
-            value = state.description,
-            type = InputType.Text,
-            onChange = { onChange(state.copy(description = it)) }
-        )
-
-        formField(
-            inputId = "date",
-            label = "Date",
-            value = state.startDateTime?.format(LocalDateTime.Formats.ISO) ?: "",
-            type = InputType.DatetimeLocal,
-            required = true,
-            onChange = {
-                onChange(state.copy(startDateTime = it.let {
-                    try
-                    {
-                        LocalDateTime.parse(it, LocalDateTime.Formats.ISO)
-                    }
-                    catch (e: Exception)
-                    {
-                        null
-                    }
-                }))
-            }
-        )
-
-        div("form-field") {
-            applyColumn()
-            label(className = "form-field-label") {
-                htmlFor("type")
-                +"Type"
-            }
-            select(className = "form-field-input", required = true) {
-                id("type")
-                option {
-                    value("dressage")
-                    +"Dressage"
-                }
-                option {
-                    value("parkour")
-                    +"Parkour"
-                }
-                onChange { onChange(state.copy(type = this.value ?: "dressage")) }
-            }
-        }
-
-        formField(
-            inputId = "length",
-            label = "Length (minutes)",
-            value = state.lengthMinutes.toString(),
-            type = InputType.Number,
-            required = true,
-            onChange = { onChange(state.copy(lengthMinutes = it.toIntOrNull() ?: 0)) }
-        )
-
-        div(className = "form-field") {
-            applyColumn()
-            label(htmlFor = "users", className = "form-field-label") {
-                +"Users"
-            }
-            val clients = remember(users) { users.filter { !it.isAdmin } }
-            if (clients.isEmpty())
-                +"No users available"
-            else
-                div(id = "users") {
-                    applyColumn()
-                    rowGap(10.px)
-                    clients.forEach { user ->
-                        val selected = state.participants.contains(user)
-                        div(className = "user-card ${if (selected) "selected" else ""}") {
-                            +"${user.firstName} ${user.lastName}"
-                            onClick {
-                                if (!selected)
-                                    onChange(state.copy(participants = state.participants + user))
-                                else
-                                    onChange(state.copy(participants = state.participants - user))
-                            }
-                        }
-                    }
-                }
-        }
-
-        button("Create Training", type = ButtonType.Submit, className = "primary-button")
     }
 }
 
@@ -408,11 +368,35 @@ private val dateFormat = LocalDate.Format {
     char('.')
 }
 
-private data class TrainingCreationFormState(
-    val title: String = "",
+@Serializable
+private data class TrainingForm(
+    val name: String = "",
     val description: String = "",
     val startDateTime: LocalDateTime? = null,
-    val type: String = "dressage",
-    val lengthMinutes: Int = 0,
+    val type: TrainingType = TrainingType.DRESSAGE,
+    val lengthMinutes: Int = 60,
     val participants: Set<UserDto> = emptySet()
+)
+{
+    fun toTrainingWithParticipantsDto(
+        arranger: UserDto
+    ) = TrainingWithParticipantsDto(
+        id = -1,
+        arranger = arranger,
+        name = name,
+        description = description,
+        type = type,
+        startDateTime = startDateTime ?: LocalDateTime.now(),
+        lengthMinutes = lengthMinutes,
+        participants = participants.toSet()
+    )
+}
+
+private fun TrainingWithParticipantsDto.toTrainingForm() = TrainingForm(
+    name = name,
+    description = description,
+    startDateTime = startDateTime,
+    type = type,
+    lengthMinutes = lengthMinutes,
+    participants = participants.toSet()
 )
