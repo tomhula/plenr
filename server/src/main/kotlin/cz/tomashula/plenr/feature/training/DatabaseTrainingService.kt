@@ -2,8 +2,6 @@ package cz.tomashula.plenr.feature.training
 
 import cz.tomashula.plenr.auth.AuthService
 import cz.tomashula.plenr.auth.UnauthorizedException
-import cz.tomashula.plenr.feature.training.TrainingParticipantTable.trainingId
-import cz.tomashula.plenr.feature.user.UserDto
 import cz.tomashula.plenr.feature.user.UserTable
 import cz.tomashula.plenr.feature.user.toUserDto
 import cz.tomashula.plenr.mail.MailService
@@ -132,12 +130,12 @@ class DatabaseTrainingService(
                         type = type,
                         startDateTime = row[TrainingTable.startDateTime],
                         lengthMinutes = row[TrainingTable.lengthMinutes],
-                        participants = mutableListOf()
+                        participants = mutableSetOf()
                     )
                 }
 
                 if (participant != null)
-                    (trainingDto.participants as MutableList).add(participant)
+                    (trainingDto.participants as MutableSet).add(participant)
             }
 
             trainingMap.values.toList()
@@ -206,12 +204,12 @@ class DatabaseTrainingService(
                         type = type,
                         startDateTime = row[TrainingTable.startDateTime],
                         lengthMinutes = row[TrainingTable.lengthMinutes],
-                        participants = mutableListOf()
+                        participants = mutableSetOf()
                     )
                 }
 
                 if (participant != null)
-                    (trainingDto.participants as MutableList).add(participant)
+                    (trainingDto.participants as MutableSet).add(participant)
             }
 
             trainingMap.values.toList()

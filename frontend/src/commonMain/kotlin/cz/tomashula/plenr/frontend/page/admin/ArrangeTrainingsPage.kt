@@ -68,7 +68,7 @@ private fun newTraining(
     type = TrainingType.DRESSAGE,
     startDateTime = dateTime,
     lengthMinutes = 60,
-    participants = emptyList()
+    participants = emptySet()
 )
 
 @Composable
