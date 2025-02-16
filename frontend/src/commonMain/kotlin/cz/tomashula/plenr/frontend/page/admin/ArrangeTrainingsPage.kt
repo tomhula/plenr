@@ -145,14 +145,15 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
             }
         }
 
-        bsButton(label = "Save", disabled = newOrModifiedTrainings.isEmpty()) {
-            onClickLaunch {
-                val createOrUpdateDtos = newOrModifiedTrainings.map { it.training.toCreateTrainingDto(mainViewModel.user!!) }.toSet()
-                mainViewModel.arrangeTrainings(createOrUpdateDtos)
-                for (day in trainings.keys)
-                    trainings[day] = trainings[day]!!.map { it.copy(edited = false, created = false) }
+        if (newOrModifiedTrainings.isNotEmpty())
+            bsButton(label = "Save") {
+                onClickLaunch {
+                    val createOrUpdateDtos = newOrModifiedTrainings.map { it.training.toCreateTrainingDto(mainViewModel.user!!) }.toSet()
+                    mainViewModel.arrangeTrainings(createOrUpdateDtos)
+                    for (day in trainings.keys)
+                        trainings[day] = trainings[day]!!.map { it.copy(edited = false, created = false) }
+                }
             }
-        }
     }
 }
 
