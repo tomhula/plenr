@@ -61,7 +61,7 @@ class DatabaseTrainingService(
                 }
 
                 if (createOrUpdateTrainingDto.id != null)
-                    TrainingParticipantTable.deleteWhere { TrainingParticipantTable.trainingId  eq createOrUpdateTrainingDto.id }
+                    TrainingParticipantTable.deleteWhere { TrainingParticipantTable.trainingId eq createOrUpdateTrainingDto.id }
 
                 TrainingParticipantTable.batchInsert(createOrUpdateTrainingDto.participantIds) { participantId ->
                     this[TrainingParticipantTable.trainingId] = trainingId
@@ -173,11 +173,9 @@ class DatabaseTrainingService(
         return dbQuery {
             val trainingMap = mutableMapOf<Int, TrainingWithParticipantsDto>()
 
-            // Alias for arranger and participant
             val arrangerAlias = UserTable.alias("arranger")
             val participantAlias = UserTable.alias("participant")
 
-            // Select only trainings where userId is a participant
             val relevantTrainingIds = TrainingParticipantTable
                 .select(TrainingParticipantTable.trainingId)
                 .where { TrainingParticipantTable.participantId eq userId }
@@ -187,9 +185,18 @@ class DatabaseTrainingService(
             if (relevantTrainingIds.isEmpty())
                 return@dbQuery emptyList()
 
-            val q = (TrainingTable innerJoin arrangerAlias)
+            val q = TrainingTable
+                .innerJoin(
+                    otherTable = arrangerAlias,
+                    onColumn = { TrainingTable.arrangerId },
+                    otherColumn = { arrangerAlias[UserTable.id] }
+                )
                 .leftJoin(TrainingParticipantTable)
-                .leftJoin(participantAlias) { TrainingParticipantTable.participantId eq participantAlias[UserTable.id] }
+                .leftJoin(
+                    otherTable = participantAlias,
+                    onColumn = { TrainingParticipantTable.participantId },
+                    otherColumn = { participantAlias[UserTable.id] }
+                )
                 .selectAll()
                 .where { TrainingTable.id inList relevantTrainingIds }
 
