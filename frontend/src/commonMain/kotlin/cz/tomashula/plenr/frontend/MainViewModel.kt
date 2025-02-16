@@ -14,9 +14,8 @@ import kotlinx.rpc.krpc.ktor.client.rpcConfig
 import kotlinx.rpc.krpc.serialization.json.json
 import kotlinx.rpc.withService
 import kotlinx.serialization.json.Json
-import cz.tomashula.plenr.feature.training.CreateTrainingDto
+import cz.tomashula.plenr.feature.training.CreateOrUpdateTrainingDto
 import cz.tomashula.plenr.feature.training.TrainingService
-import cz.tomashula.plenr.feature.training.TrainingType
 import cz.tomashula.plenr.feature.training.TrainingWithParticipantsDto
 import cz.tomashula.plenr.feature.user.UserDto
 import cz.tomashula.plenr.feature.user.UserService
@@ -118,17 +117,9 @@ class MainViewModel
         return userService.getAllUsers(authToken!!)
     }
 
-    suspend fun createTraining(
-        title: String,
-        description: String,
-        startDateTime: LocalDateTime,
-        type: TrainingType,
-        lengthMinutes: Int,
-        participantIds: List<Int>
-    )
+    suspend fun arrangeTrainings(trainings: Set<CreateOrUpdateTrainingDto>)
     {
-        val createTrainingDto = CreateTrainingDto(title, description, type, startDateTime, lengthMinutes, participantIds)
-        trainingService.arrangeTrainings(listOf(createTrainingDto), authToken!!)
+        trainingService.arrangeTrainings(trainings, authToken!!)
     }
 
     suspend fun getAllTrainingsAdmin(

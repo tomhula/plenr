@@ -1,6 +1,7 @@
 package cz.tomashula.plenr.frontend.page.admin
 
 import androidx.compose.runtime.*
+import cz.tomashula.plenr.feature.training.CreateOrUpdateTrainingDto
 import cz.tomashula.plenr.feature.training.TrainingType
 import cz.tomashula.plenr.feature.training.TrainingWithParticipantsDto
 import dev.kilua.core.IComponent
@@ -22,6 +23,7 @@ import dev.kilua.form.InputType
 import dev.kilua.form.select.select
 import dev.kilua.form.time.richDateTime
 import dev.kilua.html.helpers.TagStyleFun.Companion.background
+import dev.kilua.html.helpers.onClickLaunch
 import dev.kilua.panel.hPanel
 import dev.kilua.panel.vPanel
 import dev.kilua.utils.cast
@@ -74,6 +76,10 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
     var currentDialogTraining by remember { mutableStateOf<TrainingWithParticipantsDto?>(null) }
     /* Whether the current dialog is editing a training or creating a new one */
     var currentDialogTrainingEdit by remember { mutableStateOf(false) }
+
+    val newOrModifiedTrainings by derivedStateOf {
+        trainings.values.flatten().filter { it.edited || it.created }
+    }
 
     LaunchedEffect(Unit) {
         users = mainViewModel.getAllUsers()
@@ -138,6 +144,15 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
                     )
             }
         }
+
+        bsButton(label = "Save", disabled = newOrModifiedTrainings.isEmpty()) {
+            onClickLaunch {
+                val createOrUpdateDtos = newOrModifiedTrainings.map { it.training.toCreateTrainingDto(mainViewModel.user!!) }.toSet()
+                mainViewModel.arrangeTrainings(createOrUpdateDtos)
+                for (day in trainings.keys)
+                    trainings[day] = trainings[day]!!.map { it.copy(edited = false, created = false) }
+            }
+        }
     }
 }
 
@@ -170,14 +185,14 @@ private fun IComponent.trainingDialog(
             }
             bsButton("Save", style = ButtonStyle.BtnPrimary) {
                 onClick {
-                    form?.let { onSave(it.getData().toTrainingWithParticipantsDto(training.arranger)) }
+                    form?.let { onSave(it.getData().toTrainingWithParticipantsDto(training.arranger).copy(id = training.id)) }
                 }
             }
         }
     ) {
         form = bsFormRef<TrainingForm>(
             onSubmit = { data, _, _ ->
-                onSave(data.toTrainingWithParticipantsDto(training.arranger))
+                onSave(data.toTrainingWithParticipantsDto(training.arranger).copy(id = training.id))
             }
         ) {
             setData(training.toTrainingForm())
@@ -399,4 +414,14 @@ private fun TrainingWithParticipantsDto.toTrainingForm() = TrainingForm(
     type = type,
     lengthMinutes = lengthMinutes,
     participants = participants.toSet()
+)
+
+private fun TrainingWithParticipantsDto.toCreateTrainingDto(arranger: UserDto) = CreateOrUpdateTrainingDto(
+    id = if (id == -1) null else id,
+    name = name,
+    description = description,
+    type = type,
+    startDateTime = startDateTime,
+    lengthMinutes = lengthMinutes,
+    participantIds = participants.map { it.id }.toSet()
 )

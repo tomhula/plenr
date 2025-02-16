@@ -8,6 +8,7 @@ import cz.tomashula.plenr.mail.MailService
 import cz.tomashula.plenr.service.DatabaseService
 import kotlinx.datetime.LocalDateTime
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import kotlin.coroutines.CoroutineContext
 
 class DatabaseTrainingService(
@@ -25,7 +26,7 @@ class DatabaseTrainingService(
     private val serverUrl = serverUrl.removeSuffix("/")
 
     override suspend fun arrangeTrainings(
-        trainings: Iterable<CreateTrainingDto>,
+        trainings: Set<CreateOrUpdateTrainingDto>,
         authToken: String
     )
     {
@@ -36,25 +37,40 @@ class DatabaseTrainingService(
         val participantsEmails = mutableMapOf<Int, String>()
 
         dbQuery {
-            for (createTrainingDto in trainings)
+            for (createOrUpdateTrainingDto in trainings)
             {
-                val trainingId = TrainingTable.insertAndGetId {
+                val trainingId = if (createOrUpdateTrainingDto.id == null) TrainingTable.insertAndGetId {
                     it[arrangerId] = caller.id
-                    it[name] = createTrainingDto.name
-                    it[description] = createTrainingDto.description
-                    it[type] = createTrainingDto.type
-                    it[startDateTime] = createTrainingDto.startDateTime
-                    it[lengthMinutes] = createTrainingDto.lengthMinutes
+                    it[name] = createOrUpdateTrainingDto.name
+                    it[description] = createOrUpdateTrainingDto.description
+                    it[type] = createOrUpdateTrainingDto.type
+                    it[startDateTime] = createOrUpdateTrainingDto.startDateTime
+                    it[lengthMinutes] = createOrUpdateTrainingDto.lengthMinutes
                 }.value
+                else
+                {
+                    TrainingTable.update({ TrainingTable.id eq createOrUpdateTrainingDto.id }) {
+                        it[arrangerId] = caller.id
+                        it[name] = createOrUpdateTrainingDto.name
+                        it[description] = createOrUpdateTrainingDto.description
+                        it[type] = createOrUpdateTrainingDto.type
+                        it[startDateTime] = createOrUpdateTrainingDto.startDateTime
+                        it[lengthMinutes] = createOrUpdateTrainingDto.lengthMinutes
+                    }
+                    createOrUpdateTrainingDto.id!!
+                }
 
-                TrainingParticipantTable.batchInsert(createTrainingDto.participantIds) { participantId ->
+                if (createOrUpdateTrainingDto.id != null)
+                    TrainingParticipantTable.deleteWhere { TrainingParticipantTable.trainingId  eq createOrUpdateTrainingDto.id }
+
+                TrainingParticipantTable.batchInsert(createOrUpdateTrainingDto.participantIds) { participantId ->
                     this[TrainingParticipantTable.trainingId] = trainingId
                     this[TrainingParticipantTable.participantId] = participantId
                 }
 
                 UserTable
                     .select(UserTable.email)
-                    .where { UserTable.id inList createTrainingDto.participantIds }
+                    .where { UserTable.id inList createOrUpdateTrainingDto.participantIds }
                     .forEach { row ->
                         participantsEmails[trainingId] = row[UserTable.email]
                     }

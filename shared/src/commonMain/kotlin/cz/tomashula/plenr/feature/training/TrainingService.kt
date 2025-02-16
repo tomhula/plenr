@@ -7,9 +7,10 @@ import kotlinx.rpc.annotations.Rpc
 @Rpc
 interface TrainingService : RemoteService
 {
-    /** Allows admins to arrange new trainings */
+    /** Allows admins to arrange new trainings.
+     * Updates any existing ones */
     suspend fun arrangeTrainings(
-        trainings: Iterable<CreateTrainingDto>,
+        trainings: Set<CreateOrUpdateTrainingDto>,
         authToken: String
     )
 
