@@ -103,7 +103,7 @@ class PlenrFrontendApp : Application()
                         }
                     }
                     noMatch {
-                        h1t(text = "Not Found")
+                        h1t(text = "Page not found")
                     }
                 }
             }
