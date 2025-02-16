@@ -30,6 +30,7 @@ import dev.kilua.utils.cast
 import dev.kilua.utils.toJsAny
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
 import kotlinx.datetime.format.Padding
@@ -128,7 +129,18 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
             val timetableHeight = 300
             val timetableWidth = 3000
 
-            timetableBackground(timetableHeight, timetableWidth, Color("#c6c6c6dd"))
+            timetableBackground(
+                height = timetableHeight,
+                width = timetableWidth,
+                color = Color("#c6c6c6dd"),
+                onClick = { clickedTime ->
+                    currentDialogTraining = newTraining(
+                        dateTime = selectedDay.atTime(clickedTime.hour, 0),
+                        arranger = mainViewModel.user!!
+                    )
+                    currentDialogTrainingEdit = false
+                }
+            )
 
             /* Overlay */
             div {
@@ -136,6 +148,7 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
                 top(0.px)
                 height(timetableHeight.px)
                 width(timetableWidth.px)
+                style("pointer-events", "none")
 
                 for (training in trainings[selectedDay] ?: emptyList())
                     training(
@@ -196,10 +209,14 @@ private fun IComponent.trainingDialog(
                 onSave(data.toTrainingWithParticipantsDto(training.arranger).copy(id = training.id))
             }
         ) {
-            setData(training.toTrainingForm())
+            LaunchedEffect(training) {
+                setData(training.toTrainingForm())
+            }
 
             LaunchedEffect(participants) {
+                println("Data before: ${getData()}")
                 setData(getData().copy(participants = participants.toSet()))
+                println("Data after: ${getData()}")
             }
 
             bsLabelledFormField("Name") {
@@ -278,6 +295,7 @@ private fun IDiv.training(
         fontSize(0.8.rem)
         borderRadius(5.px)
         cursor(Cursor.Pointer)
+        style("pointer-events", "auto")
         onClick { onEdit(training) }
         background(Color.Bisque)
         if (trainingView.edited || trainingView.created)
@@ -302,7 +320,8 @@ private fun IDiv.training(
 fun IComponent.timetableBackground(
     height: Int,
     width: Int,
-    color: Color
+    color: Color,
+    onClick: (LocalTime) -> Unit = {}
 )
 {
     canvas(
@@ -332,6 +351,12 @@ fun IComponent.timetableBackground(
             ctx.lineTo(x.toDouble(), canvasHeight.toDouble() - 35)
             ctx.stroke()
             ctx.fillText(i.toString().padStart(2, '0'), x.toDouble(), canvasHeight.toDouble() - 20, maxWidth = 20.0)
+        }
+
+        onClick { clickEvent ->
+            val relativeMinute = (clickEvent.offsetX / spacing * 60).toInt()
+            val clickedTime = LocalTime(relativeMinute / 60, relativeMinute % 60)
+            onClick(clickedTime)
         }
     }
 }
