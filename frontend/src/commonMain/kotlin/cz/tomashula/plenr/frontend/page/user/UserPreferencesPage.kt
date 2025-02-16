@@ -35,6 +35,15 @@ fun IComponent.userPreferencesPage(viewModel: MainViewModel)
     var permanentBusyTimes by remember { mutableStateOf<WeeklyTimeRanges?>(null) }
     var addBusyTimeDialogDay by remember { mutableStateOf(DayOfWeek.MONDAY) }
 
+    if (viewModel.user?.isAdmin == true)
+    {
+        h2t("Admins do not have any preferences") {
+          textAlign(TextAlign.Center)
+            marginTop(50.px)
+        }
+        return
+    }
+
     LaunchedEffect(Unit) {
         preferences = viewModel.getPreferences()
         permanentBusyTimes = viewModel.getPermanentBusyTimes()
