@@ -2,43 +2,31 @@ package cz.tomashula.plenr.frontend.page.user
 
 import androidx.compose.runtime.*
 import app.softwork.routingcompose.Router
+import cz.tomashula.plenr.feature.user.preferences.UserPreferencesDto
+import cz.tomashula.plenr.frontend.MainViewModel
+import cz.tomashula.plenr.frontend.Route
+import cz.tomashula.plenr.frontend.component.bsForm
+import cz.tomashula.plenr.frontend.component.bsFormInput
+import cz.tomashula.plenr.frontend.component.bsLabelledFormField
 import dev.kilua.core.IComponent
 import dev.kilua.form.InputType
 import dev.kilua.form.check.checkBox
-import dev.kilua.form.form
-import dev.kilua.form.text.text
 import dev.kilua.html.*
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.launch
-import kotlinx.datetime.DayOfWeek
-import kotlinx.datetime.LocalTime
-import cz.tomashula.plenr.frontend.MainViewModel
-import cz.tomashula.plenr.frontend.component.applyColumn
-import cz.tomashula.plenr.frontend.component.applyRow
-import cz.tomashula.plenr.frontend.component.formField
-import cz.tomashula.plenr.frontend.component.materialIconOutlined
-import cz.tomashula.plenr.frontend.component.onSubmit
-import cz.tomashula.plenr.feature.user.preferences.UserPreferencesDto
-import cz.tomashula.plenr.feature.user.preferences.WeeklyTimeRanges
-import cz.tomashula.plenr.frontend.Route
-import cz.tomashula.plenr.util.rangeTo
-import web.document
-import web.window
+import dev.kilua.html.helpers.TagStyleFun
+import dev.kilua.html.helpers.TagStyleFun.Companion.background
+import dev.kilua.panel.flexPanel
+import kotlinx.serialization.Serializable
 
 @Composable
 fun IComponent.userPreferencesPage(viewModel: MainViewModel)
 {
     val router = Router.current
-    val coroutineScope = rememberCoroutineScope()
     var preferences by remember { mutableStateOf<UserPreferencesDto?>(null) }
-    var permanentBusyTimes by remember { mutableStateOf<WeeklyTimeRanges?>(null) }
-    var addBusyTimeDialogDay by remember { mutableStateOf(DayOfWeek.MONDAY) }
 
     if (viewModel.user?.isAdmin == true)
     {
         h2t("Admins do not have any preferences") {
-          textAlign(TextAlign.Center)
+            textAlign(TextAlign.Center)
             marginTop(50.px)
         }
         return
@@ -46,118 +34,103 @@ fun IComponent.userPreferencesPage(viewModel: MainViewModel)
 
     LaunchedEffect(Unit) {
         preferences = viewModel.getPreferences()
-        permanentBusyTimes = viewModel.getPermanentBusyTimes()
     }
 
-    val addBusyTimeDialog = dialogRef(className = "modal-dialog add-busy-time-dialog") {
-        var start by remember { mutableStateOf(LocalTime(0, 0)) }
-        var end by remember { mutableStateOf(LocalTime(0, 0)) }
-
-        form {
-            onSubmit {
-                permanentBusyTimes = permanentBusyTimes?.builder()?.addTimeRange(addBusyTimeDialogDay, start..end)?.build()
-                this@dialogRef.element.close("")
-            }
-
-            text(type = InputType.Time, value = start.toString()) {
-                onChange { start = this.value?.let { LocalTime.parse(it) } ?: LocalTime(0, 0) }
-            }
-
-            spant(" - ")
-
-            text(type = InputType.Time, value = end.toString()) {
-                onChange { end = this.value?.let { LocalTime.parse(it) } ?: LocalTime(0, 0) }
-            }
-
-            button("Add", className = "primary-button", type = ButtonType.Submit)
-        }
-    }
-
-    form(className = "form") {
-        applyColumn(alignItems = AlignItems.Center)
-        rowGap(10.px)
-
-        onSubmit {
-            coroutineScope.launch {
-                val preferences = async { viewModel.setPreferences(preferences!!) }
-                val permanentBusyTimes = async { viewModel.setPermanentBusyTimes(permanentBusyTimes!!) }
-                awaitAll(preferences, permanentBusyTimes)
-                window.alert("Preferences saved")
+    flexPanel(
+        justifyContent = JustifyContent.Center,
+        alignItems = AlignItems.Center
+    ) {
+        bsForm<PreferencesForm>(
+            onSubmit = { data, _, _ ->
+                viewModel.setPreferences(preferences!!)
                 router.navigate(Route.HOME)
             }
-        }
-
-        formField(
-            inputId = "trainings-per-week",
-            label = "Trainings per week",
-            value = preferences?.trainingsPerWeek?.toString() ?: "Loading...",
-            type = InputType.Number,
-            onChange = { preferences = preferences?.copy(trainingsPerWeek = it.toInt()) },
-            inputBlock = { attribute("min", "1"); attribute("max", "7") }
-        )
-
-        div(className = "form-field") {
-            applyColumn()
-            label(className = "form-field-label") {
-                +"Permanent busy times"
+        ) {
+            LaunchedEffect(preferences) {
+                preferences?.let { setData(it.toFormData()) }
             }
-            // Here just to trigger recomposition when permanentBusyTimes changes
-            if (permanentBusyTimes != null)
-                for (day in DayOfWeek.entries)
-                    permanentBusyTimesDay(
-                        day = day,
-                        busyTimes = permanentBusyTimes!!.getRangesForDay(day),
-                        onAddClick = {
-                            addBusyTimeDialogDay = day
-                            addBusyTimeDialog.element.showModal(document.body!!)
-                        },
-                        onRemoveClick = {
-                            permanentBusyTimes = permanentBusyTimes!!.builder().removeTimeRange(day, it).build()
-                        }
-                    )
-        }
-
-        div(className = "form-field") {
-            applyColumn()
-            label(className = "form-field-label") {
-                +"Notifications"
-            }
-
-            table(className = "notifications-table") {
-                thead {
-                    tr {
-                        th { +"Notification" }
-                        th { +"Email" }
-                        th { +"SMS" }
+            bsLabelledFormField("Trainings per week") {
+                bsFormInput(it, type = InputType.Number) {
+                    bindCustom(PreferencesForm::trainingsPerWeek)
+                    onChange {
+                        preferences = preferences?.copy(trainingsPerWeek = value?.toInt() ?: 0)
                     }
-                }
-                tbody {
-                    notificationsTableRow(
-                        label = "Training Arranged",
-                        email = preferences?.trainingArrangedNotiEmail == true,
-                        sms = preferences?.trainingArrangedNotiSms == true,
-                        onEmailChange = { preferences = preferences?.copy(trainingArrangedNotiEmail = it) },
-                        onSmsChange = { preferences = preferences?.copy(trainingArrangedNotiSms = it) }
-                    )
-                    notificationsTableRow(
-                        label = "Training Moved",
-                        email = preferences?.trainingMovedNotiEmail == true,
-                        sms = preferences?.trainingMovedNotiSms == true,
-                        onEmailChange = { preferences = preferences?.copy(trainingMovedNotiEmail = it) },
-                        onSmsChange = { preferences = preferences?.copy(trainingMovedNotiSms = it) }
-                    )
-                    notificationsTableRow(
-                        label = "Training Cancelled",
-                        email = preferences?.trainingCancelledNotiEmail == true,
-                        sms = preferences?.trainingCancelledNotiSms == true,
-                        onEmailChange = { preferences = preferences?.copy(trainingCancelledNotiEmail = it) },
-                        onSmsChange = { preferences = preferences?.copy(trainingCancelledNotiSms = it) }
-                    )
+                    attribute("min", "0")
+                    attribute("max", "7")
                 }
             }
-        }
 
-        button(label = "Save preferences", type = ButtonType.Submit, className = "primary-button")
+                bsLabelledFormField("Notifications") {
+                    table(id = it) {
+                        width(100.perc)
+                        style("border-collapse", "collapse")
+
+                        thead {
+                            tr {
+                                notificationsTableHeader("Notification")
+                                notificationsTableHeader("Email")
+                                notificationsTableHeader("SMS")
+                            }
+                        }
+                        tbody {
+                            notificationsTableRow(
+                                label = "Training Arranged",
+                                email = preferences?.trainingArrangedNotiEmail == true,
+                                sms = preferences?.trainingArrangedNotiSms == true,
+                                onEmailChange = { preferences = preferences?.copy(trainingArrangedNotiEmail = it) },
+                                onSmsChange = { preferences = preferences?.copy(trainingArrangedNotiSms = it) }
+                            )
+                            notificationsTableRow(
+                                label = "Training Moved",
+                                email = preferences?.trainingMovedNotiEmail == true,
+                                sms = preferences?.trainingMovedNotiSms == true,
+                                onEmailChange = { preferences = preferences?.copy(trainingMovedNotiEmail = it) },
+                                onSmsChange = { preferences = preferences?.copy(trainingMovedNotiSms = it) }
+                            )
+                            notificationsTableRow(
+                                label = "Training Cancelled",
+                                email = preferences?.trainingCancelledNotiEmail == true,
+                                sms = preferences?.trainingCancelledNotiSms == true,
+                                onEmailChange = { preferences = preferences?.copy(trainingCancelledNotiEmail = it) },
+                                onSmsChange = { preferences = preferences?.copy(trainingCancelledNotiSms = it) }
+                            )
+                        }
+                    }
+
+            }
+
+            bsButton(label = "Save preferences", type = ButtonType.Submit, className = "mt-3")
+        }
+    }
+}
+
+@Composable
+fun TagStyleFun.notificationsTableHeaderDataStyle()
+{
+    background(Color("#f3f3f3"))
+    border(Border(width = 1.px, style = BorderStyle.Solid, color = Color("#ccc")))
+    padding(10.px)
+    textAlign(TextAlign.Center)
+}
+
+@Composable
+fun IComponent.notificationsTableHeader(text: String)
+{
+    th {
+        notificationsTableHeaderDataStyle()
+        background(Color("#f3f3f3"))
+        +text
+    }
+}
+
+@Composable
+fun IComponent.notificationsTableData(
+    content: @Composable IComponent.() -> Unit = {}
+)
+{
+    td {
+        notificationsTableHeaderDataStyle()
+        content()
     }
 }
 
@@ -171,48 +144,41 @@ private fun IComponent.notificationsTableRow(
 )
 {
     tr {
-        th { +label }
-        td {
+        notificationsTableHeader(label)
+        notificationsTableData {
             checkBox(value = email) {
+                style("transform", "scale(1.5")
+                cursor(Cursor.Pointer)
                 onChange { onEmailChange(this.value) }
             }
         }
-        td {
+        notificationsTableData {
             checkBox(value = sms) {
+                style("transform", "scale(1.5")
+                cursor(Cursor.Pointer)
                 onChange { onSmsChange(this.value) }
             }
         }
     }
 }
 
-@Composable
-private fun IComponent.permanentBusyTimesDay(
-    day: DayOfWeek,
-    busyTimes: List<ClosedRange<LocalTime>>,
-    onAddClick: () -> Unit,
-    onRemoveClick: (ClosedRange<LocalTime>) -> Unit
+@Serializable
+private data class PreferencesForm(
+    val trainingsPerWeek: Int = 1,
+    val trainingArrangedNotiEmail: Boolean = true,
+    val trainingArrangedNotiSms: Boolean = true,
+    val trainingMovedNotiEmail: Boolean = true,
+    val trainingMovedNotiSms: Boolean = true,
+    val trainingCancelledNotiEmail: Boolean = true,
+    val trainingCancelledNotiSms: Boolean = true
 )
-{
-    div {
-        applyRow(alignItems = AlignItems.Center)
-        spant(day.toString().lowercase().replaceFirstChar(Char::uppercase))
-        button(className = "icon-button") {
-            onClick {
-                onAddClick()
-            }
-            materialIconOutlined("add")
-        }
-    }
 
-    div {
-        applyRow()
-        flexWrap(FlexWrap.Wrap)
-
-        for (busyTime in busyTimes)
-            spant("${busyTime.start}-${busyTime.endInclusive}", className = "busy-time-range-chip") {
-                onClick {
-                    onRemoveClick(busyTime)
-                }
-            }
-    }
-}
+private fun UserPreferencesDto.toFormData() = PreferencesForm(
+    trainingsPerWeek = trainingsPerWeek,
+    trainingArrangedNotiEmail = trainingArrangedNotiEmail,
+    trainingArrangedNotiSms = trainingArrangedNotiSms,
+    trainingMovedNotiEmail = trainingMovedNotiEmail,
+    trainingMovedNotiSms = trainingMovedNotiSms,
+    trainingCancelledNotiEmail = trainingCancelledNotiEmail,
+    trainingCancelledNotiSms = trainingCancelledNotiSms
+)
