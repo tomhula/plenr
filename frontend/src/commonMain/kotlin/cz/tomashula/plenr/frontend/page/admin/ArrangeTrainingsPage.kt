@@ -403,9 +403,9 @@ private fun IComponent.daySelector(
 }
 
 private val dateFormat = LocalDate.Format {
-    monthNumber()
-    char('.')
     dayOfMonth()
+    char('.')
+    monthNumber()
     char('.')
 }
 
