@@ -11,6 +11,7 @@ import cz.tomashula.plenr.frontend.page.admin.manageUsersPage
 import cz.tomashula.plenr.frontend.page.adminsetup.adminSetupPage
 import cz.tomashula.plenr.frontend.page.login.loginPage
 import cz.tomashula.plenr.frontend.page.passwordsetup.passwordSetupPage
+import cz.tomashula.plenr.frontend.page.user.unavailableDaysPage
 import cz.tomashula.plenr.frontend.page.user.userPreferencesPage
 import cz.tomashula.plenr.frontend.page.userHomePage
 import dev.kilua.Application
@@ -89,6 +90,9 @@ class PlenrFrontendApp : Application()
                     }
                     route(Route.PREFERENCES) {
                         userPreferencesPage(viewModel)
+                    }
+                    route(Route.UNAVAILABLE_DAYS) {
+                        unavailableDaysPage(viewModel)
                     }
                     if (viewModel.user?.isAdmin == true)
                     {
