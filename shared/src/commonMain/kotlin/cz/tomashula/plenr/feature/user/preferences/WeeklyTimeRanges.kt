@@ -90,20 +90,20 @@ class WeeklyTimeRanges private constructor(private val weeklyTimeRanges: Map<Day
                     {
                         updatedRanges.add(range)
                     }
-                    // Case 2: Overlap at the start
+                    // Case 2: The range is split by the timeRange
+                    range.start < timeRange.start && range.endInclusive > timeRange.endInclusive ->
+                    {
+                        updatedRanges.add(range.start..timeRange.start)
+                        updatedRanges.add(timeRange.endInclusive..range.endInclusive)
+                    }
+                    // Case 3: Overlap at the start
                     range.start < timeRange.start && range.endInclusive > timeRange.start ->
                     {
                         updatedRanges.add(range.start..timeRange.start)
                     }
-                    // Case 3: Overlap at the end
+                    // Case 4: Overlap at the end
                     range.start < timeRange.endInclusive && range.endInclusive > timeRange.endInclusive ->
                     {
-                        updatedRanges.add(timeRange.endInclusive..range.endInclusive)
-                    }
-                    // Case 4: The range is split by the timeRange
-                    range.start < timeRange.start && range.endInclusive > timeRange.endInclusive ->
-                    {
-                        updatedRanges.add(range.start..timeRange.start)
                         updatedRanges.add(timeRange.endInclusive..range.endInclusive)
                     }
                     // Case 5: Complete overlap (timeRange covers the range completely)
