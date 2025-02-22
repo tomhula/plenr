@@ -30,18 +30,31 @@ import kotlinx.datetime.format.Padding
 import kotlinx.datetime.format.char
 
 @Composable
-fun IComponent.trainingCalendar()
+fun IComponent.trainingCalendar(
+    selectedWeek: Week,
+    onWeekChange: (Week) -> Unit = {}
+)
 {
-    var selectedWeek by remember { mutableStateOf(Week.current()) }
-
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(20.px),
         modifier = Modifier.fillMaxWidth(),
     ) {
-        weekSelector(
-            week = selectedWeek,
-            onWeekChange = { selectedWeek = it }
+        val currentWeek = remember { Week.current() }
+
+        arrowSelector(
+            selectedItem = selectedWeek,
+            onNext = { onWeekChange(selectedWeek.relative(1)) },
+            onPrevious = { onWeekChange(selectedWeek.relative(-1)) },
+            itemDisplay = {
+                when (currentWeek.differenceInWeeks(selectedWeek))
+                {
+                    0 -> "This week"
+                    1 -> "Next week"
+                    -1 -> "Last week"
+                    else -> selectedWeek.toString(dateFormat)
+                }
+            }
         )
 
         hPanel (
@@ -53,44 +66,10 @@ fun IComponent.trainingCalendar()
             width(100.perc)
 
             for (day in selectedWeek.days)
-            {
                 trainingCalendarDay(day)
-            }
         }
 
         bt("Upcoming")
-    }
-}
-
-@Composable
-private fun IComponent.weekSelector(
-    week: Week,
-    onWeekChange: (Week) -> Unit
-)
-{
-    val weekDifference = Week.current().differenceInWeeks(week)
-    val text = when (weekDifference)
-    {
-        0 -> "This week"
-        1 -> "Next week"
-        -1 -> "Last week"
-        else -> week.toString(dateFormat)
-    }
-
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(16.px)
-    ) {
-        materialIconOutlined("chevron_left") {
-            onClick {
-                onWeekChange(week.relative(-1))
-            }
-        }
-        bt(text)
-        materialIconOutlined("chevron_right") {
-            onClick {
-                onWeekChange(week.relative(1))
-            }
-        }
     }
 }
 

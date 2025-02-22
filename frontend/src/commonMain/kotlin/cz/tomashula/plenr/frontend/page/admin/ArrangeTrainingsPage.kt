@@ -4,41 +4,26 @@ import androidx.compose.runtime.*
 import cz.tomashula.plenr.feature.training.CreateOrUpdateTrainingDto
 import cz.tomashula.plenr.feature.training.TrainingType
 import cz.tomashula.plenr.feature.training.TrainingWithParticipantsDto
-import dev.kilua.core.IComponent
-import dev.kilua.html.*
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.format
-import cz.tomashula.plenr.frontend.MainViewModel
 import cz.tomashula.plenr.feature.user.UserDto
-import cz.tomashula.plenr.frontend.component.bsFormInput
-import cz.tomashula.plenr.frontend.component.bsFormRef
-import cz.tomashula.plenr.frontend.component.bsLabelledFormField
-import cz.tomashula.plenr.frontend.component.bsModalDialog
-import cz.tomashula.plenr.frontend.component.materialIconOutlined
+import cz.tomashula.plenr.frontend.MainViewModel
+import cz.tomashula.plenr.frontend.component.*
 import cz.tomashula.plenr.util.now
 import dev.kilua.compose.foundation.layout.Column
 import dev.kilua.compose.ui.Alignment
+import dev.kilua.core.IComponent
 import dev.kilua.form.Form
 import dev.kilua.form.InputType
 import dev.kilua.form.select.select
 import dev.kilua.form.time.richDateTime
+import dev.kilua.html.*
 import dev.kilua.html.helpers.TagStyleFun.Companion.background
 import dev.kilua.html.helpers.onClickLaunch
-import dev.kilua.panel.hPanel
 import dev.kilua.panel.vPanel
 import dev.kilua.utils.cast
 import dev.kilua.utils.toJsAny
-import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atTime
+import kotlinx.datetime.*
 import kotlinx.datetime.format.Padding
 import kotlinx.datetime.format.char
-import kotlinx.datetime.minus
-import kotlinx.datetime.plus
-import kotlinx.datetime.toInstant
-import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Serializable
 import web.dom.CanvasTextAlign
 import web.dom.CanvasTextBaseline
@@ -115,9 +100,22 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        daySelector(
-            day = selectedDay,
-            onDayChange = { selectedDay = it }
+        val todayDay = remember { LocalDate.now() }
+
+        arrowSelector(
+            selectedItem = selectedDay,
+            onNext = { selectedDay = selectedDay.plus(1, DateTimeUnit.DAY) },
+            onPrevious = { selectedDay = selectedDay.minus(1, DateTimeUnit.DAY) },
+            itemDisplay = {
+                when (selectedDay.minus(todayDay).days)
+                {
+                    -1 -> "Yesterday"
+                    0 -> "Today"
+                    1 -> "Tomorrow"
+                    2 -> "Day After Tomorrow"
+                    else -> selectedDay.dayOfWeek.name.lowercase().replaceFirstChar { it.uppercase() } + " " + selectedDay.format(dateFormat)
+                }
+            }
         )
 
         div {
@@ -357,47 +355,6 @@ fun IComponent.timetableBackground(
             val relativeMinute = (clickEvent.offsetX / spacing * 60).toInt()
             val clickedTime = LocalTime(relativeMinute / 60, relativeMinute % 60)
             onClick(clickedTime)
-        }
-    }
-}
-
-@Composable
-private fun IComponent.daySelector(
-    day: LocalDate,
-    onDayChange: (LocalDate) -> Unit
-)
-{
-    val dayDifference = day.minus(LocalDate.now()).days
-    val text = when (dayDifference)
-    {
-        -1 -> "Yesterday"
-        0 -> "Today"
-        1 -> "Tomorrow"
-        2 -> "Day After Tomorrow"
-        else -> day.dayOfWeek.name.lowercase().replaceFirstChar { it.uppercase() } + " " + day.format(dateFormat)
-    }
-
-    hPanel(
-        alignItems = AlignItems.Center,
-        justifyContent = JustifyContent.SpaceBetween
-    ) {
-        style("user-select", "none")
-        fontSize(1.5.rem)
-        width(370.px)
-        materialIconOutlined("chevron_left") {
-            fontSize(3.rem)
-            cursor(Cursor.Pointer)
-            onClick {
-                onDayChange(day.plus(-1, DateTimeUnit.DAY))
-            }
-        }
-        bt(text)
-        materialIconOutlined("chevron_right") {
-            fontSize(3.rem)
-            cursor(Cursor.Pointer)
-            onClick {
-                onDayChange(day.plus(1, DateTimeUnit.DAY))
-            }
         }
     }
 }
