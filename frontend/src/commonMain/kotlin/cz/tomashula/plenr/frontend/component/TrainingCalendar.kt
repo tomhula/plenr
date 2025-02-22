@@ -17,7 +17,6 @@ import dev.kilua.html.*
 import dev.kilua.html.helpers.TagStyleFun.Companion.background
 import dev.kilua.panel.flexPanel
 import dev.kilua.panel.hPanel
-import dev.kilua.panel.vPanel
 import kotlinx.datetime.*
 import kotlinx.datetime.format.Padding
 import kotlinx.datetime.format.char
