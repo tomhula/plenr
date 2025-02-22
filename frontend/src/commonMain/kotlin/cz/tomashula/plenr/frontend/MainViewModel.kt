@@ -24,6 +24,8 @@ import cz.tomashula.plenr.feature.user.preferences.UserPreferencesDto
 import cz.tomashula.plenr.feature.user.preferences.UserPreferencesService
 import cz.tomashula.plenr.feature.user.preferences.WeeklyTimeRanges
 import cz.tomashula.plenr.feature.user.tempbusytimes.TempBusyTimesService
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.atTime
 import web.localStorage
 import web.window
 
@@ -135,12 +137,15 @@ class MainViewModel
         return trainingService.getAllTrainings(from, to, authToken!!)
     }
 
-    suspend fun getMyTrainings(): List<TrainingWithParticipantsDto>
+    suspend fun getMyTrainings(
+        from: LocalDateTime? = null,
+        to: LocalDateTime? = null
+    ): List<TrainingWithParticipantsDto>
     {
         if (authToken == null)
             return emptyList()
 
-        return trainingService.getTrainingsForUser(user!!.id, null, null, authToken!!)
+        return trainingService.getTrainingsForUser(user!!.id, from, to, authToken!!)
     }
 
     suspend fun getPreferences() = preferencesService.getUserPreferences(user!!.id, authToken!!) ?: UserPreferencesDto(

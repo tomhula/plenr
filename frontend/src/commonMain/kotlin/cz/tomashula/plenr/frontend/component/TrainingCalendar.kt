@@ -1,10 +1,10 @@
 package cz.tomashula.plenr.frontend.component
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import cz.tomashula.plenr.feature.training.TrainingWithParticipantsDto
 import cz.tomashula.plenr.util.Week
 import dev.kilua.compose.foundation.layout.Arrangement
 import dev.kilua.compose.foundation.layout.Column
@@ -13,28 +13,27 @@ import dev.kilua.compose.ui.Alignment
 import dev.kilua.compose.ui.Modifier
 import dev.kilua.compose.ui.fillMaxWidth
 import dev.kilua.core.IComponent
-import dev.kilua.html.AlignItems
-import dev.kilua.html.FlexDirection
-import dev.kilua.html.FlexWrap
-import dev.kilua.html.JustifyContent
-import dev.kilua.html.b
-import dev.kilua.html.bt
-import dev.kilua.html.perc
-import dev.kilua.html.px
-import dev.kilua.html.spant
-import dev.kilua.panel.flexPanel
+import dev.kilua.html.*
+import dev.kilua.html.helpers.TagStyleFun.Companion.background
 import dev.kilua.panel.hPanel
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.format
+import dev.kilua.panel.vPanel
+import kotlinx.datetime.*
 import kotlinx.datetime.format.Padding
 import kotlinx.datetime.format.char
 
 @Composable
 fun IComponent.trainingCalendar(
     selectedWeek: Week,
-    onWeekChange: (Week) -> Unit = {}
+    onWeekChange: (Week) -> Unit = {},
+    trainings: Set<TrainingWithParticipantsDto>,
+    onTrainingClick: (TrainingWithParticipantsDto) -> Unit = {}
 )
 {
+    val trainingsByDate by derivedStateOf { trainings.groupBy { it.startDateTime.date } }
+    val upcomingTrainingDaysOrdered by derivedStateOf {
+        trainingsByDate.keys.filter { it >= selectedWeek.dateTimeRange.endInclusive.date }.sortedBy { it }
+    }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(20.px),
@@ -66,25 +65,99 @@ fun IComponent.trainingCalendar(
             width(100.perc)
 
             for (day in selectedWeek.days)
-                trainingCalendarDay(day)
+                trainingCalendarDay(
+                    date = day,
+                    trainings = trainingsByDate[day]?.toSet() ?: emptySet(),
+                    onTrainingClick = onTrainingClick
+                )
         }
 
-        bt("Upcoming")
+        bt("Upcoming") {
+            fontSize(1.5.rem)
+            fontWeight(FontWeight.Bolder)
+        }
+
+        vPanel (
+            alignItems = AlignItems.Center,
+            gap = 16.px,
+            justifyContent = JustifyContent.SpaceEvenly,
+            flexWrap = FlexWrap.Wrap
+        ) {
+            width(100.perc)
+
+            for (upcomingDay in upcomingTrainingDaysOrdered)
+                trainingCalendarDay(
+                    date = upcomingDay,
+                    trainings = trainingsByDate[upcomingDay]?.toSet() ?: emptySet(),
+                    onTrainingClick = onTrainingClick
+                )
+        }
     }
 }
 
 @Composable
 private fun IComponent.trainingCalendarDay(
-    date: LocalDate
+    date: LocalDate,
+    trainings: Set<TrainingWithParticipantsDto>,
+    onTrainingClick: (TrainingWithParticipantsDto) -> Unit
 )
 {
+    val trainingsOrdered by derivedStateOf { trainings.sortedBy { it.startDateTime} }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         spant(date.dayOfWeek.name.lowercase().replaceFirstChar { it.uppercase() }) {
             style("font-weight", "bold")
         }
-        spant(date.format(dateFormat))
+        spant(date.format(dateFormat))  {
+            marginBottom(10.px)
+        }
+        for (training in trainingsOrdered)
+            training(
+                training = training,
+                onClick = { onTrainingClick(training) }
+            )
+    }
+}
+
+@Composable
+private fun IComponent.training(
+    training: TrainingWithParticipantsDto,
+    onClick: () -> Unit
+)
+{
+    div {
+        onClick { onClick() }
+        background(Color.Bisque)
+        padding(5.px)
+        fontSize(0.8.rem)
+        borderRadius(5.px)
+        cursor(Cursor.Pointer)
+        style("pointer-events", "auto")
+
+        Column {
+            spant(training.name) {
+                fontWeight(FontWeight.Bold)
+            }
+            spant(training.type.name.lowercase().replaceFirstChar { it.uppercase() })
+
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                spant(training.startDateTime.time.format(timeFormat)) {
+                    fontSize(0.7.rem)
+                }
+                val timeZone = TimeZone.currentSystemDefault()
+                val endTimeStr = training.startDateTime.toInstant(timeZone).plus(training.lengthMinutes, DateTimeUnit.MINUTE).toLocalDateTime(
+                    timeZone
+                ).time.format(timeFormat)
+                spant(endTimeStr) {
+                    fontSize(0.7.rem)
+                }
+            }
+        }
     }
 }
 
@@ -93,4 +166,10 @@ private val dateFormat = LocalDate.Format {
     char('.')
     monthNumber()
     char('.')
+}
+
+private val timeFormat = LocalTime.Format {
+    hour(padding = Padding.ZERO)
+    char(':')
+    minute(padding = Padding.ZERO)
 }
