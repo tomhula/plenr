@@ -159,7 +159,7 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
         if (newOrModifiedTrainings.isNotEmpty())
             bsButton(label = "Save") {
                 onClickLaunch {
-                    val createOrUpdateDtos = newOrModifiedTrainings.map { it.training.toCreateTrainingDto(mainViewModel.user!!) }.toSet()
+                    val createOrUpdateDtos = newOrModifiedTrainings.map { it.training.toCreateTrainingDto() }.toSet()
                     mainViewModel.arrangeTrainings(createOrUpdateDtos)
                     for (day in trainings.keys)
                         trainings[day] = trainings[day]!!.map { it.copy(edited = false, created = false) }
@@ -399,7 +399,7 @@ private fun TrainingWithParticipantsDto.toTrainingForm() = TrainingForm(
     participants = participants.toSet()
 )
 
-private fun TrainingWithParticipantsDto.toCreateTrainingDto(arranger: UserDto) = CreateOrUpdateTrainingDto(
+private fun TrainingWithParticipantsDto.toCreateTrainingDto() = CreateOrUpdateTrainingDto(
     id = if (id == -1) null else id,
     name = name,
     description = description,
