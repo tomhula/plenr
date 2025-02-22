@@ -10,7 +10,6 @@ import cz.tomashula.plenr.frontend.MainViewModel
 import cz.tomashula.plenr.frontend.Route
 import cz.tomashula.plenr.frontend.component.bsForm
 import dev.kilua.core.IComponent
-import dev.kilua.externals.TempusDominusLocale
 import dev.kilua.form.time.richTime
 import dev.kilua.html.*
 import dev.kilua.html.style.style
