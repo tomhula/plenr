@@ -15,6 +15,7 @@ import dev.kilua.compose.ui.fillMaxWidth
 import dev.kilua.core.IComponent
 import dev.kilua.html.*
 import dev.kilua.html.helpers.TagStyleFun.Companion.background
+import dev.kilua.panel.flexPanel
 import dev.kilua.panel.hPanel
 import dev.kilua.panel.vPanel
 import kotlinx.datetime.*
@@ -77,9 +78,11 @@ fun IComponent.trainingCalendar(
             fontWeight(FontWeight.Bolder)
         }
 
-        vPanel (
-            alignItems = AlignItems.Center,
-            gap = 16.px,
+        flexPanel(
+            alignItems = AlignItems.Start,
+            rowGap = 16.px,
+            flexDirection = FlexDirection.Row,
+            columnGap = 16.px,
             justifyContent = JustifyContent.SpaceEvenly,
             flexWrap = FlexWrap.Wrap
         ) {
