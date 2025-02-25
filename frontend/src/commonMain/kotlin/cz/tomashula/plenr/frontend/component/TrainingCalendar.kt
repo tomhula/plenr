@@ -17,6 +17,7 @@ import dev.kilua.html.*
 import dev.kilua.html.helpers.TagStyleFun.Companion.background
 import dev.kilua.panel.flexPanel
 import dev.kilua.panel.hPanel
+import dev.kilua.panel.vPanel
 import kotlinx.datetime.*
 import kotlinx.datetime.format.Padding
 import kotlinx.datetime.format.char
@@ -106,14 +107,22 @@ private fun IComponent.trainingCalendarDay(
 {
     val trainingsOrdered by derivedStateOf { trainings.sortedBy { it.startDateTime} }
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+    vPanel(
+        justifyContent = JustifyContent.Center,
+        gap = 2.px
     ) {
+        flexGrow(1)
+        maxWidth(200.px)
+
         spant(date.dayOfWeek.name.lowercase().replaceFirstChar { it.uppercase() }) {
             style("font-weight", "bold")
+            alignSelf(AlignItems.Center)
         }
         spant(date.format(dateFormat))  {
+            alignSelf(AlignItems.Center)
             marginBottom(10.px)
+            marginTop((-5).px)
+            fontSize(0.9.rem)
         }
         for (training in trainingsOrdered)
             training(
@@ -164,9 +173,9 @@ private fun IComponent.training(
 }
 
 private val dateFormat = LocalDate.Format {
-    dayOfMonth()
+    dayOfMonth(padding = Padding.NONE)
     char('.')
-    monthNumber()
+    monthNumber(padding = Padding.NONE)
     char('.')
 }
 

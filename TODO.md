@@ -22,7 +22,3 @@
 ## Admin home page
 - Center buttons
 - Color based on training type
-
-## Training calendar
-- Spacing between trainings in a single day
-- Make trainings fixed width (or grow + max-width)
