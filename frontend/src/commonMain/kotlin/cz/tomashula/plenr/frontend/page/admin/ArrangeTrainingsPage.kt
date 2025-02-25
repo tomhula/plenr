@@ -6,6 +6,7 @@ import cz.tomashula.plenr.feature.training.TrainingType
 import cz.tomashula.plenr.feature.training.TrainingWithParticipantsDto
 import cz.tomashula.plenr.feature.user.UserDto
 import cz.tomashula.plenr.feature.user.preferences.WeeklyTimeRanges
+import cz.tomashula.plenr.frontend.Colors
 import cz.tomashula.plenr.frontend.MainViewModel
 import cz.tomashula.plenr.frontend.component.*
 import cz.tomashula.plenr.util.LocalTimeRange
@@ -370,7 +371,7 @@ private fun IComponent.training(
         cursor(Cursor.Pointer)
         style("pointer-events", "auto")
         onClick { onEdit(training) }
-        background(Color.Bisque)
+        background(Color(if (training.type == TrainingType.DRESSAGE) Colors.DRESSAGE_TRAINING_BACKGROUND else Colors.PARKOUR_TRAINING_BACKGROUND))
         if (trainingView.edited || trainingView.created)
             border(Border(2.px, BorderStyle.Dashed, Color.Black))
 

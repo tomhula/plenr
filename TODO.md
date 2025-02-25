@@ -23,4 +23,3 @@
 
 ## Admin home page
 - Center buttons
-- Color based on training type

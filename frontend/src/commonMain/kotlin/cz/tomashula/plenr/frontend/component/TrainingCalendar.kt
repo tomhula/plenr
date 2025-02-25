@@ -4,7 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import cz.tomashula.plenr.feature.training.TrainingType
 import cz.tomashula.plenr.feature.training.TrainingWithParticipantsDto
+import cz.tomashula.plenr.frontend.Colors
 import cz.tomashula.plenr.util.Week
 import dev.kilua.compose.foundation.layout.Arrangement
 import dev.kilua.compose.foundation.layout.Column
@@ -140,7 +142,7 @@ private fun IComponent.training(
 {
     div {
         onClick { onClick() }
-        background(Color.Bisque)
+        background(Color(if (training.type == TrainingType.DRESSAGE) Colors.DRESSAGE_TRAINING_BACKGROUND else Colors.PARKOUR_TRAINING_BACKGROUND))
         padding(5.px)
         fontSize(0.8.rem)
         borderRadius(5.px)
