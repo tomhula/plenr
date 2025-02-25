@@ -50,6 +50,7 @@ kotlin {
             implementation(libs.kilua.toastify)
             implementation(libs.kilua.tempus.dominus)
             implementation(libs.kilua.rsup.progress)
+            implementation(libs.kilua.fontawesome)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
 

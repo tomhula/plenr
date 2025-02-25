@@ -29,6 +29,7 @@ kilua-bootstrap = { module = "dev.kilua:kilua-bootstrap", version.ref = "kilua" 
 kilua-toastify = { module = "dev.kilua:kilua-toastify", version.ref = "kilua" }
 kilua-tempus-dominus = { module = "dev.kilua:kilua-tempus-dominus", version.ref = "kilua" }
 kilua-rsup-progress = { module = "dev.kilua:kilua-rsup-progress", version.ref = "kilua" }
+kilua-fontawesome = { module = "dev.kilua:kilua-fontawesome", version.ref = "kilua" }
 # Logging
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 # CLI
