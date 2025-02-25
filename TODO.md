@@ -10,6 +10,8 @@
 - Share as much code as possible between client and server (Constants like URLs, paths, maximum length of fields, etc.)
 - Fix database tables create only after accessing the api
 - Fix "Create" button on admin creation page
+- Fix error when mail server cannot be reached. (currently it crashes the frontend, which is bad. Ideally it should either abort the save, notify about the fact or retry later)
+- Maybe consider usage of some kind of global styles? So each instance of a component does not repeat the inlined styles, but just has a class.
 
 ## Arrange Trainings
 - Quick user availability hover (no delay before appearance)
