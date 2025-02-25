@@ -115,7 +115,7 @@ private fun IComponent.trainingCalendarDay(
         maxWidth(200.px)
 
         spant(date.dayOfWeek.name.lowercase().replaceFirstChar { it.uppercase() }) {
-            style("font-weight", "bold")
+            fontWeight(FontWeight.Bold)
             alignSelf(AlignItems.Center)
         }
         spant(date.format(dateFormat))  {
