@@ -19,6 +19,15 @@ class WeeklyTimeRanges private constructor(private val weeklyTimeRanges: Map<Day
 
     fun builder() = Builder(weeklyTimeRanges)
 
+    fun inverted() = builder().apply {
+        for (day in DayOfWeek.entries)
+            addTimeRange(day, LocalTime(0, 0)..LocalTime(23, 59))
+
+        for ((day, ranges) in weeklyTimeRanges)
+            for (range in ranges)
+                removeTimeRange(day, range)
+    }.build()
+
     companion object
     {
         fun builder(weeklyTimeRanges: Map<DayOfWeek, List<LocalTimeRange>>) = Builder(weeklyTimeRanges)

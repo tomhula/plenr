@@ -5,8 +5,10 @@ import cz.tomashula.plenr.feature.training.CreateOrUpdateTrainingDto
 import cz.tomashula.plenr.feature.training.TrainingType
 import cz.tomashula.plenr.feature.training.TrainingWithParticipantsDto
 import cz.tomashula.plenr.feature.user.UserDto
+import cz.tomashula.plenr.feature.user.preferences.WeeklyTimeRanges
 import cz.tomashula.plenr.frontend.MainViewModel
 import cz.tomashula.plenr.frontend.component.*
+import cz.tomashula.plenr.util.LocalTimeRange
 import cz.tomashula.plenr.util.now
 import dev.kilua.compose.foundation.layout.Column
 import dev.kilua.compose.ui.Alignment
@@ -21,6 +23,7 @@ import dev.kilua.html.helpers.onClickLaunch
 import dev.kilua.panel.vPanel
 import dev.kilua.utils.cast
 import dev.kilua.utils.toJsAny
+import kotlinx.coroutines.launch
 import kotlinx.datetime.*
 import kotlinx.datetime.format.Padding
 import kotlinx.datetime.format.char
@@ -43,7 +46,7 @@ private fun newTraining(
     dateTime: LocalDateTime,
     arranger: UserDto
 ) = TrainingWithParticipantsDto(
-    id =  -1,
+    id = -1,
     arranger = arranger,
     name = "",
     description = "",
@@ -62,6 +65,10 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
     var currentDialogTraining by remember { mutableStateOf<TrainingWithParticipantsDto?>(null) }
     /* Whether the current dialog is editing a training or creating a new one */
     var currentDialogTrainingEdit by remember { mutableStateOf(false) }
+    val permanentBusyTimes = remember { mutableStateMapOf<UserDto, WeeklyTimeRanges>() }
+    val permanentAvailableTimes by derivedStateOf {
+        permanentBusyTimes.mapValues { it.value.inverted() }
+    }
 
     val newOrModifiedTrainings by derivedStateOf {
         trainings.values.flatten().filter { it.edited || it.created }
@@ -69,6 +76,10 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
 
     LaunchedEffect(Unit) {
         users = mainViewModel.getAllUsers()
+        for (user in users)
+            launch {
+                permanentBusyTimes[user] = mainViewModel.getPermanentBusyTimesAdmin(user.id)
+            }
     }
 
     LaunchedEffect(selectedDay) {
@@ -89,7 +100,10 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
             val originalDate = originalTraining.startDateTime.date
             val saveDate = saveTraining.startDateTime.date
             trainings[originalDate] = trainings[originalDate]!!.filterNot { it.training.id == originalTraining.id }
-            trainings[saveDate] = trainings[saveDate]!! + saveTraining.toTrainingView(created = !currentDialogTrainingEdit, edited = currentDialogTrainingEdit)
+            trainings[saveDate] = trainings[saveDate]!! + saveTraining.toTrainingView(
+                created = !currentDialogTrainingEdit,
+                edited = currentDialogTrainingEdit
+            )
 
             println(saveTraining)
             currentDialogTraining = null
@@ -148,6 +162,9 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
                 width(timetableWidth.px)
                 style("pointer-events", "none")
 
+                for ((user, availableTimeRanges) in permanentAvailableTimes)
+                    userAvailability(user, availableTimeRanges.getRangesForDay(selectedDay.dayOfWeek))
+
                 for (training in trainings[selectedDay] ?: emptyList())
                     training(
                         trainingView = training,
@@ -165,6 +182,60 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
                         trainings[day] = trainings[day]!!.map { it.copy(edited = false, created = false) }
                 }
             }
+    }
+}
+
+@Composable
+private fun IComponent.userAvailability(
+    user: UserDto,
+    availableTimeRanges: List<LocalTimeRange>
+)
+{
+    div {
+        width(100.perc)
+        marginTop(1.px)
+        top(0.px)
+        height(10.px)
+        position(Position.Relative)
+        style("pointer-events", "auto")
+        title(user.fullName)
+
+        for ((i, range) in availableTimeRanges.withIndex())
+            userAvailabilityPart(range, Color.Green, if (i == 0) user.fullName else null)
+    }
+}
+
+@Composable
+private fun IComponent.userAvailabilityPart(
+    range: LocalTimeRange,
+    color: Color,
+    text: String? = null
+)
+{
+    val totalMinutes = 24 * 60f
+    val startMinute = range.start.hour * 60 + range.start.minute
+    val endMinute = range.endInclusive.hour * 60 + range.endInclusive.minute
+    val durationMinutes = endMinute - startMinute
+
+
+    div {
+        height(100.perc)
+        top(0.px)
+        background(color)
+        position(Position.Absolute)
+        left((startMinute / totalMinutes * 100).perc)
+        width((durationMinutes / totalMinutes * 100).perc)
+
+        if (text != null)
+        {
+            display(Display.Flex)
+            alignItems(AlignItems.Center)
+            justifyContent(JustifyContent.Start)
+            spant(text) {
+                fontSize(0.6.rem)
+                color(Color.White)
+            }
+        }
     }
 }
 
@@ -197,7 +268,13 @@ private fun IComponent.trainingDialog(
             }
             bsButton("Save", style = ButtonStyle.BtnPrimary) {
                 onClick {
-                    form?.let { onSave(it.getData().toTrainingWithParticipantsDto(training.arranger).copy(id = training.id)) }
+                    form?.let {
+                        onSave(
+                            it.getData()
+                                .toTrainingWithParticipantsDto(training.arranger)
+                                .copy(id = training.id)
+                        )
+                    }
                 }
             }
         }
@@ -212,9 +289,7 @@ private fun IComponent.trainingDialog(
             }
 
             LaunchedEffect(participants) {
-                println("Data before: ${getData()}")
                 setData(getData().copy(participants = participants.toSet()))
-                println("Data after: ${getData()}")
             }
 
             bsLabelledFormField("Name") {
@@ -275,7 +350,7 @@ private val localDateTimeFormat = LocalDateTime.Format {
 }
 
 @Composable
-private fun IDiv.training(
+private fun IComponent.training(
     trainingView: TrainingView,
     onEdit: (TrainingWithParticipantsDto) -> Unit = {},
 )
@@ -301,9 +376,10 @@ private fun IDiv.training(
 
         val timeZone = TimeZone.currentSystemDefault()
         val startTimeStr = training.startDateTime.format(localDateTimeFormat)
-        val endTimeStr = training.startDateTime.toInstant(timeZone).plus(durationMinutes, DateTimeUnit.MINUTE).toLocalDateTime(
-            timeZone
-        ).format(localDateTimeFormat)
+        val endTimeStr =
+            training.startDateTime.toInstant(timeZone).plus(durationMinutes, DateTimeUnit.MINUTE).toLocalDateTime(
+                timeZone
+            ).format(localDateTimeFormat)
 
         title("$startTimeStr - $endTimeStr")
 

@@ -3,6 +3,16 @@ package cz.tomashula.plenr.frontend
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import cz.tomashula.plenr.feature.training.CreateOrUpdateTrainingDto
+import cz.tomashula.plenr.feature.training.TrainingService
+import cz.tomashula.plenr.feature.training.TrainingWithParticipantsDto
+import cz.tomashula.plenr.feature.user.UserDto
+import cz.tomashula.plenr.feature.user.UserService
+import cz.tomashula.plenr.feature.user.preferences.PermanentBusyTimesDto
+import cz.tomashula.plenr.feature.user.preferences.UserPreferencesDto
+import cz.tomashula.plenr.feature.user.preferences.UserPreferencesService
+import cz.tomashula.plenr.feature.user.preferences.WeeklyTimeRanges
+import cz.tomashula.plenr.feature.user.tempbusytimes.TempBusyTimesService
 import io.ktor.client.*
 import io.ktor.client.engine.js.*
 import io.ktor.http.*
@@ -14,18 +24,6 @@ import kotlinx.rpc.krpc.ktor.client.rpcConfig
 import kotlinx.rpc.krpc.serialization.json.json
 import kotlinx.rpc.withService
 import kotlinx.serialization.json.Json
-import cz.tomashula.plenr.feature.training.CreateOrUpdateTrainingDto
-import cz.tomashula.plenr.feature.training.TrainingService
-import cz.tomashula.plenr.feature.training.TrainingWithParticipantsDto
-import cz.tomashula.plenr.feature.user.UserDto
-import cz.tomashula.plenr.feature.user.UserService
-import cz.tomashula.plenr.feature.user.preferences.PermanentBusyTimesDto
-import cz.tomashula.plenr.feature.user.preferences.UserPreferencesDto
-import cz.tomashula.plenr.feature.user.preferences.UserPreferencesService
-import cz.tomashula.plenr.feature.user.preferences.WeeklyTimeRanges
-import cz.tomashula.plenr.feature.user.tempbusytimes.TempBusyTimesService
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.atTime
 import web.localStorage
 import web.window
 
@@ -158,6 +156,8 @@ class MainViewModel
     suspend fun setPreferences(preferences: UserPreferencesDto) = preferencesService.setUserPreferences(user!!.id, preferences, authToken!!)
 
     suspend fun getPermanentBusyTimes() = preferencesService.getPermanentBusyTimes(user!!.id, authToken!!).busyTimes
+
+    suspend fun getPermanentBusyTimesAdmin(userId: Int) = preferencesService.getPermanentBusyTimes(userId, authToken!!).busyTimes
 
     suspend fun setPermanentBusyTimes(busyTimes: WeeklyTimeRanges) = preferencesService.setPermanentBusyTimes(
         PermanentBusyTimesDto(user!!.id, busyTimes),
