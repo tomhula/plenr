@@ -100,7 +100,8 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
             val originalTraining = currentDialogTraining!!
             val originalDate = originalTraining.startDateTime.date
             val saveDate = saveTraining.startDateTime.date
-            trainings[originalDate] = trainings[originalDate]!!.filterNot { it.training.id == originalTraining.id }
+            if (currentDialogTrainingEdit)
+                trainings[originalDate] = trainings[originalDate]!!.filterNot { it.training.id == originalTraining.id }
             trainings[saveDate] = trainings[saveDate]!! + saveTraining.toTrainingView(
                 created = !currentDialogTrainingEdit,
                 edited = currentDialogTrainingEdit
