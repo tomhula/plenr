@@ -140,7 +140,7 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
             overflowX(Overflow.Auto)
             alignSelf(AlignItems.Stretch)
 
-            val timetableHeight = 300
+            val timetableHeight = 500
             val timetableWidth = 3000
 
             timetableBackground(

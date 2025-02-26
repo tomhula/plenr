@@ -19,7 +19,3 @@
 - Each user has unique color?
 - Space out user availability and make it wider
 - Users names next to user availabilities
-- Make timetable fill rest of the page or at least make it bigger
-
-## Admin home page
-- Center buttons
