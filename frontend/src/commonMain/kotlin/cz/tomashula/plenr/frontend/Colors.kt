@@ -4,8 +4,8 @@ import dev.kilua.html.Color
 
 object Colors
 {
-    const val DRESSAGE_TRAINING_BACKGROUND = "#c1d3ff"
-    const val PARKOUR_TRAINING_BACKGROUND = "#fbb78e"
+    val DRESSAGE_TRAINING_BACKGROUND = Color.hex(0xC1D3FF)
+    val PARKOUR_TRAINING_BACKGROUND = Color.hex(0xFBB78E)
     val PEOPLE_COLORS = listOf(
         Color.hex(0x1E90FF),
         Color.hex(0xFF4500),

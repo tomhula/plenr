@@ -372,7 +372,7 @@ private fun IComponent.training(
         cursor(Cursor.Pointer)
         style("pointer-events", "auto")
         onClick { onEdit(training) }
-        background(Color(if (training.type == TrainingType.DRESSAGE) Colors.DRESSAGE_TRAINING_BACKGROUND else Colors.PARKOUR_TRAINING_BACKGROUND))
+        background(if (training.type == TrainingType.DRESSAGE) Colors.DRESSAGE_TRAINING_BACKGROUND else Colors.PARKOUR_TRAINING_BACKGROUND)
         if (trainingView.edited || trainingView.created)
             border(Border(2.px, BorderStyle.Dashed, Color.Black))
 

@@ -142,7 +142,7 @@ private fun IComponent.training(
 {
     div {
         onClick { onClick() }
-        background(Color(if (training.type == TrainingType.DRESSAGE) Colors.DRESSAGE_TRAINING_BACKGROUND else Colors.PARKOUR_TRAINING_BACKGROUND))
+        background(if (training.type == TrainingType.DRESSAGE) Colors.DRESSAGE_TRAINING_BACKGROUND else Colors.PARKOUR_TRAINING_BACKGROUND)
         padding(5.px)
         fontSize(0.8.rem)
         borderRadius(5.px)
