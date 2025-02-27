@@ -197,13 +197,13 @@ private fun IComponent.userAvailability(
         width(100.perc)
         marginTop(1.px)
         top(0.px)
-        height(10.px)
+        height(15.px)
         position(Position.Relative)
         style("pointer-events", "auto")
         title(user.fullName)
 
         for ((i, range) in availableTimeRanges.withIndex())
-            userAvailabilityPart(range, Color.Green, if (i == 0) user.fullName else null)
+            userAvailabilityPart(range, Colors.getColorForPerson(user.fullName), if (i == 0) user.fullName else null)
     }
 }
 
