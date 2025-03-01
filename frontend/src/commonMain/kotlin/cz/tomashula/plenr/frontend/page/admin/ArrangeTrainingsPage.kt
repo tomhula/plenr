@@ -196,7 +196,6 @@ private fun IComponent.userAvailability(
     div {
         width(100.perc)
         marginTop(1.px)
-        top(0.px)
         height(15.px)
         position(Position.Relative)
         style("pointer-events", "auto")
