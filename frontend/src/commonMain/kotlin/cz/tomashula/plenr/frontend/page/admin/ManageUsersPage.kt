@@ -44,8 +44,7 @@ fun IComponent.manageUsersPage(viewModel: MainViewModel)
                 manageUserCard(
                     user = user,
                     onEditClick = { window.alert("TODO: Edit clicked") },
-                    onDeleteClick = { window.alert("TODO: Delete clicked") },
-                    onPasswordResetClick = { window.alert("TODO: Password Reset clicked") }
+                    onDeleteClick = { window.alert("TODO: Delete clicked") }
                 )
             }
         }
@@ -60,8 +59,7 @@ fun IComponent.manageUsersPage(viewModel: MainViewModel)
 fun IComponent.manageUserCard(
     user: UserDto,
     onEditClick: () -> Unit,
-    onDeleteClick: () -> Unit,
-    onPasswordResetClick: () -> Unit
+    onDeleteClick: () -> Unit
 )
 {
     div("card") {
@@ -73,7 +71,6 @@ fun IComponent.manageUserCard(
                 +user.fullName
 
                 div {
-                    outlinedMaterialIconButton("lock_reset", onClick = onPasswordResetClick)
                     outlinedMaterialIconButton("edit", onClick = onEditClick)
                     outlinedMaterialIconButton("delete", onClick = onDeleteClick, color = Color("#ce4949"))
                 }
