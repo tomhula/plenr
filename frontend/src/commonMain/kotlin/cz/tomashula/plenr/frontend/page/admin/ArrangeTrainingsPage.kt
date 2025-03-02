@@ -390,6 +390,7 @@ private fun IComponent.training(
         position(Position.Absolute)
         left((startMinute / totalMinutes * 100).perc)
         width((durationMinutes / totalMinutes * 100).perc)
+        marginTop(30.px)
         padding(5.px)
         fontSize(0.8.rem)
         borderRadius(5.px)
