@@ -134,7 +134,7 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
             }
         )
 
-        val userAvailabilityHeight = 10.px
+        val userAvailabilityHeightPx = 10
         val userAvailabilitySpacing = 1.px
 
         div {
@@ -149,7 +149,7 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
                 {
                     div {
                         color(Colors.getColorForPerson(user.fullName))
-                        height(userAvailabilityHeight)
+                        height(userAvailabilityHeightPx.px)
                         marginTop(userAvailabilitySpacing)
                         fontSize(0.5.rem)
                         +user.fullName
@@ -189,7 +189,7 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
                     for ((user, availableTimeRanges) in permanentAvailableTimes)
                         userAvailability(
                             user = user,
-                            height = userAvailabilityHeight,
+                            heightPx = userAvailabilityHeightPx,
                             marginTop = userAvailabilitySpacing,
                             availableTimeRanges = availableTimeRanges.getRangesForDay(selectedDay.dayOfWeek)
                         )
@@ -219,7 +219,7 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
 @Composable
 private fun IComponent.userAvailability(
     user: UserDto,
-    height: CssSize,
+    heightPx: Int,
     marginTop: CssSize,
     availableTimeRanges: List<LocalTimeRange>
 )
@@ -227,19 +227,24 @@ private fun IComponent.userAvailability(
     div {
         width(100.perc)
         marginTop(marginTop)
-        height(height)
+        height(heightPx.px)
         position(Position.Relative)
         style("pointer-events", "auto")
         title(user.fullName)
 
         for (range in availableTimeRanges)
-            userAvailabilityPart(range, Colors.getColorForPerson(user.fullName))
+            userAvailabilityPart(
+                range = range,
+                borderRadius = (heightPx/2).px,
+                color = Colors.getColorForPerson(user.fullName)
+            )
     }
 }
 
 @Composable
 private fun IComponent.userAvailabilityPart(
     range: LocalTimeRange,
+    borderRadius: CssSize,
     color: Color
 )
 {
@@ -253,6 +258,7 @@ private fun IComponent.userAvailabilityPart(
         height(100.perc)
         top(0.px)
         background(color)
+        borderRadius(borderRadius)
         position(Position.Absolute)
         left((startMinute / totalMinutes * 100).perc)
         width((durationMinutes / totalMinutes * 100).perc)
