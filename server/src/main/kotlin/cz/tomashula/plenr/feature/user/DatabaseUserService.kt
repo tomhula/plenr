@@ -9,8 +9,12 @@ import cz.tomashula.plenr.security.PasswordHasher
 import cz.tomashula.plenr.security.PasswordValidator
 import cz.tomashula.plenr.security.TokenGenerator
 import cz.tomashula.plenr.service.DatabaseService
+import cz.tomashula.plenr.util.now
+import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.LocalDateTime
 import org.jetbrains.exposed.sql.*
 import kotlin.coroutines.CoroutineContext
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class DatabaseUserService(
     override val coroutineContext: CoroutineContext,
@@ -21,7 +25,7 @@ class DatabaseUserService(
     private val tokenGenerator: TokenGenerator,
     private val mailService: MailService,
     private val authService: AuthService
-) : UserService, DatabaseService(database, UserTable, UserActivationTable)
+) : UserService, DatabaseService(database, UserTable, UserSetPassword)
 {
     private val serverUrl = serverUrl.removeSuffix("/")
 
@@ -44,9 +48,7 @@ class DatabaseUserService(
                 throw UnauthorizedException("Only admins can create new users")
         }
 
-        val activationToken = tokenGenerator.generate(32)
-
-        val userId = dbQuery {
+        val (userId, passwordToken) = dbQuery {
             val userId = UserTable.insertAndGetId {
                 it[firstName] = newUser.firstName
                 it[lastName] = newUser.lastName
@@ -56,25 +58,39 @@ class DatabaseUserService(
                 it[isAdmin] = newUser.isAdmin
             }.value
 
-            UserActivationTable.insert {
-                it[UserActivationTable.userId] = userId
-                it[UserActivationTable.token] = activationToken
+            val passwordToken = runBlocking {
+                setUserPasswordRequest(userId, reset = false)
             }
 
-            userId
+            userId to passwordToken
         }
 
-
-        val activationTokenB64 = activationToken.encodeBase64()
-        val activationTokenB64UrlEncoded = activationTokenB64.encodeURLPathPart()
+        val passwordTokenB64 = passwordToken.encodeBase64()
+        val passwordTokenB64UrlEncoded = passwordTokenB64.encodeURLPathPart()
 
         mailService.sendMail(
             recipient = newUser.email,
             subject = "Welcome to Plenr",
-            body = "Welcome to Plenr! Set your password here: $serverUrl/set-password/${activationTokenB64UrlEncoded}"
+            body = "Welcome to Plenr! Set your password here: $serverUrl/set-password/${passwordTokenB64UrlEncoded}"
         )
 
         return userId
+    }
+
+    private suspend fun setUserPasswordRequest(userId: Int, reset: Boolean): ByteArray
+    {
+        val activationToken = tokenGenerator.generate(32)
+
+        dbQuery {
+            UserSetPassword.insert {
+                it[UserSetPassword.userId] = userId
+                it[UserSetPassword.token] = activationToken
+                it[UserSetPassword.reset] = reset
+                it[UserSetPassword.issuedAt] = LocalDateTime.now()
+            }
+        }
+
+        return activationToken
     }
 
     override suspend fun getUser(id: Int, authToken: String): UserDto?
@@ -103,6 +119,35 @@ class DatabaseUserService(
         } != null
     }
 
+    override suspend fun requestPasswordReset(email: String)
+    {
+        val passwordResetToken = dbQuery {
+            val userId = UserTable
+                .select(UserTable.id)
+                .where { UserTable.email eq email }
+                .limit(1)
+                .singleOrNull()
+                ?.get(UserTable.id)
+                ?.value ?: return@dbQuery null
+
+            runBlocking {
+                setUserPasswordRequest(userId, true)
+            }
+        }
+
+        if (passwordResetToken != null)
+        {
+            val passwordResetTokenB64 = passwordResetToken.encodeBase64()
+            val passwordResetTokenB64UrlEncoded = passwordResetTokenB64.encodeURLPathPart()
+
+            mailService.sendMail(
+                recipient = email,
+                subject = "Plenr password reset request",
+                body = "To reset your password, click here: $serverUrl/set-password/${passwordResetTokenB64UrlEncoded}"
+            )
+        }
+    }
+
     override suspend fun setPassword(token: ByteArray, password: String)
     {
         check(token.size == 32) { "Invalid token size" }
@@ -110,9 +155,10 @@ class DatabaseUserService(
 
         val passwordHash = passwordHasher.hash(password)
         dbQuery {
-            UserTable.join(UserActivationTable, JoinType.INNER).update({ UserActivationTable.token eq token }) {
+            UserTable.join(UserSetPassword, JoinType.INNER).update({ UserSetPassword.token eq token }) {
                 it[UserTable.passwordHash] = passwordHash
             }
+            UserSetPassword.deleteWhere { UserSetPassword.token eq token }
         }
     }
 

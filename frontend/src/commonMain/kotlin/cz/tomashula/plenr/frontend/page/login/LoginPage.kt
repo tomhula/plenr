@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import cz.tomashula.plenr.frontend.MainViewModel
 import cz.tomashula.plenr.frontend.Route
 import cz.tomashula.plenr.frontend.component.*
+import dev.kilua.html.helpers.onClickLaunch
 import dev.kilua.panel.flexPanel
 import kotlinx.serialization.Serializable
 
@@ -40,6 +41,14 @@ fun IComponent.loginPage(mainViewModel: MainViewModel)
             div("mt-2") {
                 bsLabelledFormField("Password") {
                     bsFormInput(it, LoginForm::password, type = InputType.Password)
+                }
+            }
+
+            // TODO: Improve look and make a forgot password request page
+            bsButton("Forgot password?", style = ButtonStyle.BtnLink, className = "mt-3") {
+                display(Display.Block)
+                onClickLaunch {
+                    mainViewModel.requestPasswordReset(getData().email!!)
                 }
             }
 

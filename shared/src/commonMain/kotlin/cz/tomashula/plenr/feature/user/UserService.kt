@@ -24,6 +24,10 @@ interface UserService : RemoteService
     /** Allows anyone to check if an admin account exists. */
     suspend fun adminExists(): Boolean
 
+    /** Allows anyone (even unauthenticated users) to request a password reset. */
+    suspend fun requestPasswordReset(email: String)
+
+    /** Sets a password based on a [password reset token][token]. */
     suspend fun setPassword(token: ByteArray, password: String)
 
     /** Checks [username] and [password] and returns the authenticated [user][UserDto] with auth token. */

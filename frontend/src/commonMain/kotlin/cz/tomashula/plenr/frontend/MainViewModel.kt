@@ -153,6 +153,8 @@ class MainViewModel
         false, false,
     )
 
+    suspend fun requestPasswordReset(email: String) = userService.requestPasswordReset(email)
+
     suspend fun setPreferences(preferences: UserPreferencesDto) = preferencesService.setUserPreferences(user!!.id, preferences, authToken!!)
 
     suspend fun getPermanentBusyTimes() = preferencesService.getPermanentBusyTimes(user!!.id, authToken!!).busyTimes
