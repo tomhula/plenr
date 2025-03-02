@@ -134,46 +134,75 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
             }
         )
 
+        val userAvailabilityHeight = 10.px
+        val userAvailabilitySpacing = 1.px
+
         div {
-            marginTop(20.px)
             position(Position.Relative)
-            overflowX(Overflow.Auto)
             alignSelf(AlignItems.Stretch)
-
-            val timetableHeight = 500
-            val timetableWidth = 3000
-
-            timetableBackground(
-                height = timetableHeight,
-                width = timetableWidth,
-                color = Color("#c6c6c6dd"),
-                onClick = { clickedTime ->
-                    currentDialogTraining = newTraining(
-                        dateTime = selectedDay.atTime(clickedTime.hour, 0),
-                        arranger = mainViewModel.user!!
-                    )
-                    currentDialogTrainingEdit = false
-                }
-            )
-
-            /* Overlay */
+            marginTop(20.px)
             div {
                 position(Position.Absolute)
                 top(0.px)
-                height(timetableHeight.px)
-                width(timetableWidth.px)
-                style("pointer-events", "none")
+                left((-80).px)
+                for (user in permanentAvailableTimes.keys)
+                {
+                    div {
+                        color(Colors.getColorForPerson(user.fullName))
+                        height(userAvailabilityHeight)
+                        marginTop(userAvailabilitySpacing)
+                        fontSize(0.5.rem)
+                        +user.fullName
+                    }
+                }
+            }
+            div {
+                position(Position.Relative)
+                overflowX(Overflow.Auto)
+                width(100.perc)
+                height(100.perc)
 
-                for ((user, availableTimeRanges) in permanentAvailableTimes)
-                    userAvailability(user, availableTimeRanges.getRangesForDay(selectedDay.dayOfWeek))
+                val timetableHeight = 500
+                val timetableWidth = 3000
 
-                for (training in trainings[selectedDay] ?: emptyList())
-                    training(
-                        trainingView = training,
-                        onEdit = { currentDialogTraining = it; currentDialogTrainingEdit = true }
-                    )
+                timetableBackground(
+                    height = timetableHeight,
+                    width = timetableWidth,
+                    color = Color("#c6c6c6dd"),
+                    onClick = { clickedTime ->
+                        currentDialogTraining = newTraining(
+                            dateTime = selectedDay.atTime(clickedTime.hour, 0),
+                            arranger = mainViewModel.user!!
+                        )
+                        currentDialogTrainingEdit = false
+                    }
+                )
+
+                /* Overlay */
+                div {
+                    position(Position.Absolute)
+                    top(0.px)
+                    height(timetableHeight.px)
+                    width(timetableWidth.px)
+                    style("pointer-events", "none")
+
+                    for ((user, availableTimeRanges) in permanentAvailableTimes)
+                        userAvailability(
+                            user = user,
+                            height = userAvailabilityHeight,
+                            marginTop = userAvailabilitySpacing,
+                            availableTimeRanges = availableTimeRanges.getRangesForDay(selectedDay.dayOfWeek)
+                        )
+
+                    for (training in trainings[selectedDay] ?: emptyList())
+                        training(
+                            trainingView = training,
+                            onEdit = { currentDialogTraining = it; currentDialogTrainingEdit = true }
+                        )
+                }
             }
         }
+
 
         if (newOrModifiedTrainings.isNotEmpty())
             bsButton(label = "Save") {
@@ -190,27 +219,28 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
 @Composable
 private fun IComponent.userAvailability(
     user: UserDto,
+    height: CssSize,
+    marginTop: CssSize,
     availableTimeRanges: List<LocalTimeRange>
 )
 {
     div {
         width(100.perc)
-        marginTop(1.px)
-        height(15.px)
+        marginTop(marginTop)
+        height(height)
         position(Position.Relative)
         style("pointer-events", "auto")
         title(user.fullName)
 
-        for ((i, range) in availableTimeRanges.withIndex())
-            userAvailabilityPart(range, Colors.getColorForPerson(user.fullName), if (i == 0) user.fullName else null)
+        for (range in availableTimeRanges)
+            userAvailabilityPart(range, Colors.getColorForPerson(user.fullName))
     }
 }
 
 @Composable
 private fun IComponent.userAvailabilityPart(
     range: LocalTimeRange,
-    color: Color,
-    text: String? = null
+    color: Color
 )
 {
     val totalMinutes = 24 * 60f
@@ -226,17 +256,6 @@ private fun IComponent.userAvailabilityPart(
         position(Position.Absolute)
         left((startMinute / totalMinutes * 100).perc)
         width((durationMinutes / totalMinutes * 100).perc)
-
-        if (text != null)
-        {
-            display(Display.Flex)
-            alignItems(AlignItems.Center)
-            justifyContent(JustifyContent.Start)
-            spant(text) {
-                fontSize(0.6.rem)
-                color(Color.White)
-            }
-        }
     }
 }
 
