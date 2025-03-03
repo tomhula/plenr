@@ -7,6 +7,7 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import org.jetbrains.exposed.sql.transactions.experimental.withSuspendTransaction
 
 abstract class DatabaseService(
     private val database: Database,
@@ -18,6 +19,6 @@ abstract class DatabaseService(
         SchemaUtils.create(*tables)
     }
 
-    protected suspend fun <T> dbQuery(query: Transaction.() -> T) =
+    protected suspend fun <T> dbQuery(query: suspend Transaction.() -> T) =
         newSuspendedTransaction(coroutineDispatcher, database, statement = query)
 }
