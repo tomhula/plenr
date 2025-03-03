@@ -9,7 +9,7 @@ clikt = "5.0.2"
 compose = "1.8.0-alpha02"
 kilua = "0.0.19"
 mysql = "9.2.0"
-exposed = "0.59.0"
+exposed = "0.60.0"
 commons-email = "2.0.0-M1"
 kotlinx-rpc = "0.5.1"
 
