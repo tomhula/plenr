@@ -12,25 +12,40 @@ application {
 }
 
 tasks {
-    val wasmJsBrowserWebpackTask = project(":frontend").tasks.getByName("wasmJsBrowserDevelopmentExecutableDistribution")
+    val jsBrowserDistributionTask = project(":frontend").tasks.getByName("jsBrowserDistribution")
+    val jsBrowserDevDistributionTask = project(":frontend").tasks.getByName("jsBrowserDevelopmentExecutableDistribution")
+    val resourcesFrontendDestination = "frontend"
+    val processResourcesTask = processResources.get()
 
-    val compileFrontendDev by registering(Copy::class) {
-        val resourcesOutputPath = "frontend"
+    val processFrontendDev by registeringCopyIntoResources(
+        resourcesFrontendDestination,
+        processResourcesTask,
+        jsBrowserDevDistributionTask
+    )
 
-        dependsOn(wasmJsBrowserWebpackTask)
-
-        from(wasmJsBrowserWebpackTask.outputs.files)
-
-        // TEMP: This is a workaround, the wasmJsBrowserDevelopmentExecutableDistribution task for some reason does not include wasm source maps
-        from(project(":frontend").layout.buildDirectory.file("compileSync/wasmJs/main/developmentExecutable/kotlin/main.bundle.wasm.map"))
-
-        into(processResources.get().destinationDir.resolve(resourcesOutputPath))
-        includeEmptyDirs = false
-    }
+    val processFrontendProd by registeringCopyIntoResources(
+        resourcesFrontendDestination,
+        processResourcesTask,
+        jsBrowserDistributionTask
+    )
 
     compileKotlin {
-        // dependsOn(compileFrontendDev)
+        if (gradle.taskGraph.hasTask(shadowJar.get()))
+            dependsOn(processFrontendProd)
+        else
+            dependsOn(processFrontendDev)
     }
+}
+
+fun PolymorphicDomainObjectContainer<Task>.registeringCopyIntoResources(
+    resourcesDestination: String,
+    processResourcesTask: ProcessResources,
+    outputTask: Task
+) = registering(Copy::class) {
+    dependsOn(outputTask)
+    from(outputTask.outputs.files)
+    into(processResourcesTask.destinationDir.resolve(resourcesDestination))
+    includeEmptyDirs = false
 }
 
 ktor {
