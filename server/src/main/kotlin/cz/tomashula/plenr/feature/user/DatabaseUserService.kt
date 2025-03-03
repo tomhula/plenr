@@ -1,7 +1,5 @@
 package cz.tomashula.plenr.feature.user
 
-import io.ktor.http.*
-import io.ktor.util.*
 import cz.tomashula.plenr.auth.AuthService
 import cz.tomashula.plenr.auth.UnauthorizedException
 import cz.tomashula.plenr.mail.MailService
@@ -10,11 +8,12 @@ import cz.tomashula.plenr.security.PasswordValidator
 import cz.tomashula.plenr.security.TokenGenerator
 import cz.tomashula.plenr.service.DatabaseService
 import cz.tomashula.plenr.util.now
-import kotlinx.coroutines.runBlocking
+import io.ktor.http.*
+import io.ktor.util.*
 import kotlinx.datetime.LocalDateTime
 import org.jetbrains.exposed.sql.*
-import kotlin.coroutines.CoroutineContext
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import kotlin.coroutines.CoroutineContext
 
 class DatabaseUserService(
     override val coroutineContext: CoroutineContext,
@@ -58,9 +57,7 @@ class DatabaseUserService(
                 it[isAdmin] = newUser.isAdmin
             }.value
 
-            val passwordToken = runBlocking {
-                setUserPasswordRequest(userId, reset = false)
-            }
+            val passwordToken = setUserPasswordRequest(userId, reset = false)
 
             userId to passwordToken
         }
@@ -77,17 +74,15 @@ class DatabaseUserService(
         return userId
     }
 
-    private suspend fun setUserPasswordRequest(userId: Int, reset: Boolean): ByteArray
+    private suspend fun Transaction.setUserPasswordRequest(userId: Int, reset: Boolean): ByteArray
     {
         val activationToken = tokenGenerator.generate(32)
 
-        dbQuery {
-            UserSetPassword.insert {
-                it[UserSetPassword.userId] = userId
-                it[UserSetPassword.token] = activationToken
-                it[UserSetPassword.reset] = reset
-                it[UserSetPassword.issuedAt] = LocalDateTime.now()
-            }
+        UserSetPassword.insert {
+            it[UserSetPassword.userId] = userId
+            it[UserSetPassword.token] = activationToken
+            it[UserSetPassword.reset] = reset
+            it[UserSetPassword.issuedAt] = LocalDateTime.now()
         }
 
         return activationToken
@@ -130,9 +125,7 @@ class DatabaseUserService(
                 ?.get(UserTable.id)
                 ?.value ?: return@dbQuery null
 
-            runBlocking {
-                setUserPasswordRequest(userId, true)
-            }
+            setUserPasswordRequest(userId, true)
         }
 
         if (passwordResetToken != null)
