@@ -20,7 +20,7 @@
     3. Arrange trainings
     4. Now try going back, does not work
 - Use bootstrap form validation
-  - Setup password page
+  - Add user page
 
 ## Arrange Trainings
 - Quick user availability hover (no delay before appearance)
