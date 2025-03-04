@@ -54,11 +54,8 @@ fun IComponent.loginPage(mainViewModel: MainViewModel)
 
             bsButton("Login", type = ButtonType.Submit, className = "mt-3")
 
-            when (authenticated)
-            {
-                false -> p { +"Incorrect credentials" }
-                else -> Unit
-            }
+            if  (authenticated == false)
+                p { +"Incorrect credentials" }
         }
     }
 }
