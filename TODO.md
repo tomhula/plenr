@@ -13,6 +13,12 @@
 - Fix error when mail server cannot be reached. (currently it crashes the frontend, which is bad. Ideally it should either abort the save, notify about the fact or retry later)
 - Maybe consider usage of some kind of global styles? So each instance of a component does not repeat the inlined styles, but just has a class.
 - Make password reset requests expire
+- Fix routing
+  - Repro steps:
+    1. Log out
+    2. Log in
+    3. Arrange trainings
+    4. Now try going back, does not work
 
 ## Arrange Trainings
 - Quick user availability hover (no delay before appearance)
