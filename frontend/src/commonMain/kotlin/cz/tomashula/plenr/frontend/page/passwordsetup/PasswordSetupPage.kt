@@ -62,7 +62,7 @@ fun IComponent.passwordSetupPage(mainViewModel: MainViewModel, token: String)
             }
             div("mt-2") {
                 bsLabelledFormField("Confirm password") {
-                    bsFormInput(it, bindKey = PasswordSetupForm::password, type = InputType.Password)
+                    bsFormInput(it, bindKey = PasswordSetupForm::confirmPassword, type = InputType.Password)
                 }
             }
 
