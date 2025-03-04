@@ -153,7 +153,12 @@ private fun IComponent.training(
             spant(training.name) {
                 fontWeight(FontWeight.Bold)
             }
-            spant(training.type.name.lowercase().replaceFirstChar { it.uppercase() })
+
+            for (participant in training.participants)
+                spant(participant.fullName) {
+                    marginLeft(5.px)
+                    fontSize(0.7.rem)
+                }
 
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
