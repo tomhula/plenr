@@ -66,11 +66,15 @@ class PlenrFrontendApp : Application()
 
             main {
                 style("margin", "24px 100px")
-                BrowserRouter(initPath) {
+                BrowserRouter("/") {
+                    if (loading) return@BrowserRouter
                     router = Router.current
+
                     LaunchedEffect(Unit) {
                         if (!viewModel.adminExists())
                             router!!.navigate(Route.ADMIN_SETUP)
+                        else if (!viewModel.isLoggedIn)
+                            router!!.navigate(Route.LOGIN)
                     }
                     route(Route.HOME) {
                         if (viewModel.user?.isAdmin == true)
