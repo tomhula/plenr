@@ -9,6 +9,7 @@ import cz.tomashula.plenr.frontend.page.admin.adminHomePage
 import cz.tomashula.plenr.frontend.page.admin.arrangeTrainingsPage
 import cz.tomashula.plenr.frontend.page.admin.manageUsersPage
 import cz.tomashula.plenr.frontend.page.adminsetup.adminSetupPage
+import cz.tomashula.plenr.frontend.page.login.forgotPasswordPage
 import cz.tomashula.plenr.frontend.page.login.loginPage
 import cz.tomashula.plenr.frontend.page.passwordsetup.passwordSetupPage
 import cz.tomashula.plenr.frontend.page.user.unavailableDaysPage
@@ -88,6 +89,9 @@ class PlenrFrontendApp : Application()
                     route(Route.LOGIN) {
                         loginPage(viewModel)
                     }
+                    route(Route.FORGOT_PASSWORD) {
+                        forgotPasswordPage(viewModel)
+                    }
                     route(Route.PREFERENCES) {
                         userPreferencesPage(viewModel)
                     }
@@ -126,6 +130,7 @@ class PlenrFrontendApp : Application()
         Route.ARRANGE_TRAININGS -> "Arrange Trainings"
         Route.MANAGE_USERS -> "Manage Users"
         Route.ADD_USER -> "Add User"
+        Route.FORGOT_PASSWORD -> "Forgot password"
         else -> ""
     }
 

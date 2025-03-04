@@ -11,4 +11,5 @@ object Route
     const val ARRANGE_TRAININGS = "/arrange-trainings"
     const val MANAGE_USERS = "/manage-users"
     const val ADD_USER = "/add-user"
+    const val FORGOT_PASSWORD = "/forgot-password"
 }

@@ -10,7 +10,11 @@ import kotlinx.coroutines.launch
 import cz.tomashula.plenr.frontend.MainViewModel
 import cz.tomashula.plenr.frontend.Route
 import cz.tomashula.plenr.frontend.component.*
+import dev.kilua.form.text.password
+import dev.kilua.html.helpers.TagStyleFun.Companion.textDecoration
 import dev.kilua.html.helpers.onClickLaunch
+import dev.kilua.html.style.pClass
+import dev.kilua.html.style.style
 import dev.kilua.panel.flexPanel
 import kotlinx.serialization.Serializable
 
@@ -44,11 +48,15 @@ fun IComponent.loginPage(mainViewModel: MainViewModel)
                 }
             }
 
-            // TODO: Improve look and make a forgot password request page
-            bsButton("Forgot password?", style = ButtonStyle.BtnLink, className = "mt-3") {
-                display(Display.Block)
-                onClickLaunch {
-                    mainViewModel.requestPasswordReset(getData().email!!)
+            navLink(Route.FORGOT_PASSWORD, "Forgot password?") {
+                style {
+                    display(Display.Block)
+                    color(Color.Gray)
+                    fontSize(0.8.rem)
+                    textDecoration(TextDecorationLine.None)
+                    pClass("hover") {
+                        textDecoration(TextDecorationLine.Underline)
+                    }
                 }
             }
 
