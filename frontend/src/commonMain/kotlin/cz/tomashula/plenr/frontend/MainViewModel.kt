@@ -54,6 +54,9 @@ class MainViewModel
 
     suspend fun init()
     {
+        authToken = localStorage.getItem(AUTH_TOKEN_STORAGE_KEY)
+        user = localStorage.getItem(USER_STORAGE_KEY)?.let { json.decodeFromString(it) }
+
         val ktorRpcClient = httpClient.rpc {
             url {
                 host = window.location.hostname
@@ -72,9 +75,6 @@ class MainViewModel
         trainingService = ktorRpcClient.withService()
         preferencesService = ktorRpcClient.withService()
         tempBusyTimesService = ktorRpcClient.withService()
-
-        authToken = localStorage.getItem(AUTH_TOKEN_STORAGE_KEY)
-        user = localStorage.getItem(USER_STORAGE_KEY)?.let { json.decodeFromString(it) }
     }
 
     fun logout()
