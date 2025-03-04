@@ -55,7 +55,7 @@ class PlenrFrontendApp : Application()
                 user = viewModel.user,
                 onUnavailableDaysClick = { router?.navigate(Route.UNAVAILABLE_DAYS) },
                 onPreferencesClick = { router?.navigate(Route.PREFERENCES) },
-                onLogoutClick = { viewModel.logout() }
+                onLogoutClick = { viewModel.logout(); router?.navigate(Route.LOGIN) }
             )
 
             if (loading)
