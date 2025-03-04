@@ -11,8 +11,12 @@ import cz.tomashula.plenr.frontend.MainViewModel
 import cz.tomashula.plenr.frontend.component.*
 import cz.tomashula.plenr.util.LocalTimeRange
 import cz.tomashula.plenr.util.now
+import dev.kilua.compose.foundation.layout.Arrangement
 import dev.kilua.compose.foundation.layout.Column
+import dev.kilua.compose.foundation.layout.Row
 import dev.kilua.compose.ui.Alignment
+import dev.kilua.compose.ui.Modifier
+import dev.kilua.compose.ui.fillMaxWidth
 import dev.kilua.core.IComponent
 import dev.kilua.form.Form
 import dev.kilua.form.InputType
@@ -21,6 +25,7 @@ import dev.kilua.form.time.richDateTime
 import dev.kilua.html.*
 import dev.kilua.html.helpers.TagStyleFun.Companion.background
 import dev.kilua.html.helpers.onClickLaunch
+import dev.kilua.panel.hPanel
 import dev.kilua.panel.vPanel
 import dev.kilua.utils.cast
 import dev.kilua.utils.toJsAny
@@ -413,7 +418,28 @@ private fun IComponent.training(
         spant(training.name) {
             fontWeight(FontWeight.Bold)
         }
-        spant(training.type.name.lowercase())
+
+        for (participant in training.participants)
+            spant(participant.fullName) {
+                marginLeft(5.px)
+                fontSize(0.7.rem)
+            }
+
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            spant(training.startDateTime.time.format(timeFormat)) {
+                fontSize(0.7.rem)
+            }
+            val timeZone = TimeZone.currentSystemDefault()
+            val endTimeStr = training.startDateTime.toInstant(timeZone).plus(training.lengthMinutes, DateTimeUnit.MINUTE).toLocalDateTime(
+                timeZone
+            ).time.format(timeFormat)
+            spant(endTimeStr) {
+                fontSize(0.7.rem)
+            }
+        }
     }
 }
 
@@ -511,3 +537,9 @@ private fun TrainingWithParticipantsDto.toCreateTrainingDto() = CreateOrUpdateTr
     lengthMinutes = lengthMinutes,
     participantIds = participants.map { it.id }.toSet()
 )
+
+private val timeFormat = LocalTime.Format {
+    hour(padding = Padding.ZERO)
+    char(':')
+    minute(padding = Padding.ZERO)
+}
