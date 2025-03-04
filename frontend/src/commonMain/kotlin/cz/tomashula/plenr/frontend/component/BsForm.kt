@@ -73,12 +73,16 @@ inline fun <reified T : Any> IComponent.bsFormRef(
 inline fun IComponent.bsLabelledFormField(
     label: String,
     wrapperClassName: String? = null,
+    groupClassName: String? = null,
+    labelAfter: Boolean = false,
     crossinline content: @Composable IComponent.(inputId: String) -> Unit
 )
 {
     fieldWithLabel(
         label = label,
         className = "form-label",
+        groupClassName = groupClassName,
+        labelAfter = labelAfter,
         wrapperClassName = wrapperClassName,
         content = { inputId -> content(inputId) }
     )

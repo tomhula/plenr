@@ -2,57 +2,92 @@ package cz.tomashula.plenr.frontend.page.admin
 
 import androidx.compose.runtime.*
 import app.softwork.routingcompose.Router
+import cz.tomashula.plenr.feature.user.UserDto
 import dev.kilua.core.IComponent
 import dev.kilua.form.check.checkBox
-import dev.kilua.form.form
 import dev.kilua.html.*
-import kotlinx.coroutines.launch
 import cz.tomashula.plenr.frontend.MainViewModel
 import cz.tomashula.plenr.frontend.Route
 import cz.tomashula.plenr.frontend.component.UserCreationFormState
-import cz.tomashula.plenr.frontend.component.applyColumn
-import cz.tomashula.plenr.frontend.component.onSubmit
-import cz.tomashula.plenr.frontend.component.userCreationFormFields
+import cz.tomashula.plenr.frontend.component.bsForm
+import cz.tomashula.plenr.frontend.component.bsFormInput
+import cz.tomashula.plenr.frontend.component.bsLabelledFormField
+import dev.kilua.form.InputType
+import dev.kilua.form.fieldWithLabel
+import dev.kilua.modal.alert
+import dev.kilua.panel.flexPanel
+import kotlinx.serialization.Serializable
 import web.window
 
 @Composable
 fun IComponent.addUserPage(viewModel: MainViewModel)
 {
     val router = Router.current
-    val coroutineScope = rememberCoroutineScope()
-    var formState by remember { mutableStateOf(UserCreationFormState()) }
-    var isAdmin by remember { mutableStateOf(false) }
 
-    form(className = "form") {
-        applyColumn(alignItems = AlignItems.Center)
-        rowGap(10.px)
+    val done by remember { mutableStateOf(false) }
 
-        onSubmit {
-            coroutineScope.launch {
-                viewModel.createUser(
-                    formState.toUserDto(isAdmin)
-                )
-                window.alert("User created")
+    flexPanel(
+        justifyContent = JustifyContent.Center,
+        alignItems = AlignItems.Center
+    ) {
+        bsForm<UserCreationForm>(
+            onSubmit = { data, _, _ ->
+                viewModel.createUser(data.toUserDto())
                 router.navigate(Route.MANAGE_USERS)
             }
-        }
+        ) {
+            if (done)
+                alert(
+                    caption = "User created",
+                    content = "User was created successfully and will receive an activation email.",
+                    callback = { router.navigate(Route.MANAGE_USERS) }
+                )
 
-        userCreationFormFields(
-            state = formState,
-            onChange = { formState = it }
-        )
+            bsLabelledFormField("First name", groupClassName = "mt-2") {
+                bsFormInput(it, UserCreationForm::firstName)
+            }
 
-        div(className = "form-field") {
-            checkBox(isAdmin, id = "is-admin", className = "form-field-input") {
-                onChange {
-                    isAdmin = !isAdmin
+            bsLabelledFormField("Last name", groupClassName = "mt-2") {
+                bsFormInput(it, UserCreationForm::lastName)
+            }
+
+            bsLabelledFormField("Email", groupClassName = "mt-2") {
+                bsFormInput(it, UserCreationForm::email, type = InputType.Email)
+            }
+
+            bsLabelledFormField("Phone", groupClassName = "mt-2") {
+                bsFormInput(it, UserCreationForm::phone, type = InputType.Tel)
+            }
+
+            div(className = "form-check mt-2") {
+                fieldWithLabel("Admin", className = "form-check-label") {
+                    checkBox(id = it, className = "form-check-input") {
+                        bind(UserCreationForm::isAdmin)
+                    }
                 }
             }
-            label(htmlFor = "is-admin-input", className = "form-field-label") {
-                +"Admin"
-            }
-        }
 
-        button(label = "Create User", type = ButtonType.Submit, className = "primary-button")
+            bsButton(label = "Create User", type = ButtonType.Submit, className = "mt-3")
+        }
     }
+}
+
+@Serializable
+private data class UserCreationForm(
+    val firstName: String? = null,
+    val lastName: String? = null,
+    val email: String? = null,
+    val phone: String? = null,
+    val isAdmin: Boolean? = null
+)
+{
+    fun toUserDto() = UserDto(
+        id = -1,
+        firstName = firstName!!,
+        lastName = lastName!!,
+        email = email!!,
+        phone = phone!!,
+        isAdmin = isAdmin!!,
+        isActive = false
+    )
 }
