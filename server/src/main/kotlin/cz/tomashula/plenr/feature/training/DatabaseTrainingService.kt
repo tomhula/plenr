@@ -2,6 +2,7 @@ package cz.tomashula.plenr.feature.training
 
 import cz.tomashula.plenr.auth.AuthService
 import cz.tomashula.plenr.auth.UnauthorizedException
+import cz.tomashula.plenr.feature.user.UserDto
 import cz.tomashula.plenr.feature.user.UserTable
 import cz.tomashula.plenr.feature.user.toUserDto
 import cz.tomashula.plenr.mail.MailService
@@ -34,33 +35,38 @@ class DatabaseTrainingService(
         if (!caller.isAdmin)
             throw UnauthorizedException("Only admins can arrange new trainings")
 
-        val participantsEmails = mutableMapOf<Int, String>()
+        val trainingsByUser = mutableMapOf<UserDto, MutableSet<CreateOrUpdateTrainingDto>>()
+        val participantsByTraining = mutableMapOf<CreateOrUpdateTrainingDto, MutableSet<UserDto>>()
+        val newTrainingsIds = mutableMapOf<CreateOrUpdateTrainingDto, Int>()
+        val arranger = caller
 
         dbQuery {
             for (createOrUpdateTrainingDto in trainings)
             {
-                val trainingId = if (createOrUpdateTrainingDto.id == null) TrainingTable.insertAndGetId {
-                    it[arrangerId] = caller.id
-                    it[name] = createOrUpdateTrainingDto.name
-                    it[description] = createOrUpdateTrainingDto.description
-                    it[type] = createOrUpdateTrainingDto.type
-                    it[startDateTime] = createOrUpdateTrainingDto.startDateTime
-                    it[lengthMinutes] = createOrUpdateTrainingDto.lengthMinutes
-                }.value
-                else
-                {
-                    TrainingTable.update({ TrainingTable.id eq createOrUpdateTrainingDto.id }) {
-                        it[arrangerId] = caller.id
+                val isUpdate = createOrUpdateTrainingDto.id != null
+                val trainingId =
+                    if (!isUpdate) TrainingTable.insertAndGetId {
+                        it[TrainingTable.arrangerId] = arranger.id
                         it[name] = createOrUpdateTrainingDto.name
                         it[description] = createOrUpdateTrainingDto.description
                         it[type] = createOrUpdateTrainingDto.type
                         it[startDateTime] = createOrUpdateTrainingDto.startDateTime
                         it[lengthMinutes] = createOrUpdateTrainingDto.lengthMinutes
+                    }.value
+                    else
+                    {
+                        TrainingTable.update({ TrainingTable.id eq createOrUpdateTrainingDto.id }) {
+                            it[TrainingTable.arrangerId] = arranger.id
+                            it[name] = createOrUpdateTrainingDto.name
+                            it[description] = createOrUpdateTrainingDto.description
+                            it[type] = createOrUpdateTrainingDto.type
+                            it[startDateTime] = createOrUpdateTrainingDto.startDateTime
+                            it[lengthMinutes] = createOrUpdateTrainingDto.lengthMinutes
+                        }
+                        createOrUpdateTrainingDto.id!!
                     }
-                    createOrUpdateTrainingDto.id!!
-                }
 
-                if (createOrUpdateTrainingDto.id != null)
+                if (isUpdate)
                     TrainingParticipantTable.deleteWhere { TrainingParticipantTable.trainingId eq createOrUpdateTrainingDto.id }
 
                 TrainingParticipantTable.batchInsert(createOrUpdateTrainingDto.participantIds) { participantId ->
@@ -68,26 +74,43 @@ class DatabaseTrainingService(
                     this[TrainingParticipantTable.participantId] = participantId
                 }
 
+                newTrainingsIds[createOrUpdateTrainingDto] = trainingId
+
                 UserTable
-                    .select(UserTable.email)
+                    .selectAll()
                     .where { UserTable.id inList createOrUpdateTrainingDto.participantIds }
-                    .forEach { row ->
-                        participantsEmails[trainingId] = row[UserTable.email]
+                    .map(ResultRow::toUserDto)
+                    .forEach {
+                        participantsByTraining.getOrPut(createOrUpdateTrainingDto) { mutableSetOf()  }.add(it)
+                        trainingsByUser.getOrPut(it) { mutableSetOf() }.add(createOrUpdateTrainingDto)
                     }
             }
         }
 
-        val trainingsByUsers = participantsEmails.entries.associate { (trainingId, participantEmail) ->
-            participantEmail to trainings.filter { it.participantIds.contains(trainingId) }
+        val trainingsWithParticipantsByUser = trainingsByUser.mapValues {
+            it.value.map {
+                TrainingWithParticipantsDto(
+                    it.id ?: newTrainingsIds[it]!!,
+                    arranger,
+                    it.name,
+                    it.description,
+                    it.type,
+                    it.startDateTime,
+                    it.lengthMinutes,
+                    participantsByTraining[it] ?: emptySet()
+                )
+            }
         }
 
-        // TODO: Create properly formatted email
-        for ((email, trainings) in trainingsByUsers)
+        for ((user, trainings) in trainingsWithParticipantsByUser)
+        {
+            val message = MailMessages.getNewTrainingsMessage(arranger, user, trainings.toSet(), serverUrl)
             mailService.sendMail(
-                recipient = email,
-                subject = if (trainings.size > 1) "New trainings" else "New training",
-                body = "You have been added to new trainings: $trainings"
+                recipient = user.email,
+                subject = message.subject,
+                body = message.body
             )
+        }
     }
 
     override suspend fun getAllTrainings(
