@@ -62,8 +62,6 @@ class PlenrFrontendApp : Application()
             if (loading)
                 return@root
 
-            val initPath = if (viewModel.user == null) Route.LOGIN else Route.HOME
-
             main {
                 style("margin", "24px 100px")
                 BrowserRouter("/") {
