@@ -3,6 +3,7 @@ package cz.tomashula.plenr.frontend.component
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import dev.kilua.core.IComponent
+import dev.kilua.modal.IModal
 import dev.kilua.modal.modal
 import web.dom.events.Event
 
@@ -12,7 +13,7 @@ fun IComponent.bsModalDialog(
     title: String,
     onDismiss: () -> Unit,
     footer: @Composable IComponent.() -> Unit = {},
-    body: @Composable IComponent.() -> Unit
+    body: @Composable IModal.() -> Unit
 )
 {
     modal(
