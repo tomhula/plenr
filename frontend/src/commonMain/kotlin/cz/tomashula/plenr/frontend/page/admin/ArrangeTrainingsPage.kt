@@ -81,7 +81,7 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
     }
 
     LaunchedEffect(Unit) {
-        users = mainViewModel.getAllUsers()
+        users = mainViewModel.getAllUsers().filterNot { it.isAdmin }
         for (user in users)
             launch {
                 permanentBusyTimes[user] = mainViewModel.getPermanentBusyTimesAdmin(user.id)
