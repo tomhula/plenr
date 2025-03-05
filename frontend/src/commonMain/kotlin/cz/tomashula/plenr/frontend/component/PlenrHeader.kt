@@ -33,6 +33,7 @@ import dev.kilua.panel.hPanel
 fun IComponent.plenrHeader(
     title: String,
     user: UserDto?,
+    onLogoClick: () -> Unit = {},
     onUnavailableDaysClick: () -> Unit = {},
     onPreferencesClick: () -> Unit = {},
     onLogoutClick: () -> Unit = {}
@@ -65,7 +66,11 @@ fun IComponent.plenrHeader(
             alignItems = AlignItems.Center,
         ) {
             position(Position.Relative)
-            img(Logo.url)
+            img(Logo.url) {
+                zIndex(1)
+                cursor(Cursor.Pointer)
+                onClick { onLogoClick() }
+            }
 
             hPanel(
                 justifyContent = JustifyContent.Center,

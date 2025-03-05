@@ -54,6 +54,7 @@ class PlenrFrontendApp : Application()
             plenrHeader(
                 title = router?.currentPath?.path?.title() ?: "",
                 user = viewModel.user,
+                onLogoClick = { router?.navigate(Route.HOME) },
                 onUnavailableDaysClick = { router?.navigate(Route.UNAVAILABLE_DAYS) },
                 onPreferencesClick = { router?.navigate(Route.PREFERENCES) },
                 onLogoutClick = { viewModel.logout(); router?.navigate(Route.LOGIN) }
