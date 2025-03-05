@@ -13,6 +13,7 @@ import dev.kilua.core.IComponent
 import dev.kilua.form.time.richTime
 import dev.kilua.html.*
 import dev.kilua.html.style.style
+import dev.kilua.panel.flexPanel
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalTime
 
@@ -38,56 +39,63 @@ fun IComponent.unavailableDaysPage(viewModel: MainViewModel)
         }
     }
 
-    bsForm<Unit>(
-        onSubmit = { _, _, _ ->
-            val weeklyTimeRanges = WeeklyTimeRanges.builder().apply {
-                for ((day, timeRange) in days)
-                    addTimeRange(day, timeRange.first, timeRange.second)
-            }.build()
-
-            viewModel.setPermanentBusyTimes(weeklyTimeRanges)
-            router.navigate(Route.HOME)
-        }
+    flexPanel(
+        justifyContent = JustifyContent.Center,
+        alignItems = AlignItems.Center
     ) {
-        table("table") {
-            style {
-                style("th, td") {
-                    border(Border(1.px, BorderStyle.Solid, Color("#CCCCCC")))
-                    padding(10.px)
-                    textAlign(TextAlign.Center)
-                }
-            }
-            thead {
-                tr {
-                    th { +"Day" }
-                    th { +"From" }
-                    th { +"To" }
-                }
-            }
-            tbody {
-                for (weekDay in DayOfWeek.entries)
-                    tr {
-                        th { +weekDay.name.lowercase().replaceFirstChar { it.uppercase() } }
+        bsForm<Unit>(
+            onSubmit = { _, _, _ ->
+                val weeklyTimeRanges = WeeklyTimeRanges.builder().apply {
+                    for ((day, timeRange) in days)
+                        addTimeRange(day, timeRange.first, timeRange.second)
+                }.build()
 
-                        td {
-                            richTime(value = days[weekDay]?.first) {
-                                onChange {
-                                    days[weekDay] = this@richTime.value!! to days[weekDay]!!.second
-                                }
-                            }
-                        }
+                viewModel.setPermanentBusyTimes(weeklyTimeRanges)
+                router.navigate(Route.HOME)
+            }
+        ) {
+            maxWidth(500.px)
 
-                        td {
-                            richTime(value = days[weekDay]?.second) {
-                                onChange {
-                                    days[weekDay] = days[weekDay]!!.first to this@richTime.value!!
-                                }
-                            }
-                        }
+            table("table") {
+                style {
+                    style("th, td") {
+                        border(Border(1.px, BorderStyle.Solid, Color("#CCCCCC")))
+                        padding(10.px)
+                        textAlign(TextAlign.Center)
                     }
-            }
-        }
+                }
+                thead {
+                    tr {
+                        th { +"Day" }
+                        th { +"From" }
+                        th { +"To" }
+                    }
+                }
+                tbody {
+                    for (weekDay in DayOfWeek.entries)
+                        tr {
+                            th { +weekDay.name.lowercase().replaceFirstChar { it.uppercase() } }
 
-        bsButton("Save", type = ButtonType.Submit)
+                            td {
+                                richTime(value = days[weekDay]?.first) {
+                                    onChange {
+                                        days[weekDay] = this@richTime.value!! to days[weekDay]!!.second
+                                    }
+                                }
+                            }
+
+                            td {
+                                richTime(value = days[weekDay]?.second) {
+                                    onChange {
+                                        days[weekDay] = days[weekDay]!!.first to this@richTime.value!!
+                                    }
+                                }
+                            }
+                        }
+                }
+            }
+
+            bsButton("Save", type = ButtonType.Submit)
+        }
     }
 }
