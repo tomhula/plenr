@@ -14,7 +14,7 @@ fun IComponent.participantBadge(
     content: @Composable IDiv.() -> Unit = {}
 )
 {
-    bsBadge(participant.fullName, textColor = Color.White, backgroundColor = Colors.getColorForPerson(participant.fullName)) {
+    bsBadge(participant.fullName, textColor = Color.Black, backgroundColor = Colors.getColor(participant.id)) {
         fontWeight(FontWeight.Normal)
         content()
     }

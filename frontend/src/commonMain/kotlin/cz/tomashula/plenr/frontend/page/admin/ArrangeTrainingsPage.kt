@@ -11,12 +11,8 @@ import cz.tomashula.plenr.frontend.MainViewModel
 import cz.tomashula.plenr.frontend.component.*
 import cz.tomashula.plenr.util.LocalTimeRange
 import cz.tomashula.plenr.util.now
-import dev.kilua.compose.foundation.layout.Arrangement
 import dev.kilua.compose.foundation.layout.Column
-import dev.kilua.compose.foundation.layout.Row
 import dev.kilua.compose.ui.Alignment
-import dev.kilua.compose.ui.Modifier
-import dev.kilua.compose.ui.fillMaxWidth
 import dev.kilua.core.IComponent
 import dev.kilua.form.Form
 import dev.kilua.form.InputType
@@ -25,7 +21,6 @@ import dev.kilua.form.time.richDateTime
 import dev.kilua.html.*
 import dev.kilua.html.helpers.TagStyleFun.Companion.background
 import dev.kilua.html.helpers.onClickLaunch
-import dev.kilua.panel.vPanel
 import dev.kilua.utils.cast
 import dev.kilua.utils.toJsAny
 import kotlinx.coroutines.launch
@@ -152,7 +147,7 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
                 for (user in permanentAvailableTimes.keys)
                 {
                     div {
-                        color(Colors.getColorForPerson(user.fullName))
+                        color(Colors.getColor(user.id))
                         height(userAvailabilityHeightPx.px)
                         marginTop(userAvailabilitySpacing)
                         fontSize(0.5.rem)
@@ -240,7 +235,7 @@ private fun IComponent.userAvailability(
             userAvailabilityPart(
                 range = range,
                 borderRadius = (heightPx/2).px,
-                color = Colors.getColorForPerson(user.fullName)
+                color = Colors.getColor(user.fullName)
             )
     }
 }
