@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import cz.tomashula.plenr.feature.training.TrainingType
 import cz.tomashula.plenr.feature.training.TrainingWithParticipantsDto
+import cz.tomashula.plenr.feature.user.UserDto
 import cz.tomashula.plenr.frontend.Colors
 import cz.tomashula.plenr.util.Week
 import dev.kilua.compose.foundation.layout.Arrangement
@@ -27,6 +28,7 @@ import kotlinx.datetime.format.char
 @Composable
 fun IComponent.trainingCalendar(
     selectedWeek: Week,
+    viewer: UserDto? = null,
     onWeekChange: (Week) -> Unit = {},
     trainings: Set<TrainingWithParticipantsDto>,
     onTrainingClick: (TrainingWithParticipantsDto) -> Unit = {}
@@ -70,6 +72,7 @@ fun IComponent.trainingCalendar(
             for (day in selectedWeek.days)
                 trainingCalendarDay(
                     date = day,
+                    viewer = viewer,
                     trainings = trainingsByDate[day]?.toSet() ?: emptySet(),
                     onTrainingClick = onTrainingClick
                 )
@@ -93,6 +96,7 @@ fun IComponent.trainingCalendar(
             for (upcomingDay in upcomingTrainingDaysOrdered)
                 trainingCalendarDay(
                     date = upcomingDay,
+                    viewer = viewer,
                     trainings = trainingsByDate[upcomingDay]?.toSet() ?: emptySet(),
                     onTrainingClick = onTrainingClick
                 )
@@ -103,6 +107,7 @@ fun IComponent.trainingCalendar(
 @Composable
 private fun IComponent.trainingCalendarDay(
     date: LocalDate,
+    viewer: UserDto? = null,
     trainings: Set<TrainingWithParticipantsDto>,
     onTrainingClick: (TrainingWithParticipantsDto) -> Unit
 )
@@ -129,58 +134,9 @@ private fun IComponent.trainingCalendarDay(
         for (training in trainingsOrdered)
             training(
                 training = training,
+                viewer = viewer,
                 onClick = { onTrainingClick(training) }
             )
-    }
-}
-
-@Composable
-private fun IComponent.training(
-    training: TrainingWithParticipantsDto,
-    onClick: () -> Unit
-)
-{
-    div {
-        onClick { onClick() }
-        background(if (training.type == TrainingType.DRESSAGE) Colors.DRESSAGE_TRAINING_BACKGROUND else Colors.PARKOUR_TRAINING_BACKGROUND)
-        padding(5.px)
-        fontSize(0.8.rem)
-        borderRadius(5.px)
-        cursor(Cursor.Pointer)
-        style("pointer-events", "auto")
-
-        Column {
-            spant(training.name) {
-                fontWeight(FontWeight.Bold)
-            }
-
-            hPanel(
-                flexWrap = FlexWrap.Wrap,
-                gap = 4.px
-            ) {
-                marginTop(5.px)
-                marginBottom(5.px)
-                marginLeft(5.px)
-                for (participant in training.participants)
-                    participantBadge(participant)
-            }
-
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                spant(training.startDateTime.time.format(timeFormat)) {
-                    fontSize(0.7.rem)
-                }
-                val timeZone = TimeZone.currentSystemDefault()
-                val endTimeStr = training.startDateTime.toInstant(timeZone).plus(training.lengthMinutes, DateTimeUnit.MINUTE).toLocalDateTime(
-                    timeZone
-                ).time.format(timeFormat)
-                spant(endTimeStr) {
-                    fontSize(0.7.rem)
-                }
-            }
-        }
     }
 }
 
@@ -189,10 +145,4 @@ private val dateFormat = LocalDate.Format {
     char('.')
     monthNumber(padding = Padding.NONE)
     char('.')
-}
-
-private val timeFormat = LocalTime.Format {
-    hour(padding = Padding.ZERO)
-    char(':')
-    minute(padding = Padding.ZERO)
 }

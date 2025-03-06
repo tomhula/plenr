@@ -25,7 +25,6 @@ import dev.kilua.form.time.richDateTime
 import dev.kilua.html.*
 import dev.kilua.html.helpers.TagStyleFun.Companion.background
 import dev.kilua.html.helpers.onClickLaunch
-import dev.kilua.panel.hPanel
 import dev.kilua.panel.vPanel
 import dev.kilua.utils.cast
 import dev.kilua.utils.toJsAny
@@ -200,7 +199,7 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
                         )
 
                     for (training in trainings[selectedDay] ?: emptyList())
-                        training(
+                        trainingView(
                             trainingView = training,
                             onEdit = { currentDialogTraining = it; currentDialogTrainingEdit = true }
                         )
@@ -381,7 +380,7 @@ private val localDateTimeFormat = LocalDateTime.Format {
 }
 
 @Composable
-private fun IComponent.training(
+private fun IComponent.trainingView(
     trainingView: TrainingView,
     onEdit: (TrainingWithParticipantsDto) -> Unit = {},
 )
@@ -391,55 +390,17 @@ private fun IComponent.training(
     val startMinute = training.startDateTime.hour * 60 + training.startDateTime.minute
     val durationMinutes = training.lengthMinutes
 
-    vPanel {
+    training(
+        training = training,
+        onClick = { onEdit(training) }
+    ) {
         position(Position.Absolute)
         left((startMinute / totalMinutes * 100).perc)
         width((durationMinutes / totalMinutes * 100).perc)
         marginTop(30.px)
-        padding(5.px)
-        fontSize(0.8.rem)
-        borderRadius(5.px)
-        cursor(Cursor.Pointer)
-        style("pointer-events", "auto")
-        onClick { onEdit(training) }
-        background(if (training.type == TrainingType.DRESSAGE) Colors.DRESSAGE_TRAINING_BACKGROUND else Colors.PARKOUR_TRAINING_BACKGROUND)
+
         if (trainingView.edited || trainingView.created)
             border(Border(2.px, BorderStyle.Dashed, Color.Black))
-
-        val timeZone = TimeZone.currentSystemDefault()
-        val startTimeStr = training.startDateTime.format(localDateTimeFormat)
-        val endTimeStr =
-            training.startDateTime.toInstant(timeZone).plus(durationMinutes, DateTimeUnit.MINUTE).toLocalDateTime(
-                timeZone
-            ).format(localDateTimeFormat)
-
-        title("$startTimeStr - $endTimeStr")
-
-        spant(training.name) {
-            fontWeight(FontWeight.Bold)
-        }
-
-        for (participant in training.participants)
-            spant(participant.fullName) {
-                marginLeft(5.px)
-                fontSize(0.7.rem)
-            }
-
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            spant(training.startDateTime.time.format(timeFormat)) {
-                fontSize(0.7.rem)
-            }
-            val timeZone = TimeZone.currentSystemDefault()
-            val endTimeStr = training.startDateTime.toInstant(timeZone).plus(training.lengthMinutes, DateTimeUnit.MINUTE).toLocalDateTime(
-                timeZone
-            ).time.format(timeFormat)
-            spant(endTimeStr) {
-                fontSize(0.7.rem)
-            }
-        }
     }
 }
 
@@ -537,9 +498,3 @@ private fun TrainingWithParticipantsDto.toCreateTrainingDto() = CreateOrUpdateTr
     lengthMinutes = lengthMinutes,
     participantIds = participants.map { it.id }.toSet()
 )
-
-private val timeFormat = LocalTime.Format {
-    hour(padding = Padding.ZERO)
-    char(':')
-    minute(padding = Padding.ZERO)
-}

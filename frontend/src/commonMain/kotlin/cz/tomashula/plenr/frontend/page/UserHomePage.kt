@@ -9,6 +9,7 @@ import cz.tomashula.plenr.frontend.component.bsObjectDialog
 import cz.tomashula.plenr.frontend.component.participantBadge
 import cz.tomashula.plenr.frontend.component.rememberObjectDialogState
 import cz.tomashula.plenr.frontend.component.trainingCalendar
+import cz.tomashula.plenr.frontend.component.trainingDialogBody
 import cz.tomashula.plenr.util.Week
 import dev.kilua.core.IComponent
 import dev.kilua.html.bt
@@ -43,48 +44,13 @@ fun IComponent.userHomePage(viewModel: MainViewModel)
 
     trainingCalendar(
         selectedWeek = selectedWeek,
+        viewer = viewModel.user,
         onWeekChange = { selectedWeek = it },
         trainings = arrangedTrainings,
         onTrainingClick = { trainingDialogState.show(it) }
     )
 }
 
-
-@Composable
-private fun IComponent.trainingDialogBody(
-    training: TrainingWithParticipantsDto,
-    currentUser: UserDto
-)
-{
-    div {
-        marginTop(10.px)
-        bt("Name: ")
-        spant(training.name)
-    }
-    div {
-        marginTop(10.px)
-        bt("Description: ")
-        spant(training.description)
-    }
-    div {
-        marginTop(10.px)
-        bt("Start: ")
-        spant(training.startDateTime.format(dateTimeFormat))
-    }
-    div {
-        marginTop(10.px)
-        bt("Length: ")
-        spant("${training.lengthMinutes}min")
-    }
-    div {
-        marginTop(10.px)
-        bt("Participants: ")
-        for (participant in training.participants.filterNot { it.id == currentUser.id })
-            participantBadge(participant) {
-                marginLeft(5.px)
-            }
-    }
-}
 
 private val dateTimeFormat = LocalDateTime.Format {
     dayOfMonth()
