@@ -12,6 +12,9 @@
 - Make password reset requests expire
 - Use bootstrap form validation
   - Add user page
+- Implement user editing
+- Implement user removal
+- Allow admin to see busy unavailable times of users
 
 ## Arrange Trainings
 - Quick user availability hover (no delay before appearance)
