@@ -17,7 +17,8 @@ object Colors
         Color.hex(0xFCCDE5),
         Color.hex(0xD9D9D9),
         Color.hex(0xBC80BD),
-        Color.hex(0xCCECB5)
+        Color.hex(0xCCEBC5),
+        Color.hex(0xFFED6F),
     )
 
     fun getColor(any: Any): Color
