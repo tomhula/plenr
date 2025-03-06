@@ -154,11 +154,16 @@ private fun IComponent.training(
                 fontWeight(FontWeight.Bold)
             }
 
-            for (participant in training.participants)
-                spant(participant.fullName) {
-                    marginLeft(5.px)
-                    fontSize(0.7.rem)
-                }
+            hPanel(
+                flexWrap = FlexWrap.Wrap,
+                gap = 4.px
+            ) {
+                marginTop(5.px)
+                marginBottom(5.px)
+                marginLeft(5.px)
+                for (participant in training.participants)
+                    participantBadge(participant)
+            }
 
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
