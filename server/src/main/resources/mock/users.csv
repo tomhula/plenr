@@ -1,0 +1,11 @@
+first_name;last_name;email;phone;isAdmin;busy_from;busy_to
+Jan;Novák;jan.novak@seznam.cz;+420 123 456 789;true;08:00;16:00
+Petra;Svobodová;petra.svobodova@seznam.cz;+420 987 654 321;true;09:00;17:00
+Martin;Dvořák;martin.dvorak@seznam.cz;+420 456 789 123;false;10:00;18:00
+Lucie;Malá;lucie.mala@seznam.cz;+420 321 654 987;false;07:30;15:30
+Tomáš;Kučera;tomas.kucera@seznam.cz;+420 654 123 789;false;12:00;20:00
+Anna;Vránová;anna.vranova@seznam.cz;+420 789 456 123;false;09:30;17:30
+Michal;Král;michal.kral@seznam.cz;+420 147 258 369;false;08:00;16:00
+Veronika;Pokorná;veronika.pokorna@seznam.cz;+420 369 258 147;false;10:30;18:30
+Jakub;Beneš;jakub.benes@seznam.cz;+420 258 147 369;false;07:00;15:00
+Eliška;Hrušková;eliska.hruskova@seznam.cz;+420 741 852 963;false;11:00;19:00

@@ -34,7 +34,7 @@ class Plenr : ConfigManager
 
     lateinit var mailService: MailService
 
-    fun init(configFilePath: Path)
+    fun init(configFilePath: Path, mock: Boolean)
     {
         runBlocking {
             /* Config has to be initialized first */
@@ -45,6 +45,13 @@ class Plenr : ConfigManager
             initApplicationEngine()
             initDb()
             initServices()
+
+            if (mock)
+            {
+                // TODO: Replace with logger
+                println("Filling with mock data!")
+                Mocker(database, passwordHasher).fill()
+            }
         }
     }
 
