@@ -6,7 +6,7 @@ import cz.tomashula.plenr.feature.training.TrainingType
 import cz.tomashula.plenr.feature.user.PermanentBusyTimeTable
 import cz.tomashula.plenr.feature.user.TempBusyTimeTable
 import cz.tomashula.plenr.feature.user.UserPreferencesTable
-import cz.tomashula.plenr.feature.user.UserSetPassword
+import cz.tomashula.plenr.feature.user.UserSetPasswordTable
 import cz.tomashula.plenr.feature.user.UserTable
 import cz.tomashula.plenr.security.PasswordHasher
 import cz.tomashula.plenr.util.now
@@ -33,7 +33,7 @@ class Mocker(
             // Drop all used tables
             SchemaUtils.drop(
                 TrainingParticipantTable,
-                UserSetPassword,
+                UserSetPasswordTable,
                 UserPreferencesTable,
                 TempBusyTimeTable,
                 PermanentBusyTimeTable,

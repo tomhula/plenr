@@ -24,7 +24,7 @@ class DatabaseUserService(
     private val tokenGenerator: TokenGenerator,
     private val mailService: MailService,
     private val authService: AuthService
-) : UserService, DatabaseService(database, UserTable, UserSetPassword)
+) : UserService, DatabaseService(database, UserTable, UserSetPasswordTable)
 {
     private val serverUrl = serverUrl.removeSuffix("/")
 
@@ -78,11 +78,11 @@ class DatabaseUserService(
     {
         val activationToken = tokenGenerator.generate(32)
 
-        UserSetPassword.insert {
-            it[UserSetPassword.userId] = userId
-            it[UserSetPassword.token] = activationToken
-            it[UserSetPassword.reset] = reset
-            it[UserSetPassword.issuedAt] = LocalDateTime.now()
+        UserSetPasswordTable.insert {
+            it[UserSetPasswordTable.userId] = userId
+            it[UserSetPasswordTable.token] = activationToken
+            it[UserSetPasswordTable.reset] = reset
+            it[UserSetPasswordTable.issuedAt] = LocalDateTime.now()
         }
 
         return activationToken
@@ -148,10 +148,10 @@ class DatabaseUserService(
 
         val passwordHash = passwordHasher.hash(password)
         dbQuery {
-            UserTable.join(UserSetPassword, JoinType.INNER).update({ UserSetPassword.token eq token }) {
+            UserTable.join(UserSetPasswordTable, JoinType.INNER).update({ UserSetPasswordTable.token eq token }) {
                 it[UserTable.passwordHash] = passwordHash
             }
-            UserSetPassword.deleteWhere { UserSetPassword.token eq token }
+            UserSetPasswordTable.deleteWhere { UserSetPasswordTable.token eq token }
         }
     }
 
