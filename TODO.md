@@ -15,6 +15,7 @@
 - Implement user editing
 - Implement user removal
 - Allow admin to see busy unavailable times of users
+- Add legend to describe training type colors
 
 ## Arrange Trainings
 - Quick user availability hover (no delay before appearance)
