@@ -235,7 +235,7 @@ private fun IComponent.userAvailability(
             userAvailabilityPart(
                 range = range,
                 borderRadius = (heightPx/2).px,
-                color = Colors.getColor(user.fullName)
+                color = Colors.getColor(user.id)
             )
     }
 }
