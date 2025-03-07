@@ -20,6 +20,7 @@ import dev.kilua.form.select.select
 import dev.kilua.form.time.richDateTime
 import dev.kilua.html.*
 import dev.kilua.html.helpers.TagStyleFun.Companion.background
+import dev.kilua.html.helpers.TagStyleFun.Companion.border
 import dev.kilua.html.helpers.onClickLaunch
 import dev.kilua.utils.cast
 import dev.kilua.utils.toJsAny
@@ -30,6 +31,7 @@ import kotlinx.datetime.format.char
 import kotlinx.serialization.Serializable
 import web.dom.CanvasTextAlign
 import web.dom.CanvasTextBaseline
+import web.dom.events.MouseEvent
 
 private data class TrainingView(
     val edited: Boolean,
@@ -69,6 +71,9 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
     val permanentAvailableTimes by derivedStateOf {
         permanentBusyTimes.mapValues { it.value.inverted() }
     }
+    var tooltipX by remember { mutableStateOf(0) }
+    var tooltipY by remember { mutableStateOf(0) }
+    var tooltipUser by remember { mutableStateOf<UserDto?>(null) }
 
     val newOrModifiedTrainings by derivedStateOf {
         trainings.values.flatten().filter { it.edited || it.created }
@@ -112,6 +117,8 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
         onDismiss = { currentDialogTraining = null }
     )
 
+    tooltipUser?.let { userTooltip(it, tooltipX, tooltipY) }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -128,7 +135,8 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
                     0 -> "Today"
                     1 -> "Tomorrow"
                     2 -> "Day After Tomorrow"
-                    else -> selectedDay.dayOfWeek.name.lowercase().replaceFirstChar { it.uppercase() } + " " + selectedDay.format(dateFormat)
+                    else -> selectedDay.dayOfWeek.name.lowercase()
+                        .replaceFirstChar { it.uppercase() } + " " + selectedDay.format(dateFormat)
                 }
             }
         )
@@ -190,6 +198,12 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
                             user = user,
                             heightPx = userAvailabilityHeightPx,
                             marginTop = userAvailabilitySpacing,
+                            onMouseMove = { event ->
+                                tooltipX = event.clientX
+                                tooltipY = event.clientY
+                                tooltipUser = user
+                            },
+                            onMouseExit = { tooltipUser = null },
                             availableTimeRanges = availableTimeRanges.getRangesForDay(selectedDay.dayOfWeek)
                         )
 
@@ -216,10 +230,31 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
 }
 
 @Composable
+private fun IComponent.userTooltip(
+    user: UserDto,
+    x: Int,
+    y: Int
+)
+{
+    participantBadge(user) {
+        position(Position.Absolute)
+        style("pointer-events", "none")
+        val offsetX = -(element.clientWidth / 2)
+        val offsetY = -element.clientHeight - 5
+        left((x + offsetX).px)
+        top((y + offsetY).px)
+        zIndex(10)
+        border(width = 1.px, style = BorderStyle.Solid, Color.hex(0x000000))
+    }
+}
+
+@Composable
 private fun IComponent.userAvailability(
     user: UserDto,
     heightPx: Int,
     marginTop: CssSize,
+    onMouseMove: (MouseEvent) -> Unit = {},
+    onMouseExit: (MouseEvent) -> Unit = {},
     availableTimeRanges: List<LocalTimeRange>
 )
 {
@@ -229,12 +264,13 @@ private fun IComponent.userAvailability(
         height(heightPx.px)
         position(Position.Relative)
         style("pointer-events", "auto")
-        title(user.fullName)
+        onEvent<MouseEvent>("mousemove") { onMouseMove(it) }
+        onEvent<MouseEvent>("mouseleave") { onMouseExit(it) }
 
         for (range in availableTimeRanges)
             userAvailabilityPart(
                 range = range,
-                borderRadius = (heightPx/2).px,
+                borderRadius = (heightPx / 2).px,
                 color = Colors.getColor(user.id)
             )
     }
