@@ -1,7 +1,6 @@
 package cz.tomashula.plenr.frontend.page
 
 import androidx.compose.runtime.*
-import app.softwork.routingcompose.Router
 import cz.tomashula.plenr.feature.training.TrainingWithParticipantsDto
 import cz.tomashula.plenr.frontend.MainViewModel
 import cz.tomashula.plenr.frontend.component.bsObjectDialog
@@ -15,7 +14,6 @@ import kotlinx.datetime.atTime
 @Composable
 fun IComponent.userHomePage(viewModel: MainViewModel)
 {
-    val router = Router.current
     var selectedWeek by remember { mutableStateOf(Week.current()) }
     var arrangedTrainings by remember { mutableStateOf(emptySet<TrainingWithParticipantsDto>()) }
     var oldestFetchedWeek: Week? by remember { mutableStateOf(null) }
