@@ -8,7 +8,7 @@ import cz.tomashula.plenr.feature.training.TrainingService
 import cz.tomashula.plenr.feature.training.TrainingWithParticipantsDto
 import cz.tomashula.plenr.feature.user.UserDto
 import cz.tomashula.plenr.feature.user.UserService
-import cz.tomashula.plenr.feature.user.preferences.PermanentBusyTimesDto
+import cz.tomashula.plenr.feature.user.preferences.UserPermanentAvailabilityDto
 import cz.tomashula.plenr.feature.user.preferences.UserPreferencesDto
 import cz.tomashula.plenr.feature.user.preferences.UserPreferencesService
 import cz.tomashula.plenr.feature.user.preferences.WeeklyTimeRanges
@@ -157,12 +157,12 @@ class MainViewModel
 
     suspend fun setPreferences(preferences: UserPreferencesDto) = preferencesService.setUserPreferences(user!!.id, preferences, authToken!!)
 
-    suspend fun getPermanentBusyTimes() = preferencesService.getPermanentBusyTimes(user!!.id, authToken!!).busyTimes
+    suspend fun getUserPermanentAvailability() = preferencesService.getUserPermanentAvailability(user!!.id, authToken!!).availableTimes
 
-    suspend fun getPermanentBusyTimesAdmin(userId: Int) = preferencesService.getPermanentBusyTimes(userId, authToken!!).busyTimes
+    suspend fun getUserPermanentAvailabilityAdmin(userId: Int) = preferencesService.getUserPermanentAvailability(userId, authToken!!).availableTimes
 
-    suspend fun setPermanentBusyTimes(busyTimes: WeeklyTimeRanges) = preferencesService.setPermanentBusyTimes(
-        PermanentBusyTimesDto(user!!.id, busyTimes),
+    suspend fun setUserPermanentAvailability(busyTimes: WeeklyTimeRanges) = preferencesService.setUserPermanentAvailability(
+        UserPermanentAvailabilityDto(user!!.id, busyTimes),
         authToken!!
     )
 }

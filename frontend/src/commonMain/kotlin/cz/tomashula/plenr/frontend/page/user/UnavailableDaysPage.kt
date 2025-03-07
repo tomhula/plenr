@@ -18,7 +18,7 @@ import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalTime
 
 @Composable
-fun IComponent.unavailableDaysPage(viewModel: MainViewModel)
+fun IComponent.availabilityPage(viewModel: MainViewModel)
 {
     val router = Router.current
 
@@ -31,7 +31,7 @@ fun IComponent.unavailableDaysPage(viewModel: MainViewModel)
     }
 
     LaunchedEffect(Unit) {
-        val weeklyTimeRanges = viewModel.getPermanentBusyTimes()
+        val weeklyTimeRanges = viewModel.getUserPermanentAvailability()
         for (day in DayOfWeek.entries)
         {
             val firstRange = weeklyTimeRanges.getRangesForDay(day).firstOrNull() ?: continue
@@ -50,7 +50,7 @@ fun IComponent.unavailableDaysPage(viewModel: MainViewModel)
                         addTimeRange(day, timeRange.first, timeRange.second)
                 }.build()
 
-                viewModel.setPermanentBusyTimes(weeklyTimeRanges)
+                viewModel.setUserPermanentAvailability(weeklyTimeRanges)
                 router.navigate(Route.HOME)
             }
         ) {

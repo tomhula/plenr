@@ -14,7 +14,7 @@
   - Add user page
 - Implement user editing
 - Implement user removal
-- Allow admin to see busy unavailable times of users
+- Allow admin to see busy available times of users
 - Add legend to describe training type colors
 
 ## Arrange Trainings

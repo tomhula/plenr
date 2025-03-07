@@ -4,7 +4,7 @@ import kotlinx.datetime.DayOfWeek
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.kotlin.datetime.time
 
-object PermanentBusyTimeTable : IntIdTable("permanent_busy_time")
+object UserPermanentAvailabilityTable : IntIdTable("user_permanent_availability")
 {
     val userId = reference("user_id", UserTable)
     val day = enumeration<DayOfWeek>("day")

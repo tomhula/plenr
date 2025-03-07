@@ -67,10 +67,7 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
     var currentDialogTraining by remember { mutableStateOf<TrainingWithParticipantsDto?>(null) }
     /* Whether the current dialog is editing a training or creating a new one */
     var currentDialogTrainingEdit by remember { mutableStateOf(false) }
-    val permanentBusyTimes = remember { mutableStateMapOf<UserDto, WeeklyTimeRanges>() }
-    val permanentAvailableTimes by derivedStateOf {
-        permanentBusyTimes.mapValues { it.value.inverted() }
-    }
+    val userPermanentAvailabilities = remember { mutableStateMapOf<UserDto, WeeklyTimeRanges>() }
     var tooltipX by remember { mutableStateOf(0) }
     var tooltipY by remember { mutableStateOf(0) }
     var tooltipUser by remember { mutableStateOf<UserDto?>(null) }
@@ -83,7 +80,7 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
         users = mainViewModel.getAllUsers().filterNot { it.isAdmin }
         for (user in users)
             launch {
-                permanentBusyTimes[user] = mainViewModel.getPermanentBusyTimesAdmin(user.id)
+                userPermanentAvailabilities[user] = mainViewModel.getUserPermanentAvailabilityAdmin(user.id)
             }
     }
 
@@ -152,7 +149,7 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
                 position(Position.Absolute)
                 top(0.px)
                 left((-80).px)
-                for (user in permanentAvailableTimes.keys)
+                for (user in userPermanentAvailabilities.keys)
                 {
                     div {
                         color(Colors.getColor(user.id))
@@ -193,7 +190,7 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
                     width(timetableWidth.px)
                     style("pointer-events", "none")
 
-                    for ((user, availableTimeRanges) in permanentAvailableTimes)
+                    for ((user, availableTimeRanges) in userPermanentAvailabilities)
                         userAvailability(
                             user = user,
                             heightPx = userAvailabilityHeightPx,

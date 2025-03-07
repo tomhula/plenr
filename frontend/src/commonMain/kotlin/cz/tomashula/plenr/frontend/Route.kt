@@ -6,7 +6,7 @@ object Route
     const val SET_PASSWORD = "/set-password"
     const val LOGIN = "/login"
     const val HOME = "/"
-    const val UNAVAILABLE_DAYS = "/unavailable-days"
+    const val AVAILABILITY = "/availability"
     const val PREFERENCES = "/preferences"
     const val ARRANGE_TRAININGS = "/arrange-trainings"
     const val MANAGE_USERS = "/manage-users"

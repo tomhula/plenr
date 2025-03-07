@@ -12,7 +12,7 @@ import cz.tomashula.plenr.frontend.page.adminsetup.adminSetupPage
 import cz.tomashula.plenr.frontend.page.login.forgotPasswordPage
 import cz.tomashula.plenr.frontend.page.login.loginPage
 import cz.tomashula.plenr.frontend.page.passwordsetup.passwordSetupPage
-import cz.tomashula.plenr.frontend.page.user.unavailableDaysPage
+import cz.tomashula.plenr.frontend.page.user.availabilityPage
 import cz.tomashula.plenr.frontend.page.user.userPreferencesPage
 import cz.tomashula.plenr.frontend.page.userHomePage
 import dev.kilua.Application
@@ -55,7 +55,7 @@ class PlenrFrontendApp : Application()
                 title = router?.currentPath?.path?.title() ?: "",
                 user = viewModel.user,
                 onLogoClick = { router?.navigate(Route.HOME) },
-                onUnavailableDaysClick = { router?.navigate(Route.UNAVAILABLE_DAYS) },
+                onAvailabilityClick = { router?.navigate(Route.AVAILABILITY) },
                 onPreferencesClick = { router?.navigate(Route.PREFERENCES) },
                 onLogoutClick = { viewModel.logout(); router?.navigate(Route.LOGIN) }
             )
@@ -98,8 +98,8 @@ class PlenrFrontendApp : Application()
                     route(Route.PREFERENCES) {
                         userPreferencesPage(viewModel)
                     }
-                    route(Route.UNAVAILABLE_DAYS) {
-                        unavailableDaysPage(viewModel)
+                    route(Route.AVAILABILITY) {
+                        availabilityPage(viewModel)
                     }
                     if (viewModel.user?.isAdmin == true)
                     {
@@ -128,7 +128,7 @@ class PlenrFrontendApp : Application()
         Route.ADMIN_SETUP -> "Admin Setup"
         Route.SET_PASSWORD -> "Set Password"
         Route.LOGIN -> "Login"
-        Route.UNAVAILABLE_DAYS -> "Unavailable Days"
+        Route.AVAILABILITY -> "Availability"
         Route.PREFERENCES -> "Preferences"
         Route.ARRANGE_TRAININGS -> "Arrange Trainings"
         Route.MANAGE_USERS -> "Manage Users"

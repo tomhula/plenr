@@ -3,9 +3,6 @@ package cz.tomashula.plenr.frontend.component
 import androidx.compose.runtime.Composable
 import cz.tomashula.plenr.feature.user.UserDto
 import cz.tomashula.plenr.frontend.Logo
-import dev.kilua.compose.foundation.layout.Arrangement
-import dev.kilua.compose.foundation.layout.Row
-import dev.kilua.compose.ui.Alignment
 import dev.kilua.core.IComponent
 import dev.kilua.html.AlignItems
 import dev.kilua.html.Background
@@ -23,9 +20,6 @@ import dev.kilua.html.perc
 import dev.kilua.html.px
 import dev.kilua.html.rem
 import dev.kilua.html.spant
-import dev.kilua.html.style.pClass
-import dev.kilua.html.style.pElement
-import dev.kilua.html.style.style
 import dev.kilua.html.ul
 import dev.kilua.panel.hPanel
 
@@ -34,7 +28,7 @@ fun IComponent.plenrHeader(
     title: String,
     user: UserDto?,
     onLogoClick: () -> Unit = {},
-    onUnavailableDaysClick: () -> Unit = {},
+    onAvailabilityClick: () -> Unit = {},
     onPreferencesClick: () -> Unit = {},
     onLogoutClick: () -> Unit = {}
 )
@@ -102,8 +96,8 @@ fun IComponent.plenrHeader(
                     ul("dropdown-menu") {
                         if (!user.isAdmin)
                             dropDownItem(
-                                text = "Unavailable Days",
-                                onClick = onUnavailableDaysClick
+                                text = "Availability",
+                                onClick = onAvailabilityClick
                             )
                         dropDownItem(
                             text = "Preferences",

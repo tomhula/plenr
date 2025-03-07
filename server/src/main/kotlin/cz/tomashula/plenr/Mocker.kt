@@ -3,7 +3,7 @@ package cz.tomashula.plenr
 import cz.tomashula.plenr.feature.training.TrainingParticipantTable
 import cz.tomashula.plenr.feature.training.TrainingTable
 import cz.tomashula.plenr.feature.training.TrainingType
-import cz.tomashula.plenr.feature.user.PermanentBusyTimeTable
+import cz.tomashula.plenr.feature.user.UserPermanentAvailabilityTable
 import cz.tomashula.plenr.feature.user.TempBusyTimeTable
 import cz.tomashula.plenr.feature.user.UserPreferencesTable
 import cz.tomashula.plenr.feature.user.UserSetPasswordTable
@@ -36,14 +36,14 @@ class Mocker(
                 UserSetPasswordTable,
                 UserPreferencesTable,
                 TempBusyTimeTable,
-                PermanentBusyTimeTable,
+                UserPermanentAvailabilityTable,
                 TrainingTable,
                 UserTable
             )
             // Recreate all the tables
             SchemaUtils.create(
                 UserTable,
-                PermanentBusyTimeTable,
+                UserPermanentAvailabilityTable,
                 TrainingTable,
                 TrainingParticipantTable
             )
@@ -70,8 +70,8 @@ class Mocker(
                 val email = fields[2]
                 val phone = fields[3]
                 val isAdmin = fields[4]
-                val busyFrom = fields[5]
-                val busyTo = fields[6]
+                val availableFrom = fields[5]
+                val availableTo = fields[6]
 
                 // Hash the password using runBlocking since PasswordHasher is suspending
                 val passwordHash = runBlocking {
@@ -90,11 +90,11 @@ class Mocker(
 
                 // Insert busy times for all days of the week
                 DayOfWeek.entries.forEach { dayOfWeek ->
-                    PermanentBusyTimeTable.insert {
+                    UserPermanentAvailabilityTable.insert {
                         it[this.userId] = userId.value
                         it[this.day] = dayOfWeek
-                        it[this.start] = LocalTime.parse(busyFrom, timeFormat)
-                        it[this.end] = LocalTime.parse(busyTo, timeFormat)
+                        it[this.start] = LocalTime.parse(availableFrom, timeFormat)
+                        it[this.end] = LocalTime.parse(availableTo, timeFormat)
                     }
                 }
             }

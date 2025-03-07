@@ -3,7 +3,7 @@ package cz.tomashula.plenr.feature.user
 import kotlinx.datetime.DayOfWeek
 import cz.tomashula.plenr.auth.AuthService
 import cz.tomashula.plenr.auth.UnauthorizedException
-import cz.tomashula.plenr.feature.user.preferences.PermanentBusyTimesDto
+import cz.tomashula.plenr.feature.user.preferences.UserPermanentAvailabilityDto
 import cz.tomashula.plenr.feature.user.preferences.UserPreferencesDto
 import cz.tomashula.plenr.feature.user.preferences.UserPreferencesService
 import cz.tomashula.plenr.feature.user.preferences.WeeklyTimeRanges
@@ -16,7 +16,7 @@ class DatabaseUserPreferencesService(
     override val coroutineContext: CoroutineContext,
     database: Database,
     private val authService: AuthService
-) : UserPreferencesService, DatabaseService(database, UserPreferencesTable, PermanentBusyTimeTable, TempBusyTimeTable)
+) : UserPreferencesService, DatabaseService(database, UserPreferencesTable, UserPermanentAvailabilityTable, TempBusyTimeTable)
 {
     private fun ResultRow.toUserPreferencesDto() = UserPreferencesDto(
         trainingsPerWeek = this[UserPreferencesTable.trainingsPerWeek],
@@ -72,51 +72,51 @@ class DatabaseUserPreferencesService(
         }
     }
 
-    override suspend fun getPermanentBusyTimes(
+    override suspend fun getUserPermanentAvailability(
         userId: Int,
         authToken: String
-    ): PermanentBusyTimesDto
+    ): UserPermanentAvailabilityDto
     {
         val caller = authService.validateToken(authToken) ?: throw UnauthorizedException()
 
         if (caller.id != userId && !caller.isAdmin)
-            throw UnauthorizedException("Only admins can get other users' permanent busy times")
+            throw UnauthorizedException("Only admins can get other users' permanent availability")
 
         val weeklyTimeRangesBuilder = WeeklyTimeRanges.builder()
 
         dbQuery {
-            PermanentBusyTimeTable.selectAll()
-                .where { PermanentBusyTimeTable.userId eq userId }
+            UserPermanentAvailabilityTable.selectAll()
+                .where { UserPermanentAvailabilityTable.userId eq userId }
                 .forEach { row ->
-                    val day = row[PermanentBusyTimeTable.day]
-                    val start = row[PermanentBusyTimeTable.start]
-                    val end = row[PermanentBusyTimeTable.end]
+                    val day = row[UserPermanentAvailabilityTable.day]
+                    val start = row[UserPermanentAvailabilityTable.start]
+                    val end = row[UserPermanentAvailabilityTable.end]
                     weeklyTimeRangesBuilder.addTimeRange(day, start, end)
                 }
         }
 
-        return PermanentBusyTimesDto(userId, weeklyTimeRangesBuilder.build())
+        return UserPermanentAvailabilityDto(userId, weeklyTimeRangesBuilder.build())
     }
 
-    override suspend fun setPermanentBusyTimes(
-        permanentBusyTimesDto: PermanentBusyTimesDto,
+    override suspend fun setUserPermanentAvailability(
+        userPermanentAvailabilityDto: UserPermanentAvailabilityDto,
         authToken: String
     )
     {
         val caller = authService.validateToken(authToken) ?: throw UnauthorizedException()
 
         dbQuery {
-            PermanentBusyTimeTable.deleteWhere { PermanentBusyTimeTable.userId eq caller.id }
+            UserPermanentAvailabilityTable.deleteWhere { UserPermanentAvailabilityTable.userId eq caller.id }
 
             for (dayOfWeek in DayOfWeek.entries)
             {
-                val dayTimeRanges = permanentBusyTimesDto.busyTimes.getRangesForDay(dayOfWeek)
+                val dayTimeRanges = userPermanentAvailabilityDto.availableTimes.getRangesForDay(dayOfWeek)
 
-                PermanentBusyTimeTable.batchInsert(dayTimeRanges) { timeRange ->
-                    this[PermanentBusyTimeTable.userId] = permanentBusyTimesDto.userId
-                    this[PermanentBusyTimeTable.day] = dayOfWeek
-                    this[PermanentBusyTimeTable.start] = timeRange.start
-                    this[PermanentBusyTimeTable.end] = timeRange.endInclusive
+                UserPermanentAvailabilityTable.batchInsert(dayTimeRanges) { timeRange ->
+                    this[UserPermanentAvailabilityTable.userId] = userPermanentAvailabilityDto.userId
+                    this[UserPermanentAvailabilityTable.day] = dayOfWeek
+                    this[UserPermanentAvailabilityTable.start] = timeRange.start
+                    this[UserPermanentAvailabilityTable.end] = timeRange.endInclusive
                 }
             }
         }

@@ -2,7 +2,7 @@
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- Truncate all tables to clear data
-TRUNCATE TABLE permanent_busy_time;
+TRUNCATE TABLE user_permanent_availability;
 TRUNCATE TABLE temp_busy_time;
 TRUNCATE TABLE training_participant;
 TRUNCATE TABLE training;
@@ -106,7 +106,7 @@ VALUES (1, 2),
        (16, 3),
        (16, 4);
 
-INSERT INTO permanent_busy_time (user_id, day, start, end)
+INSERT INTO user_permanent_availability (user_id, day, start, end)
 VALUES
     -- User 1
     (1, 0, '08:00:00', '16:00:00'),
