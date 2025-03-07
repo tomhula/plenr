@@ -124,7 +124,15 @@ fun IComponent.trainingDialogBody(
     }
     div {
         marginTop(10.px)
-        bt("Participants: ")
+        if (viewer == null || viewer.isAdmin)
+            bt("Participants: ")
+        else
+        {
+            if (participants.isEmpty())
+                bt("You have the training alone with the trainer.")
+            else
+                bt("With: ")
+        }
         for (participant in participants)
             participantBadge(participant) {
                 marginLeft(5.px)
