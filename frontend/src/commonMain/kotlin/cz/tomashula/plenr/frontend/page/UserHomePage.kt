@@ -7,7 +7,13 @@ import cz.tomashula.plenr.frontend.component.bsObjectDialog
 import cz.tomashula.plenr.frontend.component.rememberObjectDialogState
 import cz.tomashula.plenr.frontend.component.trainingCalendar
 import cz.tomashula.plenr.frontend.component.trainingDialogBody
+import cz.tomashula.plenr.frontend.component.trainingTypeLegend
 import cz.tomashula.plenr.util.Week
+import dev.kilua.compose.foundation.layout.Arrangement
+import dev.kilua.compose.foundation.layout.Row
+import dev.kilua.compose.ui.Alignment
+import dev.kilua.compose.ui.Modifier
+import dev.kilua.compose.ui.fillMaxWidth
 import dev.kilua.core.IComponent
 import kotlinx.datetime.atTime
 
@@ -29,6 +35,14 @@ fun IComponent.userHomePage(viewModel: MainViewModel)
 
     bsObjectDialog(trainingDialogState, "Training details", { trainingDialogState.hide() }) {
         trainingDialogBody(it, viewModel.user!!)
+    }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.End,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        trainingTypeLegend()
     }
 
     trainingCalendar(
