@@ -34,6 +34,7 @@ tasks {
     }
 
     this.run.configure {
+        workingDir = rootProject.projectDir.resolve("run")
         dependsOn(processFrontendDev)
     }
 }
