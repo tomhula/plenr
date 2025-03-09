@@ -1,7 +1,6 @@
 - Authentication/Authorization
 - Server exception encapsulation
 - Use better authentication (JWT?)
-- Fix initial /login route not showing in the address bar
 - Handle authentication cases. Token not being valid anymore. Basically some call failing due to invalid auth token, so authentication challenge should happen again.
 - Add localisation
 - Make sure to not send user contact details everywhere (entire UserDto)
@@ -18,6 +17,3 @@
 - Add legend to describe training type colors
 - Add ability to remove an arranged (but not yet confirmed; dashed border) training
 - Add ability to cancel a training
-
-## Arrange Trainings
-- Quick user availability hover (no delay before appearance)
