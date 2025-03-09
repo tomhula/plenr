@@ -29,11 +29,12 @@ tasks {
         jsBrowserDistributionTask
     )
 
-    compileKotlin {
-        if (gradle.taskGraph.hasTask(shadowJar.get()))
-            dependsOn(processFrontendProd)
-        else
-            dependsOn(processFrontendDev)
+    shadowJar {
+        dependsOn(processFrontendProd)
+    }
+
+    this.run.configure {
+        dependsOn(processFrontendDev)
     }
 }
 
