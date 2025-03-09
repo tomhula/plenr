@@ -339,6 +339,7 @@ private fun IComponent.trainingDialog(
     {
         participantBadge(user) {
             cursor(Cursor.Pointer)
+            style("user-select", "none")
             if (participants.contains(user))
                 border(2.px, BorderStyle.Solid, Color.Black)
             else
