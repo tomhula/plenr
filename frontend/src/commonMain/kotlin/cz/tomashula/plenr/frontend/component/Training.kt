@@ -16,6 +16,7 @@ import dev.kilua.html.Cursor
 import dev.kilua.html.FlexWrap
 import dev.kilua.html.FontWeight
 import dev.kilua.html.IDiv
+import dev.kilua.html.br
 import dev.kilua.html.bt
 import dev.kilua.html.div
 import dev.kilua.html.helpers.TagStyleFun.Companion.background
@@ -102,30 +103,27 @@ fun IComponent.trainingDialogBody(
 {
     val participants = remember(training.participants) { training.participants.filter { it != viewer} }
 
-    div {
-        marginTop(10.px)
-        bt("Name: ")
-        spant(training.name)
+    @Composable
+    fun property(name: String, value: String) {
+        div {
+            marginTop(16.px)
+            bt(name)
+            br()
+            spant(value) {
+                marginTop(5.px)
+            }
+        }
     }
-    div {
-        marginTop(10.px)
-        bt("Description: ")
-        spant(training.description)
-    }
-    div {
-        marginTop(10.px)
-        bt("Start: ")
-        spant(training.startDateTime.format(dateTimeFormat))
-    }
-    div {
-        marginTop(10.px)
-        bt("Length: ")
-        spant("${training.lengthMinutes}min")
-    }
+
+    property("Name", training.name)
+    property("Type", training.type.name.lowercase().replaceFirstChar { it.uppercase() })
+    property("Description", training.description)
+    property("Start", training.startDateTime.format(dateTimeFormat))
+    property("Length", "${training.lengthMinutes}min")
     div {
         marginTop(10.px)
         if (viewer == null || viewer.isAdmin)
-            bt("Participants: ")
+            bt("Participants")
         else
         {
             if (participants.isEmpty())
@@ -133,6 +131,7 @@ fun IComponent.trainingDialogBody(
             else
                 bt("With: ")
         }
+        br()
         for (participant in participants)
             participantBadge(participant) {
                 marginLeft(5.px)
