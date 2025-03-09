@@ -417,6 +417,10 @@ private fun IComponent.trainingDialog(
                     option(label = TrainingType.DRESSAGE.name.lowercase(), value = TrainingType.DRESSAGE.name)
                     option(label = TrainingType.PARKOUR.name.lowercase(), value = TrainingType.PARKOUR.name)
                     bindCustom(TrainingForm::type)
+                    onChange {
+                        val length = if (value?.lowercase() == TrainingType.PARKOUR.name.lowercase()) 60 else 45
+                        setData(getData().copy(lengthMinutes = length))
+                    }
                 }
             }
             bsLabelledFormField("Start") {
