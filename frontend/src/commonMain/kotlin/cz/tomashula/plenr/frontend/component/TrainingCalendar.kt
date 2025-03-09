@@ -109,7 +109,7 @@ private fun IComponent.trainingCalendarDay(
     onTrainingClick: (TrainingWithParticipantsDto) -> Unit
 )
 {
-    val trainingsOrdered by remember { derivedStateOf { trainings.sortedBy { it.startDateTime} } }
+    val trainingsOrdered = remember(trainings) { trainings.sortedBy { it.startDateTime} }
 
     vPanel(
         justifyContent = JustifyContent.Center,
