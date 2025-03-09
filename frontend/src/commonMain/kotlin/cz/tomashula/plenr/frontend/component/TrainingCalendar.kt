@@ -34,9 +34,11 @@ fun IComponent.trainingCalendar(
     onTrainingClick: (TrainingWithParticipantsDto) -> Unit = {}
 )
 {
-    val trainingsByDate by derivedStateOf { trainings.groupBy { it.startDateTime.date } }
-    val upcomingTrainingDaysOrdered by derivedStateOf {
-        trainingsByDate.keys.filter { it >= selectedWeek.dateTimeRange.endInclusive.date }.sortedBy { it }
+    val trainingsByDate by remember { derivedStateOf { trainings.groupBy { it.startDateTime.date } } }
+    val upcomingTrainingDaysOrdered by remember {
+        derivedStateOf {
+            trainingsByDate.keys.filter { it >= selectedWeek.dateTimeRange.endInclusive.date }.sortedBy { it }
+        }
     }
 
     Column(
@@ -112,7 +114,7 @@ private fun IComponent.trainingCalendarDay(
     onTrainingClick: (TrainingWithParticipantsDto) -> Unit
 )
 {
-    val trainingsOrdered by derivedStateOf { trainings.sortedBy { it.startDateTime} }
+    val trainingsOrdered by remember { derivedStateOf { trainings.sortedBy { it.startDateTime} } }
 
     vPanel(
         justifyContent = JustifyContent.Center,

@@ -74,8 +74,10 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
     var tooltipY by remember { mutableStateOf(0) }
     var tooltipUser by remember { mutableStateOf<UserDto?>(null) }
 
-    val newOrModifiedTrainings by derivedStateOf {
-        trainings.values.flatten().filter { it.edited || it.created }
+    val newOrModifiedTrainings by remember {
+        derivedStateOf {
+            trainings.values.flatten().filter { it.edited || it.created }
+        }
     }
 
     LaunchedEffect(Unit) {
@@ -311,12 +313,6 @@ private fun IComponent.trainingDialog(
 {
     var form: Form<TrainingForm>? = null
     var participants by remember(training) { mutableStateOf(training.participants) }
-    val participantsAlphabetically by derivedStateOf {
-        participants.sortedBy { it.fullName }
-    }
-    val usersAlphabetically by derivedStateOf {
-        users.sortedBy { it.fullName }
-    }
 
     bsModalDialog(
         shown = shown,
