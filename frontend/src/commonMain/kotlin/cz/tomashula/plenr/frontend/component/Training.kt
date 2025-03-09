@@ -129,7 +129,7 @@ fun IComponent.trainingDialogBody(
             if (participants.isEmpty())
                 bt("You have the training alone with the trainer.")
             else
-                bt("With: ")
+                bt("With")
         }
         br()
         for (participant in participants)
