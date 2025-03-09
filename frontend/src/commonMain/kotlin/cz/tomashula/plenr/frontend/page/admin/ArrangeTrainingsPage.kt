@@ -404,12 +404,6 @@ private fun IComponent.trainingDialog(
     }
 }
 
-private val localDateTimeFormat = LocalDateTime.Format {
-    hour(Padding.ZERO)
-    char(':')
-    minute(Padding.ZERO)
-}
-
 @Composable
 private fun IComponent.trainingView(
     trainingView: TrainingView,
