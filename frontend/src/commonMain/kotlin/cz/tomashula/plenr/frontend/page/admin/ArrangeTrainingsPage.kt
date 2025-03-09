@@ -417,8 +417,14 @@ private fun IComponent.trainingDialog(
                     option(label = TrainingType.DRESSAGE.name.lowercase(), value = TrainingType.DRESSAGE.name)
                     option(label = TrainingType.PARKOUR.name.lowercase(), value = TrainingType.PARKOUR.name)
                     bindCustom(TrainingForm::type)
+                    val dressageLength = 45
+                    val parkourLength = 60
+                    LaunchedEffect(training) {
+                        val length = if (value?.lowercase() == TrainingType.PARKOUR.name.lowercase()) parkourLength else dressageLength
+                        setData(getData().copy(lengthMinutes = length))
+                    }
                     onChange {
-                        val length = if (value?.lowercase() == TrainingType.PARKOUR.name.lowercase()) 60 else 45
+                        val length = if (value?.lowercase() == TrainingType.PARKOUR.name.lowercase()) parkourLength else dressageLength
                         setData(getData().copy(lengthMinutes = length))
                     }
                 }
