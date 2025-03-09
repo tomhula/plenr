@@ -10,7 +10,9 @@ import cz.tomashula.plenr.frontend.Colors
 import cz.tomashula.plenr.frontend.MainViewModel
 import cz.tomashula.plenr.frontend.component.*
 import cz.tomashula.plenr.util.LocalTimeRange
+import cz.tomashula.plenr.util.contains
 import cz.tomashula.plenr.util.now
+import cz.tomashula.plenr.util.rangeTo
 import dev.kilua.compose.foundation.layout.Column
 import dev.kilua.compose.ui.Alignment
 import dev.kilua.core.IComponent
@@ -27,13 +29,12 @@ import dev.kilua.utils.cast
 import dev.kilua.utils.toJsAny
 import kotlinx.coroutines.launch
 import kotlinx.datetime.*
-import kotlinx.datetime.format.Padding
 import kotlinx.datetime.format.char
 import kotlinx.serialization.Serializable
 import web.dom.CanvasTextAlign
 import web.dom.CanvasTextBaseline
 import web.dom.events.MouseEvent
-import web.window
+import kotlin.time.Duration.Companion.minutes
 
 private data class TrainingView(
     val edited: Boolean,
@@ -101,6 +102,7 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
         edit = currentDialogTrainingEdit,
         training = currentDialogTraining ?: newTraining(selectedDay.atTime(12, 0), mainViewModel.user!!),
         users = users,
+        userAvailabilities = userPermanentAvailabilities,
         onSave = { saveTraining ->
             val originalTraining = currentDialogTraining!!
             val originalDate = originalTraining.startDateTime.date
@@ -307,12 +309,49 @@ private fun IComponent.trainingDialog(
     edit: Boolean,
     training: TrainingWithParticipantsDto,
     users: List<UserDto>,
+    userAvailabilities: Map<UserDto, WeeklyTimeRanges> = emptyMap(),
     onSave: (TrainingWithParticipantsDto) -> Unit,
     onDismiss: () -> Unit
 )
 {
     var form: Form<TrainingForm>? = null
     var participants by remember(training) { mutableStateOf(training.participants) }
+    val availableUsersSorted = remember(training, users, userAvailabilities) {
+        users
+            .filter { user ->
+                userAvailabilities[user]?.getRangesForDay(training.startDateTime.date.dayOfWeek)?.let { ranges ->
+                    ranges.any { range ->
+                        training.startDateTime.time..training.startDateTime.time.plusMinutes(training.lengthMinutes) in range
+                    }
+                } == true
+            }
+            .sortedBy { it.fullName }
+            .toSet()
+    }
+    val unavailableUsers = remember(users, availableUsersSorted) {
+        users.toSet() - availableUsersSorted
+    }
+
+    @Composable
+    fun IComponent.trainingParticipant(
+        user: UserDto
+    )
+    {
+        participantBadge(user) {
+            cursor(Cursor.Pointer)
+            if (participants.contains(user))
+                border(2.px, BorderStyle.Solid, Color.Black)
+            else
+                border(2.px, BorderStyle.Solid, Color("transparent"))
+            onClick {
+                if (participants.contains(user))
+                    participants -= user
+                else
+                    participants += user
+            }
+        }
+    }
+
 
     bsModalDialog(
         shown = shown,
@@ -378,26 +417,48 @@ private fun IComponent.trainingDialog(
                     rowGap = 3.px,
                     flexWrap = FlexWrap.Wrap,
                 ) {
-                    for (user in users)
-                    {
-                        participantBadge(user) {
-                            cursor(Cursor.Pointer)
-                            if (participants.contains(user))
-                                border(2.px, BorderStyle.Solid, Color.Black)
-                            else
-                                border(2.px, BorderStyle.Solid, Color("transparent"))
-                            onClickLaunch {
-                                if (participants.contains(user))
-                                    participants -= user
-                                else
-                                    participants += user
-                            }
+                    for (user in availableUsersSorted)
+                        trainingParticipant(user)
+                }
+
+                var unavailableUsersExpanded by remember { mutableStateOf(participants.any { it in unavailableUsers }) }
+
+                if (unavailableUsers.isNotEmpty())
+                {
+                    hPanel(
+                        alignItems = AlignItems.Center,
+                    ) {
+                        cursor(Cursor.Pointer)
+                        fontSize(0.8.rem)
+                        color(Color.Gray)
+                        spant("Unavailable users")
+                        materialIconOutlined(if (unavailableUsersExpanded) "arrow_drop_up" else "arrow_drop_down")
+                        onClick {
+                            unavailableUsersExpanded = !unavailableUsersExpanded
                         }
                     }
+                    if (unavailableUsersExpanded)
+                        hPanel(
+                            gap = 3.px,
+                            rowGap = 3.px,
+                            flexWrap = FlexWrap.Wrap,
+                        ) {
+                            for (user in unavailableUsers)
+                                trainingParticipant(user)
+                        }
                 }
             }
         }
     }
+}
+
+private fun LocalTime.plusMinutes(minutes: Int): LocalTime
+{
+    val date = Clock.System.todayIn(TimeZone.currentSystemDefault())
+    val instant = this.atDate(date).toInstant(TimeZone.currentSystemDefault())
+    val instantOffset = instant.plus(minutes.minutes)
+    val offsetTime = instantOffset.toLocalDateTime(TimeZone.currentSystemDefault()).time
+    return offsetTime
 }
 
 @Composable
