@@ -237,14 +237,8 @@ private fun IComponent.userTooltip(
     participantBadge(user) {
         position(Position.Absolute)
         style("pointer-events", "none")
-        /* When the element comes into dom, (a user is hovered over) the first tick it does not have
-        * width and height calculated yet, but still renders, thus the offsets are wrong, and it introduces a small flicker. */
-        if (element.clientWidth == 0 || element.clientHeight == 0)
-            visibility(Visibility.Hidden)
-        else
-            visibility(Visibility.Visible)
-        val offsetX = -(element.clientWidth / 2)
-        val offsetY = -element.clientHeight - 5
+        val offsetX = 10
+        val offsetY = 10
         left((x + offsetX).px)
         top((y + offsetY).px)
         zIndex(10)
