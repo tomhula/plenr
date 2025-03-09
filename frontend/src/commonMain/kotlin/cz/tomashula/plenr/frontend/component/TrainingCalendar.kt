@@ -4,24 +4,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import cz.tomashula.plenr.feature.training.TrainingType
 import cz.tomashula.plenr.feature.training.TrainingWithParticipantsDto
 import cz.tomashula.plenr.feature.user.UserDto
-import cz.tomashula.plenr.frontend.Colors
 import cz.tomashula.plenr.util.Week
 import dev.kilua.compose.foundation.layout.Arrangement
 import dev.kilua.compose.foundation.layout.Column
-import dev.kilua.compose.foundation.layout.Row
 import dev.kilua.compose.ui.Alignment
 import dev.kilua.compose.ui.Modifier
 import dev.kilua.compose.ui.fillMaxWidth
 import dev.kilua.core.IComponent
 import dev.kilua.html.*
-import dev.kilua.html.helpers.TagStyleFun.Companion.background
 import dev.kilua.panel.flexPanel
 import dev.kilua.panel.hPanel
 import dev.kilua.panel.vPanel
-import kotlinx.datetime.*
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.format
 import kotlinx.datetime.format.Padding
 import kotlinx.datetime.format.char
 
@@ -34,11 +31,9 @@ fun IComponent.trainingCalendar(
     onTrainingClick: (TrainingWithParticipantsDto) -> Unit = {}
 )
 {
-    val trainingsByDate by remember { derivedStateOf { trainings.groupBy { it.startDateTime.date } } }
-    val upcomingTrainingDaysOrdered by remember {
-        derivedStateOf {
+    val trainingsByDate = remember(trainings) { trainings.groupBy { it.startDateTime.date } }
+    val upcomingTrainingDaysOrdered = remember(trainingsByDate, selectedWeek) {
             trainingsByDate.keys.filter { it >= selectedWeek.dateTimeRange.endInclusive.date }.sortedBy { it }
-        }
     }
 
     Column(
