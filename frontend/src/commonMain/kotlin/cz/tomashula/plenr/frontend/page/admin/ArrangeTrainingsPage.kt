@@ -19,6 +19,7 @@ import dev.kilua.core.IComponent
 import dev.kilua.form.Form
 import dev.kilua.form.InputType
 import dev.kilua.form.select.select
+import dev.kilua.form.text.textArea
 import dev.kilua.form.time.richDateTime
 import dev.kilua.html.*
 import dev.kilua.html.helpers.TagStyleFun.Companion.background
@@ -410,7 +411,9 @@ private fun IComponent.trainingDialog(
                 bsFormInput(it, TrainingForm::name)
             }
             bsLabelledFormField("Description") {
-                bsFormInput(it, TrainingForm::description)
+                textArea(it, className = "form-control") {
+                    bind(TrainingForm::description)
+                }
             }
             bsLabelledFormField("Type") {
                 select(id = it, className = "form-select") {
