@@ -26,6 +26,7 @@ import dev.kilua.html.helpers.TagStyleFun.Companion.border
 import dev.kilua.html.helpers.onClickLaunch
 import dev.kilua.panel.hPanel
 import dev.kilua.utils.cast
+import dev.kilua.utils.hour
 import dev.kilua.utils.toJsAny
 import kotlinx.coroutines.launch
 import kotlinx.datetime.*
@@ -173,11 +174,18 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
                 height(100.perc)
 
                 val timetableHeight = 500
-                val timetableWidth = 3000
+                val timetableWidth = 2000
+
+                val fromHour = 8
+                val toHour = 21
+
+                val spacing = timetableWidth / (toHour - fromHour)
 
                 timetableBackground(
                     height = timetableHeight,
                     width = timetableWidth,
+                    fromHour = fromHour,
+                    toHour = toHour,
                     color = Color("#c6c6c6dd"),
                     onClick = { clickedTime ->
                         currentDialogTraining = newTraining(
@@ -201,6 +209,8 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
                             user = user,
                             heightPx = userAvailabilityHeightPx,
                             marginTop = userAvailabilitySpacing,
+                            hourWidth = spacing,
+                            startHour = fromHour,
                             onMouseMove = { event ->
                                 tooltipX = event.clientX
                                 tooltipY = event.clientY
@@ -213,6 +223,8 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
                     for (training in trainings[selectedDay] ?: emptyList())
                         trainingView(
                             trainingView = training,
+                            hourWidth = spacing,
+                            startHour = fromHour,
                             onEdit = { currentDialogTraining = it; currentDialogTrainingEdit = true }
                         )
                 }
@@ -255,6 +267,8 @@ private fun IComponent.userTooltip(
 private fun IComponent.userAvailability(
     user: UserDto,
     heightPx: Int,
+    hourWidth: Int,
+    startHour: Int,
     marginTop: CssSize,
     onMouseMove: (MouseEvent) -> Unit = {},
     onMouseExit: (MouseEvent) -> Unit = {},
@@ -266,6 +280,7 @@ private fun IComponent.userAvailability(
         marginTop(marginTop)
         height(heightPx.px)
         position(Position.Relative)
+        overflowX(Overflow.Hidden)
         style("pointer-events", "auto")
         onEvent<MouseEvent>("mousemove") { onMouseMove(it) }
         onEvent<MouseEvent>("mouseleave") { onMouseExit(it) }
@@ -273,6 +288,8 @@ private fun IComponent.userAvailability(
         for (range in availableTimeRanges)
             userAvailabilityPart(
                 range = range,
+                hourWidth = hourWidth,
+                startHour = startHour,
                 borderRadius = (heightPx / 2).px,
                 color = Colors.getColor(user.id)
             )
@@ -282,11 +299,12 @@ private fun IComponent.userAvailability(
 @Composable
 private fun IComponent.userAvailabilityPart(
     range: LocalTimeRange,
+    hourWidth: Int,
+    startHour: Int,
     borderRadius: CssSize,
     color: Color
 )
 {
-    val totalMinutes = 24 * 60f
     val startMinute = range.start.hour * 60 + range.start.minute
     val endMinute = range.endInclusive.hour * 60 + range.endInclusive.minute
     val durationMinutes = endMinute - startMinute
@@ -298,8 +316,8 @@ private fun IComponent.userAvailabilityPart(
         background(color)
         borderRadius(borderRadius)
         position(Position.Absolute)
-        left((startMinute / totalMinutes * 100).perc)
-        width((durationMinutes / totalMinutes * 100).perc)
+        left(((startMinute / 60f - startHour) * hourWidth).toInt().px)
+        width((durationMinutes / 60f * hourWidth).toInt().px)
     }
 }
 
@@ -465,11 +483,12 @@ private fun LocalTime.plusMinutes(minutes: Int): LocalTime
 @Composable
 private fun IComponent.trainingView(
     trainingView: TrainingView,
+    hourWidth: Int,
+    startHour: Int,
     onEdit: (TrainingWithParticipantsDto) -> Unit = {},
 )
 {
     val training = trainingView.training
-    val totalMinutes = 24 * 60f
     val startMinute = training.startDateTime.hour * 60 + training.startDateTime.minute
     val durationMinutes = training.lengthMinutes
 
@@ -478,8 +497,8 @@ private fun IComponent.trainingView(
         onClick = { onEdit(training) }
     ) {
         position(Position.Absolute)
-        left((startMinute / totalMinutes * 100).perc)
-        width((durationMinutes / totalMinutes * 100).perc)
+        left(((startMinute / 60f - startHour) * hourWidth).toInt().px)
+        width((durationMinutes / 60f * hourWidth).toInt().px)
         marginTop(30.px)
 
         if (trainingView.edited || trainingView.created)
@@ -492,6 +511,8 @@ fun IComponent.timetableBackground(
     height: Int,
     width: Int,
     color: Color,
+    fromHour: Int = 0,
+    toHour: Int = 24,
     onClick: (LocalTime) -> Unit = {}
 )
 {
@@ -511,21 +532,22 @@ fun IComponent.timetableBackground(
         ctx.textBaseline = "middle".cast<CanvasTextBaseline>()
         ctx.font = "20px " + ctx.font.split(" ").last()
 
-        val totalLines = 24
-        val spacing = canvasWidth / totalLines
+        val totalHours = toHour - fromHour
+        val spacing = canvasWidth / totalHours
 
-        for (i in 0..23)
+        for (i in 0..<totalHours)
         {
             val x = i * spacing
+            val hour = fromHour + i
             ctx.beginPath()
             ctx.moveTo(x + 0.5, 0.0)
             ctx.lineTo(x.toDouble(), canvasHeight.toDouble() - 35)
             ctx.stroke()
-            ctx.fillText(i.toString().padStart(2, '0'), x.toDouble(), canvasHeight.toDouble() - 20, maxWidth = 20.0)
+            ctx.fillText(hour.toString().padStart(2, '0'), x.toDouble(), canvasHeight.toDouble() - 20, maxWidth = 20.0)
         }
 
         onClick { clickEvent ->
-            val relativeMinute = (clickEvent.offsetX / spacing * 60).toInt()
+            val relativeMinute = ((clickEvent.offsetX / spacing + fromHour) * 60).toInt()
             val clickedTime = LocalTime(relativeMinute / 60, relativeMinute % 60)
             onClick(clickedTime)
         }
