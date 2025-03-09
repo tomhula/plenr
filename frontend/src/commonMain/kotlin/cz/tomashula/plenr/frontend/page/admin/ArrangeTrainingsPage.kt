@@ -22,6 +22,7 @@ import dev.kilua.html.*
 import dev.kilua.html.helpers.TagStyleFun.Companion.background
 import dev.kilua.html.helpers.TagStyleFun.Companion.border
 import dev.kilua.html.helpers.onClickLaunch
+import dev.kilua.panel.hPanel
 import dev.kilua.utils.cast
 import dev.kilua.utils.toJsAny
 import kotlinx.coroutines.launch
@@ -375,28 +376,29 @@ private fun IComponent.trainingDialog(
                 }
             }
             bsLabelledFormField("Participants") {
-                bsFormInput(id = it, required = false) {
-                    list("usersList")
-                    onInput { event ->
-                        val value = this@bsFormInput.value ?: return@onInput
-                        val user = users.find { it.fullName == value.trim() }
-                        if (user != null)
-                        {
-                            this@bsFormInput.value = ""
-                            participants = participants + user
+                br()
+                hPanel(
+                    gap = 3.px,
+                    rowGap = 3.px,
+                    flexWrap = FlexWrap.Wrap,
+                ) {
+                    for (user in users)
+                    {
+                        participantBadge(user) {
+                            cursor(Cursor.Pointer)
+                            if (participants.contains(user))
+                                border(2.px, BorderStyle.Solid, Color.Black)
+                            else
+                                border(2.px, BorderStyle.Solid, Color("transparent"))
+                            onClickLaunch {
+                                if (participants.contains(user))
+                                    participants -= user
+                                else
+                                    participants += user
+                            }
                         }
                     }
                 }
-                datalist(id = "usersList") {
-                    for (user in usersAlphabetically)
-                        option(label = user.fullName, value = user.fullName)
-                }
-                for (participant in participantsAlphabetically)
-                    divt(participant.fullName) {
-                        onClick {
-                            participants = participants - participant
-                        }
-                    }
             }
         }
     }
