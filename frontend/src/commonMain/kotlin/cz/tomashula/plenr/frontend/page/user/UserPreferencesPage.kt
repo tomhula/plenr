@@ -69,7 +69,9 @@ fun IComponent.userPreferencesPage(viewModel: MainViewModel)
                             tr {
                                 notificationsTableHeader("Notification")
                                 notificationsTableHeader("Email")
-                                notificationsTableHeader("SMS")
+                                notificationsTableHeader("SMS") {
+                                    color(Color.Gray)
+                                }
                             }
                         }
                         tbody {
@@ -114,12 +116,16 @@ fun TagStyleFun.notificationsTableHeaderDataStyle()
 }
 
 @Composable
-fun IComponent.notificationsTableHeader(text: String)
+fun IComponent.notificationsTableHeader(
+    text: String,
+    content: @Composable ITh.() -> Unit = {}
+)
 {
     th {
         notificationsTableHeaderDataStyle()
         background(Color("#f3f3f3"))
         +text
+        content()
     }
 }
 
@@ -147,15 +153,16 @@ private fun IComponent.notificationsTableRow(
         notificationsTableHeader(label)
         notificationsTableData {
             checkBox(value = email) {
-                style("transform", "scale(1.5")
+                style("transform", "scale(1.5)")
                 cursor(Cursor.Pointer)
                 onChange { onEmailChange(this.value) }
             }
         }
         notificationsTableData {
             checkBox(value = sms) {
-                style("transform", "scale(1.5")
-                cursor(Cursor.Pointer)
+                style("transform", "scale(1.5)")
+                disabled(true)
+                // cursor(Cursor.Pointer)
                 onChange { onSmsChange(this.value) }
             }
         }
