@@ -4,6 +4,8 @@ import cz.tomashula.plenr.auth.AuthService
 import cz.tomashula.plenr.auth.UnauthorizedException
 import cz.tomashula.plenr.feature.user.UserDto
 import cz.tomashula.plenr.feature.user.UserTable
+import cz.tomashula.plenr.feature.user.preferences.UserPreferencesDto
+import cz.tomashula.plenr.feature.user.preferences.UserPreferencesService
 import cz.tomashula.plenr.feature.user.toUserDto
 import cz.tomashula.plenr.mail.MailService
 import cz.tomashula.plenr.service.DatabaseService
@@ -17,7 +19,8 @@ class DatabaseTrainingService(
     database: Database,
     serverUrl: String,
     private val authService: AuthService,
-    private val mailService: MailService
+    private val mailService: MailService,
+    private val userPreferencesService: UserPreferencesService
 ) : TrainingService, DatabaseService(
     database,
     TrainingTable,
@@ -38,12 +41,47 @@ class DatabaseTrainingService(
         val trainingsByUser = mutableMapOf<UserDto, MutableSet<CreateOrUpdateTrainingDto>>()
         val participantsByTraining = mutableMapOf<CreateOrUpdateTrainingDto, MutableSet<UserDto>>()
         val newTrainingsIds = mutableMapOf<CreateOrUpdateTrainingDto, Int>()
+        val originalDateTimes = mutableMapOf<Int, LocalDateTime>()
         val arranger = caller
+
+        // Categorize trainings
+        val newTrainings = mutableSetOf<CreateOrUpdateTrainingDto>()
+        val movedTrainings = mutableSetOf<CreateOrUpdateTrainingDto>()
+        val cancelledTrainings = mutableSetOf<CreateOrUpdateTrainingDto>()
 
         dbQuery {
             for (createOrUpdateTrainingDto in trainings)
             {
                 val isUpdate = createOrUpdateTrainingDto.id != null
+
+                // For updates, check if the training was moved or cancelled
+                if (isUpdate) {
+                    val existingTraining = TrainingTable.selectAll()
+                        .where { TrainingTable.id eq createOrUpdateTrainingDto.id!! }
+                        .singleOrNull()
+
+                    if (existingTraining != null) {
+                        val existingDateTime = existingTraining[TrainingTable.startDateTime]
+                        val existingCancelled = existingTraining[TrainingTable.cancelled]
+
+                        // Store original date/time for moved trainings
+                        originalDateTimes[createOrUpdateTrainingDto.id!!] = existingDateTime
+
+                        // Check if the training was moved
+                        if (existingDateTime != createOrUpdateTrainingDto.startDateTime) {
+                            movedTrainings.add(createOrUpdateTrainingDto)
+                        }
+
+                        // Check if the training was cancelled
+                        if (!existingCancelled && createOrUpdateTrainingDto.cancelled) {
+                            cancelledTrainings.add(createOrUpdateTrainingDto)
+                        }
+                    }
+                } else {
+                    // New training
+                    newTrainings.add(createOrUpdateTrainingDto)
+                }
+
                 val trainingId =
                     if (!isUpdate) TrainingTable.insertAndGetId {
                         it[TrainingTable.arrangerId] = arranger.id
@@ -105,14 +143,68 @@ class DatabaseTrainingService(
             }
         }
 
-        for ((user, trainings) in trainingsWithParticipantsByUser)
-        {
-            val message = MailMessages.getNewTrainingsMessage(arranger, user, trainings.toSet(), serverUrl)
-            mailService.sendMail(
-                recipient = user.email,
-                subject = message.subject,
-                body = message.body
-            )
+        // Group trainings by user and type (new, moved, cancelled)
+        val newTrainingsWithParticipantsByUser = mutableMapOf<UserDto, MutableSet<TrainingWithParticipantsDto>>()
+        val movedTrainingsWithParticipantsByUser = mutableMapOf<UserDto, MutableSet<TrainingWithParticipantsDto>>()
+        val cancelledTrainingsWithParticipantsByUser = mutableMapOf<UserDto, MutableSet<TrainingWithParticipantsDto>>()
+
+        for ((user, userTrainings) in trainingsWithParticipantsByUser) {
+            for (training in userTrainings) {
+                val dto = training
+                val originalDto = trainings.find { it.id == dto.id }
+
+                if (originalDto != null) {
+                    if (originalDto in newTrainings) {
+                        newTrainingsWithParticipantsByUser.getOrPut(user) { mutableSetOf() }.add(dto)
+                    }
+                    if (originalDto in movedTrainings) {
+                        movedTrainingsWithParticipantsByUser.getOrPut(user) { mutableSetOf() }.add(dto)
+                    }
+                    if (originalDto in cancelledTrainings) {
+                        cancelledTrainingsWithParticipantsByUser.getOrPut(user) { mutableSetOf() }.add(dto)
+                    }
+                }
+            }
+        }
+
+        // Send emails based on user preferences
+        for (user in trainingsWithParticipantsByUser.keys) {
+            // Get user preferences
+            val userPreferences = userPreferencesService.getUserPreferences(user.id, authToken)
+
+            // Send new training notifications
+            val newTrainingsForUser = newTrainingsWithParticipantsByUser[user]
+            if (newTrainingsForUser != null && newTrainingsForUser.isNotEmpty() && userPreferences?.trainingArrangedNotiEmail == true) {
+                val message = MailMessages.getNewTrainingsMessage(arranger, user, newTrainingsForUser, serverUrl)
+                mailService.sendMail(
+                    recipient = user.email,
+                    subject = message.subject,
+                    body = message.body
+                )
+            }
+
+            // Send moved training notifications
+            val movedTrainingsForUser = movedTrainingsWithParticipantsByUser[user]
+            if (movedTrainingsForUser != null && movedTrainingsForUser.isNotEmpty() && userPreferences?.trainingMovedNotiEmail == true) {
+                val trainingOriginalDateTimes = movedTrainingsForUser.associate { it.id to originalDateTimes[it.id]!! }
+                val message = MailMessages.getMovedTrainingsMessage(arranger, user, movedTrainingsForUser, trainingOriginalDateTimes, serverUrl)
+                mailService.sendMail(
+                    recipient = user.email,
+                    subject = message.subject,
+                    body = message.body
+                )
+            }
+
+            // Send cancelled training notifications
+            val cancelledTrainingsForUser = cancelledTrainingsWithParticipantsByUser[user]
+            if (cancelledTrainingsForUser != null && cancelledTrainingsForUser.isNotEmpty() && userPreferences?.trainingCancelledNotiEmail == true) {
+                val message = MailMessages.getCancelledTrainingsMessage(arranger, user, cancelledTrainingsForUser, serverUrl)
+                mailService.sendMail(
+                    recipient = user.email,
+                    subject = message.subject,
+                    body = message.body
+                )
+            }
         }
     }
 

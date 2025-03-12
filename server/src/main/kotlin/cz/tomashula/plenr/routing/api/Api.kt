@@ -41,15 +41,7 @@ fun Routing.apiRoute(
             ).also { runBlocking { it.createIfNotExists() } }
         }
 
-        registerService<TrainingService> { ctx ->
-            DatabaseTrainingService(
-                ctx,
-                plenr.database,
-                serverUrl,
-                plenr.authService,
-                plenr.mailService
-            ).also { runBlocking { it.createIfNotExists() } }
-        }
+        var userPreferencesService: UserPreferencesService? = null
 
         registerService<UserPreferencesService> { ctx ->
             DatabaseUserPreferencesService(
@@ -57,7 +49,20 @@ fun Routing.apiRoute(
                 plenr.database,
                 plenr.authService
             ).also { runBlocking { it.createIfNotExists() } }
+                .also { userPreferencesService = it }
         }
+
+        registerService<TrainingService> { ctx ->
+            DatabaseTrainingService(
+                ctx,
+                plenr.database,
+                serverUrl,
+                plenr.authService,
+                plenr.mailService,
+                userPreferencesService!!
+            ).also { runBlocking { it.createIfNotExists() } }
+        }
+
 
         registerService<TempBusyTimesService> { ctx ->
             DatabaseTempBusyTimesService(
