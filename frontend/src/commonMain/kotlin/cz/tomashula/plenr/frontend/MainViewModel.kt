@@ -165,4 +165,18 @@ class MainViewModel
         UserPermanentAvailabilityDto(user!!.id, busyTimes),
         authToken!!
     )
+
+    suspend fun updateUser(user: UserDto): Boolean {
+        if (authToken == null || this.user?.isAdmin != true)
+            return false
+
+        return userService.updateUser(user, authToken!!)
+    }
+
+    suspend fun deleteUser(userId: Int): Boolean {
+        if (authToken == null || user?.isAdmin != true)
+            return false
+
+        return userService.deleteUser(userId, authToken!!)
+    }
 }

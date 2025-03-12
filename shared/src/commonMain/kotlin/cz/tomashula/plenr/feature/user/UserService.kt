@@ -21,6 +21,12 @@ interface UserService : RemoteService
     /** Allows admins to get all users. */
     suspend fun getAllUsers(authToken: String): List<UserDto>
 
+    /** Allows admins to update a user. */
+    suspend fun updateUser(user: UserDto, authToken: String): Boolean
+
+    /** Allows admins to delete a user. */
+    suspend fun deleteUser(id: Int, authToken: String): Boolean
+
     /** Allows anyone to check if an admin account exists. */
     suspend fun adminExists(): Boolean
 

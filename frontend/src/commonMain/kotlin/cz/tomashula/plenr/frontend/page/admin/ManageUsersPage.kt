@@ -5,23 +5,71 @@ import app.softwork.routingcompose.Router
 import cz.tomashula.plenr.feature.user.UserDto
 import cz.tomashula.plenr.frontend.MainViewModel
 import cz.tomashula.plenr.frontend.Route
-import cz.tomashula.plenr.frontend.component.applyColumn
-import cz.tomashula.plenr.frontend.component.outlinedMaterialIconButton
+import cz.tomashula.plenr.frontend.component.*
 import dev.kilua.core.IComponent
 import dev.kilua.html.*
+import dev.kilua.modal.alert
 import dev.kilua.panel.gridPanel
 import dev.kilua.panel.hPanel
 import dev.kilua.panel.vPanel
-import web.window
+import kotlinx.coroutines.launch
 
 @Composable
 fun IComponent.manageUsersPage(viewModel: MainViewModel)
 {
     val router = Router.current
     var allUsersExceptMe: List<UserDto>? by remember { mutableStateOf(listOf()) }
+    val coroutineScope = rememberCoroutineScope()
+
+    // Dialog states
+    var editDialogShown by remember { mutableStateOf(false) }
+    var deleteDialogShown by remember { mutableStateOf(false) }
+    var selectedUser by remember { mutableStateOf<UserDto?>(null) }
 
     LaunchedEffect(Unit) {
-        allUsersExceptMe = viewModel.getAllUsers() - viewModel.user!!
+        refreshUserList(viewModel) { users -> allUsersExceptMe = users }
+    }
+
+    // Edit dialog
+    selectedUser?.let { user ->
+        userEditDialog(
+            shown = editDialogShown,
+            user = user,
+            onSave = { updatedUser ->
+                coroutineScope.launch {
+                    val success = viewModel.updateUser(updatedUser)
+                    if (success) {
+                        refreshUserList(viewModel) { users -> allUsersExceptMe = users }
+                        alert("User updated successfully")
+                    } else {
+                        alert("Failed to update user")
+                    }
+                    editDialogShown = false
+                }
+            },
+            onDismiss = { editDialogShown = false }
+        )
+    }
+
+    // Delete dialog
+    selectedUser?.let { user ->
+        userDeleteDialog(
+            shown = deleteDialogShown,
+            user = user,
+            onConfirm = {
+                coroutineScope.launch {
+                    val success = viewModel.deleteUser(user.id)
+                    if (success) {
+                        refreshUserList(viewModel) { users -> allUsersExceptMe = users }
+                        alert("User deleted successfully")
+                    } else {
+                        alert("Failed to delete user")
+                    }
+                    deleteDialogShown = false
+                }
+            },
+            onDismiss = { deleteDialogShown = false }
+        )
     }
 
     div {
@@ -43,8 +91,14 @@ fun IComponent.manageUsersPage(viewModel: MainViewModel)
             allUsersExceptMe!!.forEach { user ->
                 manageUserCard(
                     user = user,
-                    onEditClick = { window.alert("TODO: Edit clicked") },
-                    onDeleteClick = { window.alert("TODO: Delete clicked") }
+                    onEditClick = { 
+                        selectedUser = user
+                        editDialogShown = true
+                    },
+                    onDeleteClick = { 
+                        selectedUser = user
+                        deleteDialogShown = true
+                    }
                 )
             }
         }
@@ -53,6 +107,11 @@ fun IComponent.manageUsersPage(viewModel: MainViewModel)
             onClick { router.navigate(Route.ADD_USER) }
         }
     }
+}
+
+private suspend fun refreshUserList(viewModel: MainViewModel, onResult: (List<UserDto>) -> Unit) {
+    val users = viewModel.getAllUsers() - viewModel.user!!
+    onResult(users)
 }
 
 @Composable

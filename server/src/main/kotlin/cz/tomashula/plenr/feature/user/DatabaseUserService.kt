@@ -159,4 +159,36 @@ class DatabaseUserService(
     {
         return authService.authenticate(username, password)
     }
+
+    override suspend fun updateUser(user: UserDto, authToken: String): Boolean
+    {
+        val caller = authService.validateToken(authToken) ?: throw UnauthorizedException()
+        if (!caller.isAdmin)
+            throw UnauthorizedException("Only admins can update users")
+
+        return dbQuery {
+            UserTable.update({ UserTable.id eq user.id }) {
+                it[firstName] = user.firstName
+                it[lastName] = user.lastName
+                it[email] = user.email
+                it[phone] = user.phone
+                it[isAdmin] = user.isAdmin
+                // Note: isActive is a computed property based on whether passwordHash is null
+            } > 0
+        }
+    }
+
+    override suspend fun deleteUser(id: Int, authToken: String): Boolean
+    {
+        val caller = authService.validateToken(authToken) ?: throw UnauthorizedException()
+        if (!caller.isAdmin)
+            throw UnauthorizedException("Only admins can delete users")
+
+        if (caller.id == id)
+            throw IllegalArgumentException("Cannot delete your own account")
+
+        return dbQuery {
+            UserTable.deleteWhere { UserTable.id eq id } > 0
+        }
+    }
 }
