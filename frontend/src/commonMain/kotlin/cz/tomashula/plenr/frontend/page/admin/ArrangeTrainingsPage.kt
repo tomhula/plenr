@@ -119,7 +119,17 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
             println(saveTraining)
             currentDialogTraining = null
         },
-        onDismiss = { currentDialogTraining = null }
+        onDismiss = { currentDialogTraining = null },
+        onRemove = {
+            // Only allow removing trainings that haven't been saved to backend yet
+            if (currentDialogTraining != null && currentDialogTraining!!.id == -1) {
+                val date = currentDialogTraining!!.startDateTime.date
+                // Remove the training from the trainings map
+                trainings[date] = trainings[date]!!.filterNot { it.training.id == -1 && it.created }
+                // Close the dialog
+                currentDialogTraining = null
+            }
+        }
     )
 
     tooltipUser?.let { userTooltip(it, tooltipX, tooltipY) }
@@ -330,7 +340,8 @@ private fun IComponent.trainingDialog(
     users: List<UserDto>,
     userAvailabilities: Map<UserDto, WeeklyTimeRanges> = emptyMap(),
     onSave: (TrainingWithParticipantsDto) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onRemove: (() -> Unit)? = null
 )
 {
     var form: Form<TrainingForm>? = null
@@ -392,6 +403,14 @@ private fun IComponent.trainingDialog(
                                     .copy(id = training.id)
                             )
                         }
+                    }
+                }
+            }
+            // Add Remove button for trainings that haven't been saved to backend yet
+            if (training.id == -1 && onRemove != null) {
+                bsButton("Remove", style = ButtonStyle.BtnDanger) {
+                    onClick {
+                        onRemove()
                     }
                 }
             }
