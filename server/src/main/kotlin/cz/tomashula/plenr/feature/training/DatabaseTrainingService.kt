@@ -52,6 +52,7 @@ class DatabaseTrainingService(
                         it[type] = createOrUpdateTrainingDto.type
                         it[startDateTime] = createOrUpdateTrainingDto.startDateTime
                         it[lengthMinutes] = createOrUpdateTrainingDto.lengthMinutes
+                        it[cancelled] = createOrUpdateTrainingDto.cancelled
                     }.value
                     else
                     {
@@ -62,6 +63,7 @@ class DatabaseTrainingService(
                             it[type] = createOrUpdateTrainingDto.type
                             it[startDateTime] = createOrUpdateTrainingDto.startDateTime
                             it[lengthMinutes] = createOrUpdateTrainingDto.lengthMinutes
+                            it[cancelled] = createOrUpdateTrainingDto.cancelled
                         }
                         createOrUpdateTrainingDto.id!!
                     }
@@ -97,7 +99,8 @@ class DatabaseTrainingService(
                     it.type,
                     it.startDateTime,
                     it.lengthMinutes,
-                    participantsByTraining[it] ?: emptySet()
+                    participantsByTraining[it] ?: emptySet(),
+                    it.cancelled
                 )
             }
         }
@@ -169,6 +172,7 @@ class DatabaseTrainingService(
                         type = type,
                         startDateTime = row[TrainingTable.startDateTime],
                         lengthMinutes = row[TrainingTable.lengthMinutes],
+                        cancelled = row[TrainingTable.cancelled],
                         participants = mutableSetOf()
                     )
                 }

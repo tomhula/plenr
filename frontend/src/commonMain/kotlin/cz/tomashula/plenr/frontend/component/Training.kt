@@ -63,6 +63,9 @@ fun IComponent.training(
         Column {
             spant(training.name) {
                 fontWeight(FontWeight.Bold)
+                if (training.cancelled) {
+                    style("text-decoration", "line-through")
+                }
             }
 
             hPanel(
@@ -116,6 +119,15 @@ fun IComponent.trainingDialogBody(
     }
 
     property("Name", training.name)
+    if (training.cancelled) {
+        div {
+            marginTop(5.px)
+            spant("This training is cancelled") {
+                color(dev.kilua.html.Color.Red)
+                fontWeight(FontWeight.Bold)
+            }
+        }
+    }
     property("Type", training.type.name.lowercase().replaceFirstChar { it.uppercase() })
     property("Description", training.description)
     property("Start", training.startDateTime.format(dateTimeFormat))

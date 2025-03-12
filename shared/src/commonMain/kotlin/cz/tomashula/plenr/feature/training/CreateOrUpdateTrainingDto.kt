@@ -14,5 +14,6 @@ data class CreateOrUpdateTrainingDto(
     val type: TrainingType,
     val startDateTime: LocalDateTime,
     val lengthMinutes: Int,
-    val participantIds: Set<Int>
+    val participantIds: Set<Int>,
+    val cancelled: Boolean = false
 )

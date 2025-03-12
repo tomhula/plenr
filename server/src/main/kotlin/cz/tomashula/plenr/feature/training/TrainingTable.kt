@@ -12,4 +12,5 @@ object TrainingTable : IntIdTable("training")
     val type = enumeration<TrainingType>("type")
     val startDateTime = datetime("start_date_time")
     val lengthMinutes = integer("length_minutes")
+    val cancelled = bool("cancelled").default(false)
 }

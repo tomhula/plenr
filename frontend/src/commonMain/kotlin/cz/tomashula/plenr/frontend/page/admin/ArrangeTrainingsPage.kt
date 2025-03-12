@@ -381,6 +381,20 @@ private fun IComponent.trainingDialog(
             bsButton("Cancel", style = ButtonStyle.BtnSecondary) {
                 onClick { onDismiss() }
             }
+            if (edit && !training.cancelled) {
+                bsButton("Cancel Training", style = ButtonStyle.BtnDanger) {
+                    onClick {
+                        form?.let {
+                            onSave(
+                                it.getData()
+                                    .copy(cancelled = true)
+                                    .toTrainingWithParticipantsDto(training.arranger)
+                                    .copy(id = training.id)
+                            )
+                        }
+                    }
+                }
+            }
             bsButton("Save", style = ButtonStyle.BtnPrimary) {
                 onClick {
                     form?.let {
@@ -581,7 +595,8 @@ private data class TrainingForm(
     val startDateTime: LocalDateTime? = null,
     val type: TrainingType = TrainingType.DRESSAGE,
     val lengthMinutes: Int = 60,
-    val participants: Set<UserDto> = emptySet()
+    val participants: Set<UserDto> = emptySet(),
+    val cancelled: Boolean = false
 )
 {
     fun toTrainingWithParticipantsDto(
@@ -594,7 +609,8 @@ private data class TrainingForm(
         type = type,
         startDateTime = startDateTime ?: LocalDateTime.now(),
         lengthMinutes = lengthMinutes,
-        participants = participants.toSet()
+        participants = participants.toSet(),
+        cancelled = cancelled
     )
 }
 
@@ -604,7 +620,8 @@ private fun TrainingWithParticipantsDto.toTrainingForm() = TrainingForm(
     startDateTime = startDateTime,
     type = type,
     lengthMinutes = lengthMinutes,
-    participants = participants.toSet()
+    participants = participants.toSet(),
+    cancelled = cancelled
 )
 
 private fun TrainingWithParticipantsDto.toCreateTrainingDto() = CreateOrUpdateTrainingDto(
@@ -614,5 +631,6 @@ private fun TrainingWithParticipantsDto.toCreateTrainingDto() = CreateOrUpdateTr
     type = type,
     startDateTime = startDateTime,
     lengthMinutes = lengthMinutes,
-    participantIds = participants.map { it.id }.toSet()
+    participantIds = participants.map { it.id }.toSet(),
+    cancelled = cancelled
 )

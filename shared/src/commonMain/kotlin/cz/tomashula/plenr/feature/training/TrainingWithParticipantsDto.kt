@@ -13,5 +13,6 @@ data class TrainingWithParticipantsDto(
     val type: TrainingType,
     val startDateTime: LocalDateTime,
     val lengthMinutes: Int,
-    val participants: Set<UserDto>
+    val participants: Set<UserDto>,
+    val cancelled: Boolean = false
 )

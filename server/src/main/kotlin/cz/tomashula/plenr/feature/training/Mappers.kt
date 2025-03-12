@@ -12,5 +12,6 @@ fun ResultRow.toTrainingWithParticipantsDto(participants: Set<UserDto>) = Traini
     type = this[TrainingTable.type],
     startDateTime = this[TrainingTable.startDateTime],
     lengthMinutes = this[TrainingTable.lengthMinutes],
-    participants = participants
+    participants = participants,
+    cancelled = this[TrainingTable.cancelled]
 )
