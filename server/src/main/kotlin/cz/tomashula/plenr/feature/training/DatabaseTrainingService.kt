@@ -2,6 +2,7 @@ package cz.tomashula.plenr.feature.training
 
 import cz.tomashula.plenr.auth.AuthService
 import cz.tomashula.plenr.auth.UnauthorizedException
+import cz.tomashula.plenr.feature.user.DatabaseUserPreferencesService
 import cz.tomashula.plenr.feature.user.UserDto
 import cz.tomashula.plenr.feature.user.UserTable
 import cz.tomashula.plenr.feature.user.preferences.UserPreferencesDto
@@ -19,14 +20,19 @@ class DatabaseTrainingService(
     database: Database,
     serverUrl: String,
     private val authService: AuthService,
-    private val mailService: MailService,
-    private val userPreferencesService: UserPreferencesService
+    private val mailService: MailService
 ) : TrainingService, DatabaseService(
     database,
     TrainingTable,
     TrainingParticipantTable
 )
 {
+    private val userPreferencesService = DatabaseUserPreferencesService(
+        coroutineContext,
+        database,
+        authService
+    )
+
     private val serverUrl = serverUrl.removeSuffix("/")
 
     override suspend fun arrangeTrainings(
