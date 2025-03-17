@@ -11,9 +11,4 @@
 - Make password reset requests expire
 - Use bootstrap form validation
   - Add user page
-- Implement user editing
-- Implement user removal
 - Allow admin to see busy available times of users
-- Add legend to describe training type colors
-- Add ability to remove an arranged (but not yet confirmed; dashed border) training
-- Add ability to cancel a training
