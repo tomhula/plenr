@@ -43,9 +43,8 @@ fun IComponent.manageUsersPage(viewModel: MainViewModel)
                     if (success) {
                         refreshUserList(viewModel) { users -> allUsersExceptMe = users }
                         toast("User updated successfully", position = ToastPosition.BottomCenter)
-                    } else {
+                    } else
                         toast("Failed to update user", position = ToastPosition.BottomCenter)
-                    }
                     editDialogShown = false
                 }
             },
@@ -63,10 +62,9 @@ fun IComponent.manageUsersPage(viewModel: MainViewModel)
                     val success = viewModel.deleteUser(user.id)
                     if (success) {
                         refreshUserList(viewModel) { users -> allUsersExceptMe = users }
-                        alert("User deleted successfully")
-                    } else {
-                        alert("Failed to delete user")
-                    }
+                        toast("User deleted successfully", position = ToastPosition.BottomCenter)
+                    } else
+                        toast("Failed to delete user", position = ToastPosition.BottomCenter)
                     deleteDialogShown = false
                 }
             },
