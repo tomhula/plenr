@@ -12,6 +12,8 @@ import dev.kilua.modal.alert
 import dev.kilua.panel.gridPanel
 import dev.kilua.panel.hPanel
 import dev.kilua.panel.vPanel
+import dev.kilua.toast.ToastPosition
+import dev.kilua.toast.toast
 import kotlinx.coroutines.launch
 
 @Composable
@@ -40,9 +42,9 @@ fun IComponent.manageUsersPage(viewModel: MainViewModel)
                     val success = viewModel.updateUser(updatedUser)
                     if (success) {
                         refreshUserList(viewModel) { users -> allUsersExceptMe = users }
-                        alert("User updated successfully")
+                        toast("User updated successfully", position = ToastPosition.BottomCenter)
                     } else {
-                        alert("Failed to update user")
+                        toast("Failed to update user", position = ToastPosition.BottomCenter)
                     }
                     editDialogShown = false
                 }
