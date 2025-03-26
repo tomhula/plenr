@@ -28,6 +28,7 @@ fun Routing.apiRoute(
 
         val serverUrl = runBlocking { plenr.getConfig().server.url }
 
+        /* This Service usage is NOT correct. See https://github.com/Kotlin/kotlinx-rpc/issues/102#issuecomment-2723966393 */
         registerService<UserService> { ctx ->
             DatabaseUserService(
                 ctx,
