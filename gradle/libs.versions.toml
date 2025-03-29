@@ -4,7 +4,9 @@ kotlinx-serialization = "1.8.0"
 kotlinx-coroutines = "1.10.1"
 kotlinx-datetime = "0.6.1"
 ktor = "3.0.3"
-logback = "1.5.16"
+logback = "1.5.18"
+kotlin-logging = "7.0.5"
+hoplite = "2.9.0"
 clikt = "5.0.2"
 compose = "1.8.0-alpha02"
 kilua = "0.0.19"
@@ -32,6 +34,10 @@ kilua-rsup-progress = { module = "dev.kilua:kilua-rsup-progress", version.ref = 
 kilua-fontawesome = { module = "dev.kilua:kilua-fontawesome", version.ref = "kilua" }
 # Logging
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+kotlin-logging = { module = "io.github.oshai:kotlin-logging", version.ref = "kotlin-logging" }
+# Config
+hoplite-core = { module = "com.sksamuel.hoplite:hoplite-core", version.ref = "hoplite" }
+hoplite-hocon = { module = "com.sksamuel.hoplite:hoplite-hocon", version.ref = "hoplite" }
 # CLI
 clikt = { module = "com.github.ajalt.clikt:clikt", version.ref = "clikt" }
 # Ktor

@@ -61,7 +61,15 @@ dependencies {
 
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.datetime)
+
+    // Logging
     implementation(libs.logback)
+    implementation(libs.kotlin.logging)
+
+    // Config
+    implementation(libs.hoplite.core)
+    implementation(libs.hoplite.hocon)
+    
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
     implementation(libs.ktor.server.status.pages)

@@ -1,30 +1,30 @@
 package cz.tomashula.plenr
 
-import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
-import kotlinx.coroutines.runBlocking
-import kotlinx.rpc.krpc.ktor.server.Krpc
 import cz.tomashula.plenr.auth.AuthService
 import cz.tomashula.plenr.auth.BasicAuthService
 import cz.tomashula.plenr.config.Config
-import cz.tomashula.plenr.config.ConfigManager
-import cz.tomashula.plenr.config.EnvVarConfigManager
-import cz.tomashula.plenr.config.JsonFileConfigManager
+import cz.tomashula.plenr.config.ConfigProvider
+import cz.tomashula.plenr.config.FileConfigProvider
 import cz.tomashula.plenr.mail.MailService
 import cz.tomashula.plenr.mail.SmtpMailService
 import cz.tomashula.plenr.module.configureContentNegotiation
 import cz.tomashula.plenr.module.configureExceptionHandling
 import cz.tomashula.plenr.module.configureRouting
 import cz.tomashula.plenr.security.*
+import io.ktor.http.*
+import io.ktor.server.application.*
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
+import kotlinx.coroutines.runBlocking
+import kotlinx.rpc.krpc.ktor.server.Krpc
 import org.jetbrains.exposed.sql.Database
 import java.nio.file.Path
+import kotlin.io.path.pathString
 
-class Plenr : ConfigManager
+class Plenr : ConfigProvider
 {
     private lateinit var embeddedServer: EmbeddedServer<*, *>
-    private lateinit var configManager: ConfigManager
+    private lateinit var configProvider: ConfigProvider
     private lateinit var config: Config
     internal lateinit var database: Database
     internal lateinit var passwordValidator: PasswordValidator
@@ -38,7 +38,7 @@ class Plenr : ConfigManager
     {
         runBlocking {
             /* Config has to be initialized first */
-            initConfigManager(configFilePath)
+            initConfigManager(configFilePath.pathString)
             reloadConfig()
 
             initPasswordManagement()
@@ -55,10 +55,9 @@ class Plenr : ConfigManager
         }
     }
 
-    private suspend fun initConfigManager(configFilePath: Path)
+    private fun initConfigManager(configFilePath: String)
     {
-        configManager = EnvVarConfigManager(JsonFileConfigManager(configFilePath))
-        configManager.initConfig()
+        configProvider = FileConfigProvider(configFilePath, "/plenr.conf")
     }
 
     private fun initPasswordManagement()
@@ -118,16 +117,10 @@ class Plenr : ConfigManager
         configureRouting(this@Plenr, Url(config.server.url).fullPath.removeSuffix("/"))
     }
 
-    override suspend fun getConfig() = config
+    override fun getConfig() = config
 
-    override suspend fun setConfig(config: Config)
+    fun reloadConfig()
     {
-        this.config = config
-        configManager.setConfig(config)
-    }
-
-    suspend fun reloadConfig()
-    {
-        config = configManager.getConfig()
+        config = configProvider.getConfig()
     }
 }

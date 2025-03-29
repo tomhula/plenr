@@ -22,7 +22,7 @@ class Command : CliktCommand()
         canBeDir = false,
         mustBeReadable = true,
         mustBeWritable = true
-    ).default(Path("config.json")).help("Path to the config that will be used.")
+    ).default(Path("plenr.conf")).help("Path to the config that will be used.")
 
     private val mock: Boolean by option()
         .flag()
