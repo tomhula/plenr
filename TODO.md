@@ -1,3 +1,9 @@
+### Urgent TODOs
+- Loading indication
+- Input validation
+
+
+- 
 - Authentication/Authorization
 - Server exception encapsulation
 - Use better authentication (JWT?)
