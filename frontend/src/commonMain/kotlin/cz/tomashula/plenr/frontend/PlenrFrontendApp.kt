@@ -2,6 +2,7 @@ package cz.tomashula.plenr.frontend
 
 import androidx.compose.runtime.*
 import app.softwork.routingcompose.BrowserRouter
+import app.softwork.routingcompose.RouteBuilder
 import app.softwork.routingcompose.Router
 import cz.tomashula.plenr.frontend.component.plenrHeader
 import cz.tomashula.plenr.frontend.page.admin.addUserPage
@@ -62,6 +63,17 @@ class PlenrFrontendApp : Application()
 
             if (loading)
                 return@root
+            
+            @Composable
+            fun RouteBuilder.authOnlyRoute(route: String, block: @Composable () -> Unit)
+            {
+                route(route) {
+                    if (viewModel.isLoggedIn)
+                        block()
+                    else
+                        router!!.navigate(Route.LOGIN)
+                }
+            }
 
             main {
                 style("margin", "24px 100px")
@@ -72,10 +84,8 @@ class PlenrFrontendApp : Application()
                     LaunchedEffect(Unit) {
                         if (!viewModel.adminExists())
                             router!!.navigate(Route.ADMIN_SETUP)
-                        else if (!viewModel.isLoggedIn)
-                            router!!.navigate(Route.LOGIN)
                     }
-                    route(Route.HOME) {
+                    authOnlyRoute(Route.HOME) {
                         if (viewModel.user?.isAdmin == true)
                             adminHomePage(viewModel)
                         else
@@ -95,21 +105,21 @@ class PlenrFrontendApp : Application()
                     route(Route.FORGOT_PASSWORD) {
                         forgotPasswordPage(viewModel)
                     }
-                    route(Route.PREFERENCES) {
+                    authOnlyRoute(Route.PREFERENCES) {
                         userPreferencesPage(viewModel)
                     }
-                    route(Route.AVAILABILITY) {
+                    authOnlyRoute(Route.AVAILABILITY) {
                         availabilityPage(viewModel)
                     }
                     if (viewModel.user?.isAdmin == true)
                     {
-                        route(Route.MANAGE_USERS) {
+                        authOnlyRoute(Route.MANAGE_USERS) {
                             manageUsersPage(viewModel)
                         }
-                        route(Route.ARRANGE_TRAININGS) {
+                        authOnlyRoute(Route.ARRANGE_TRAININGS) {
                             arrangeTrainingsPage(viewModel)
                         }
-                        route(Route.ADD_USER) {
+                        authOnlyRoute(Route.ADD_USER) {
                             addUserPage(viewModel)
                         }
                     }
