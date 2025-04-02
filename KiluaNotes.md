@@ -1,4 +1,2 @@
-- Cannot configure tempus dominus (eg. 12/24 hour format)
 - text table header missing (tht)
 - text table data missing (tdt)
-- rich (date)time (tempus dominus) calendar/clock icons do not render
