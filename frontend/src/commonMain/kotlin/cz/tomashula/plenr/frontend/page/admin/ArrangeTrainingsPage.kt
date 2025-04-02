@@ -392,7 +392,7 @@ private fun IComponent.trainingDialog(
             bsButton("Cancel", style = ButtonStyle.BtnSecondary) {
                 onClick { onDismiss() }
             }
-            if (edit && !training.cancelled) {
+            if (edit && !training.cancelled && training.id != -1) {
                 bsButton("Cancel Training", style = ButtonStyle.BtnDanger) {
                     onClick {
                         form?.let {
