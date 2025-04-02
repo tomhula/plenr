@@ -5,6 +5,7 @@ import app.softwork.routingcompose.Router
 import cz.tomashula.plenr.feature.user.UserDto
 import cz.tomashula.plenr.frontend.MainViewModel
 import cz.tomashula.plenr.frontend.Route
+import cz.tomashula.plenr.frontend.allowLettersOnly
 import cz.tomashula.plenr.frontend.component.*
 import dev.kilua.KiluaScope
 import dev.kilua.core.IComponent
@@ -47,14 +48,20 @@ fun IComponent.adminSetupPage(plenrClient: MainViewModel)
 
             div("mt-2") {
                 bsLabelledFormField("First Name") {
-                    bsFormInput(it, AdminSetupForm::firstName)
+                    bsFormInput(it, AdminSetupForm::firstName) {
+                        allowLettersOnly()
+                    }
                 }
+                bsInvalidFeedback("Invalid first name")
             }
 
             div("mt-2") {
                 bsLabelledFormField("Last Name") {
-                    bsFormInput(id = it, AdminSetupForm::lastName)
+                    bsFormInput(id = it, AdminSetupForm::lastName) {
+                        allowLettersOnly()
+                    }
                 }
+                bsInvalidFeedback("Invalid last name")
             }
 
             div("mt-2") {
@@ -62,6 +69,7 @@ fun IComponent.adminSetupPage(plenrClient: MainViewModel)
                     bsFormInput(it, AdminSetupForm::email, type = InputType.Email) {
                         ariaDescribedby("inputGroupPrepend")
                     }
+                    bsInvalidFeedback("Invalid email address")
                 }
             }
 
