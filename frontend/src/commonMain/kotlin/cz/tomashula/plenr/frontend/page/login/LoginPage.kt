@@ -17,6 +17,9 @@ import dev.kilua.html.style.pClass
 import dev.kilua.html.style.style
 import dev.kilua.panel.flexPanel
 import kotlinx.serialization.Serializable
+import dev.kilua.KiluaScope
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 @Composable
 fun IComponent.loginPage(mainViewModel: MainViewModel)
@@ -30,21 +33,32 @@ fun IComponent.loginPage(mainViewModel: MainViewModel)
         flexDirection = FlexDirection.Column,
     ) {
         bsForm<LoginForm>(
-            onSubmit = { data, _, _ ->
+            onSubmit = { data, form, _ ->
                 authenticated = mainViewModel.login(data.email!!, data.password!!)
                 if (authenticated == true)
                     router.navigate(Route.HOME)
+                form.validate()
+                form.className = "was-validated"
             }
         ) {
+            maxWidth(330.px)
+
             div("mt-2") {
                 bsLabelledFormField("Email") {
-                    bsFormInput(it, LoginForm::email, type = InputType.Email)
+                    bsFormInput(it, LoginForm::email, type = InputType.Email, validator = { 
+                        authenticated != false 
+                    })
                 }
             }
 
             div("mt-2") {
                 bsLabelledFormField("Password") {
-                    bsFormInput(it, LoginForm::password, type = InputType.Password)
+                    bsFormInput(it, LoginForm::password, type = InputType.Password, validator = { 
+                        authenticated != false 
+                    })
+                }
+                if (authenticated == false) {
+                    bsInvalidFeedback("Incorrect email or password")
                 }
             }
 
@@ -62,8 +76,10 @@ fun IComponent.loginPage(mainViewModel: MainViewModel)
 
             bsButton("Login", type = ButtonType.Submit, className = "mt-3")
 
-            if  (authenticated == false)
-                p { +"Incorrect credentials" }
+            // Dynamic validation
+            stateFlow.onEach {
+                this.className = this.className?.replace("was-validated", "")
+            }.launchIn(KiluaScope)
         }
     }
 }
