@@ -28,5 +28,10 @@ kotlin {
             implementation(libs.kotlinx.rpc.core)
             implementation(libs.kotlinx.datetime)
         }
+        
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.datetime)
+        }
     }
 }
