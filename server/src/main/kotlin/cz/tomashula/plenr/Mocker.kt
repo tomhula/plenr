@@ -4,7 +4,7 @@ import cz.tomashula.plenr.feature.training.TrainingParticipantTable
 import cz.tomashula.plenr.feature.training.TrainingTable
 import cz.tomashula.plenr.feature.training.TrainingType
 import cz.tomashula.plenr.feature.user.UserPermanentAvailabilityTable
-import cz.tomashula.plenr.feature.user.TempBusyTimeTable
+import cz.tomashula.plenr.feature.user.BusyPeriodTable
 import cz.tomashula.plenr.feature.user.UserPreferencesTable
 import cz.tomashula.plenr.feature.user.UserSetPasswordTable
 import cz.tomashula.plenr.feature.user.UserTable
@@ -35,7 +35,7 @@ class Mocker(
                 TrainingParticipantTable,
                 UserSetPasswordTable,
                 UserPreferencesTable,
-                TempBusyTimeTable,
+                BusyPeriodTable,
                 UserPermanentAvailabilityTable,
                 TrainingTable,
                 UserTable

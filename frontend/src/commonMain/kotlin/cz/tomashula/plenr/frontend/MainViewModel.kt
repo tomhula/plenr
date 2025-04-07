@@ -12,7 +12,7 @@ import cz.tomashula.plenr.feature.user.preferences.UserPermanentAvailabilityDto
 import cz.tomashula.plenr.feature.user.preferences.UserPreferencesDto
 import cz.tomashula.plenr.feature.user.preferences.UserPreferencesService
 import cz.tomashula.plenr.feature.user.preferences.WeeklyTimeRanges
-import cz.tomashula.plenr.feature.user.tempbusytimes.TempBusyTimesService
+import cz.tomashula.plenr.feature.user.availability.UserAvailabilityService
 import io.ktor.client.*
 import io.ktor.client.engine.js.*
 import io.ktor.http.*
@@ -45,7 +45,7 @@ class MainViewModel
     private lateinit var userService: UserService
     private lateinit var trainingService: TrainingService
     private lateinit var preferencesService: UserPreferencesService
-    private lateinit var tempBusyTimesService: TempBusyTimesService
+    private lateinit var userAvailabilityService: UserAvailabilityService
     private var authToken: String? = null
     var user: UserDto? by mutableStateOf(null)
 
@@ -74,7 +74,7 @@ class MainViewModel
         userService = ktorRpcClient.withService()
         trainingService = ktorRpcClient.withService()
         preferencesService = ktorRpcClient.withService()
-        tempBusyTimesService = ktorRpcClient.withService()
+        userAvailabilityService = ktorRpcClient.withService()
     }
 
     fun logout()
@@ -157,11 +157,11 @@ class MainViewModel
 
     suspend fun setPreferences(preferences: UserPreferencesDto) = preferencesService.setUserPreferences(user!!.id, preferences, authToken!!)
 
-    suspend fun getUserPermanentAvailability() = preferencesService.getUserPermanentAvailability(user!!.id, authToken!!).availableTimes
+    suspend fun getUserPermanentAvailability() = userAvailabilityService.getUserPermanentAvailability(user!!.id, authToken!!).availableTimes
 
-    suspend fun getUserPermanentAvailabilityAdmin(userId: Int) = preferencesService.getUserPermanentAvailability(userId, authToken!!).availableTimes
+    suspend fun getUserPermanentAvailabilityAdmin(userId: Int) = userAvailabilityService.getUserPermanentAvailability(userId, authToken!!).availableTimes
 
-    suspend fun setUserPermanentAvailability(busyTimes: WeeklyTimeRanges) = preferencesService.setUserPermanentAvailability(
+    suspend fun setUserPermanentAvailability(busyTimes: WeeklyTimeRanges) = userAvailabilityService.setUserPermanentAvailability(
         UserPermanentAvailabilityDto(user!!.id, busyTimes),
         authToken!!
     )

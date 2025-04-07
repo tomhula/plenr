@@ -17,15 +17,4 @@ interface UserPreferencesService : RemoteService
      * Allows each user to set their own preferences.
      */
     suspend fun setUserPreferences(userId: Int, userPreferencesDto: UserPreferencesDto, authToken: String)
-
-    /**
-     * Allows each user to get their own permanent availability.
-     * Allows admins to get any user's permanent availability.
-     */
-    suspend fun getUserPermanentAvailability(userId: Int, authToken: String): UserPermanentAvailabilityDto
-
-    /**
-     * Allows each user to set their own permanent availability.
-     */
-    suspend fun setUserPermanentAvailability(userPermanentAvailabilityDto: UserPermanentAvailabilityDto, authToken: String)
 }

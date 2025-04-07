@@ -3,7 +3,7 @@ package cz.tomashula.plenr.feature.user
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.kotlin.datetime.datetime
 
-object TempBusyTimeTable : IntIdTable("temp_busy_time")
+object BusyPeriodTable : IntIdTable("busy_period")
 {
     val userId = reference("user_id", UserTable)
     val start = datetime("start")
