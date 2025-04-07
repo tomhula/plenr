@@ -4,78 +4,47 @@ import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalTime
 import kotlinx.serialization.Serializable
 import cz.tomashula.plenr.util.LocalTimeRange
+import cz.tomashula.plenr.util.LocalTimeRanges
 import cz.tomashula.plenr.util.rangeTo
 import kotlin.collections.iterator
 
 @Serializable
-class WeeklyTimeRanges private constructor(private val weeklyTimeRanges: Map<DayOfWeek, List<LocalTimeRange>>)
+class WeeklyTimeRanges private constructor(private val weeklyTimeRanges: Map<DayOfWeek, LocalTimeRanges>)
 {
-    fun contains(day: DayOfWeek, time: LocalTime): Boolean
-    {
-        return weeklyTimeRanges[day]?.any { it.contains(time) } == true
-    }
+    fun contains(day: DayOfWeek, time: LocalTime): Boolean = weeklyTimeRanges[day]?.contains(time) == true
 
-    fun getRangesForDay(day: DayOfWeek) = weeklyTimeRanges[day] ?: emptyList()
+    fun getRangesForDay(day: DayOfWeek) = weeklyTimeRanges[day]?.getRanges() ?: emptyList()
 
     fun builder() = Builder(weeklyTimeRanges)
 
     fun inverted() = builder().apply {
         for (day in DayOfWeek.entries)
-            addTimeRange(day, LocalTime(0, 0)..LocalTime(23, 59))
+            addTimeRange(day, LocalTimeRange.FULL)
 
         for ((day, ranges) in weeklyTimeRanges)
-            for (range in ranges)
+            for (range in ranges.getRanges())
                 removeTimeRange(day, range)
     }.build()
 
     companion object
     {
-        fun builder(weeklyTimeRanges: Map<DayOfWeek, List<LocalTimeRange>>) = Builder(weeklyTimeRanges)
-        fun builder() = Builder(emptyMap())
+        fun builder() = Builder(emptyMap<DayOfWeek, LocalTimeRanges>())
     }
 
     class Builder
     {
-        private val weeklyTimeRanges = mutableMapOf<DayOfWeek, MutableList<LocalTimeRange>>()
+        private val weeklyTimeRanges = mutableMapOf<DayOfWeek, LocalTimeRanges>()
 
-        constructor(weeklyTimeRanges: Map<DayOfWeek, List<LocalTimeRange>>)
+        constructor(weeklyTimeRanges: Map<DayOfWeek, LocalTimeRanges>)
         {
             for (entry in weeklyTimeRanges)
-                for (range in entry.value)
-                    addTimeRange(entry.key, range)
+                this.weeklyTimeRanges[entry.key] = entry.value
         }
 
-        /*
-        * Generated with ChatGPT: https://chatgpt.com/share/673f6e8f-e908-800e-afaa-29a14c59d6a5
-        */
         fun addTimeRange(day: DayOfWeek, timeRange: LocalTimeRange): Builder
         {
-            val busyRangesForDay = weeklyTimeRanges.getOrPut(day) { mutableListOf() }
-
-            // Find the correct position to insert the range
-            val insertionIndex = busyRangesForDay.indexOfFirst { it.start > timeRange.start }.let {
-                if (it == -1) busyRangesForDay.size else it
-            }
-            busyRangesForDay.add(insertionIndex, timeRange)
-
-            // Merge overlapping or contiguous ranges
-            val mergedRanges = mutableListOf<LocalTimeRange>()
-            for (current in busyRangesForDay)
-                if (mergedRanges.isEmpty() || mergedRanges.last().endInclusive < current.start)
-                {
-                    // No overlap, add the current range
-                    mergedRanges.add(current)
-                }
-                else
-                {
-                    // Overlap or contiguous, merge with the last range
-                    val lastRange = mergedRanges.removeAt(mergedRanges.size - 1)
-                    mergedRanges.add(lastRange.start..maxOf(lastRange.endInclusive, current.endInclusive))
-                }
-
-            // Replace the list with the merged ranges
-            weeklyTimeRanges[day] = mergedRanges
-
+            val ranges = weeklyTimeRanges.getOrPut(day) { LocalTimeRanges.EMPTY }
+            weeklyTimeRanges[day] = ranges.add(timeRange)
             return this
         }
 
@@ -84,58 +53,18 @@ class WeeklyTimeRanges private constructor(private val weeklyTimeRanges: Map<Day
             addTimeRange(day, start..end)
         }
 
-        fun removeTimeRange(day: DayOfWeek, timeRange: ClosedRange<LocalTime>): Builder
+        fun removeTimeRange(day: DayOfWeek, timeRange: LocalTimeRange): Builder
         {
-            val busyRangesForDay = weeklyTimeRanges[day] ?: return this
+            val ranges = weeklyTimeRanges[day] ?: return this
 
-            val updatedRanges = mutableListOf<LocalTimeRange>()
+            weeklyTimeRanges[day] = ranges.remove(timeRange)
 
-            for (range in busyRangesForDay)
-            {
-                when
-                {
-                    // Case 1: No overlap
-                    range.endInclusive < timeRange.start || range.start > timeRange.endInclusive ->
-                    {
-                        updatedRanges.add(range)
-                    }
-                    // Case 2: The range is split by the timeRange
-                    range.start < timeRange.start && range.endInclusive > timeRange.endInclusive ->
-                    {
-                        updatedRanges.add(range.start..timeRange.start)
-                        updatedRanges.add(timeRange.endInclusive..range.endInclusive)
-                    }
-                    // Case 3: Overlap at the start
-                    range.start < timeRange.start && range.endInclusive > timeRange.start ->
-                    {
-                        updatedRanges.add(range.start..timeRange.start)
-                    }
-                    // Case 4: Overlap at the end
-                    range.start < timeRange.endInclusive && range.endInclusive > timeRange.endInclusive ->
-                    {
-                        updatedRanges.add(timeRange.endInclusive..range.endInclusive)
-                    }
-                    // Case 5: Complete overlap (timeRange covers the range completely)
-                    else ->
-                    {
-                        // Do nothing, effectively removing the range
-                    }
-                }
-            }
-
-            // Replace the existing ranges with the updated ranges
-            if (updatedRanges.isEmpty())
-            {
+            // Remove the entry if the ranges are empty
+            if (weeklyTimeRanges[day]?.isEmpty() == true)
                 weeklyTimeRanges.remove(day)
-            }
-            else
-            {
-                weeklyTimeRanges[day] = updatedRanges
-            }
 
             return this
         }
-
 
         fun build(): WeeklyTimeRanges
         {
