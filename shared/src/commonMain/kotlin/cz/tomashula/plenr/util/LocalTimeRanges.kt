@@ -3,6 +3,11 @@ package cz.tomashula.plenr.util
 import kotlinx.datetime.LocalTime
 import kotlinx.serialization.Serializable
 
+/**
+ * Represents time intervals in a day.
+ * Mathematically it is the simplest union of time intervals.
+ * Used for example to represent presence or absence of someone during the day.
+ */
 @Serializable
 class LocalTimeRanges private constructor(private val ranges: List<LocalTimeRange> = listOf())
 {
@@ -10,15 +15,16 @@ class LocalTimeRanges private constructor(private val ranges: List<LocalTimeRang
 
     fun getRanges(): List<LocalTimeRange> = ranges
 
-    fun add(range: LocalTimeRange): LocalTimeRanges
+    /** Adds a new [timeRange], merges overlapping or contiguous ranges. */
+    fun add(timeRange: LocalTimeRange): LocalTimeRanges
     {
         val newRanges = ranges.toMutableList()
 
         // Find the correct position to insert the range
-        val insertionIndex = newRanges.indexOfFirst { it.start > range.start }.let {
+        val insertionIndex = newRanges.indexOfFirst { it.start > timeRange.start }.let {
             if (it == -1) newRanges.size else it
         }
-        newRanges.add(insertionIndex, range)
+        newRanges.add(insertionIndex, timeRange)
 
         // Merge overlapping or contiguous ranges
         val mergedRanges = mutableListOf<LocalTimeRange>()
@@ -40,6 +46,7 @@ class LocalTimeRanges private constructor(private val ranges: List<LocalTimeRang
         return LocalTimeRanges(mergedRanges)
     }
 
+    /** Removes a [timeRange]. (interval difference) */
     fun remove(timeRange: LocalTimeRange): LocalTimeRanges
     {
         val updatedRanges = mutableListOf<LocalTimeRange>()
@@ -79,11 +86,14 @@ class LocalTimeRanges private constructor(private val ranges: List<LocalTimeRang
 
         return LocalTimeRanges(updatedRanges)
     }
-    
+
+    /** Adds a new [timeRange], merges overlapping or contiguous ranges. */
     operator fun plus(timeRange: LocalTimeRange): LocalTimeRanges = add(timeRange)
-    
+
+    /** Removes a [timeRange]. (interval difference) */
     operator fun minus(timeRange: LocalTimeRange): LocalTimeRanges = remove(timeRange)
 
+    /** Returns inverted set. */
     fun inverted(): LocalTimeRanges
     {
         var result = FULL
