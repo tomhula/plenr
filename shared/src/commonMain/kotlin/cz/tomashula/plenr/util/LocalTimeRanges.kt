@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 class LocalTimeRanges private constructor(private val ranges: List<LocalTimeRange> = listOf())
 {
-    fun contains(time: LocalTime) = ranges.any { it.contains(time) }
+    operator fun contains(time: LocalTime) = ranges.any { it.contains(time) }
 
     fun getRanges(): List<LocalTimeRange> = ranges
 
