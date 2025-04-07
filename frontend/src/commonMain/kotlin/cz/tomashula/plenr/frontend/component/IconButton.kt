@@ -17,6 +17,7 @@ import dev.kilua.html.px
 import dev.kilua.html.spant
 import dev.kilua.html.style.pClass
 import dev.kilua.html.style.style
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun IComponent.outlinedMaterialIconButton(
@@ -34,7 +35,7 @@ fun IComponent.outlinedMaterialIconButton(
             border(style = BorderStyle.None)
             cursor(Cursor.Pointer)
             borderRadius(50.perc)
-            transition(Transition(property = "color", 0.3, "ease"))
+            transition(Transition(property = "color", 0.3.seconds, "ease"))
             color(color)
 
             pClass("hover") {

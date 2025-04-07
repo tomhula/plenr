@@ -1,5 +1,5 @@
 [versions]
-kotlin = "2.1.0"
+kotlin = "2.1.20"
 kotlinx-serialization = "1.8.0"
 kotlinx-coroutines = "1.10.1"
 kotlinx-datetime = "0.6.1"
@@ -9,11 +9,11 @@ kotlin-logging = "7.0.5"
 hoplite = "2.9.0"
 clikt = "5.0.2"
 compose = "1.8.0-alpha02"
-kilua = "0.0.19"
+kilua = "0.0.21"
 mysql = "9.2.0"
 exposed = "0.60.0"
 commons-email = "2.0.0-M1"
-kotlinx-rpc = "0.5.1"
+kotlinx-rpc = "0.6.0"
 
 [libraries]
 # Kotlin
