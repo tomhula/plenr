@@ -10,9 +10,6 @@ import kotlin.io.path.Path
 fun Application.configureRouting(plenr: Plenr, subPath: String = "")
 {
     routing {
-        if (developmentMode)
-            sourceFiles()
-
         route(subPath) {
             apiRoute(plenr)
             singlePageApplication {
@@ -22,10 +19,4 @@ fun Application.configureRouting(plenr: Plenr, subPath: String = "")
             }
         }
     }
-}
-
-private fun Route.sourceFiles()
-{
-    staticFiles("/", Path("/home/tomas/projects/plenr/frontend").toFile())
-    staticFiles("/", Path("/home/tomas/projects/plenr").toFile())
 }
