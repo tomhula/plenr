@@ -8,11 +8,14 @@ import app.softwork.routingcompose.Router
 import cz.tomashula.plenr.feature.user.UserDto
 import cz.tomashula.plenr.frontend.MainViewModel
 import cz.tomashula.plenr.frontend.Route
-import cz.tomashula.plenr.frontend.component.bsForm
 import cz.tomashula.plenr.frontend.component.bsFormInput
+import cz.tomashula.plenr.frontend.component.bsInvalidFeedback
 import cz.tomashula.plenr.frontend.component.bsLabelledFormField
+import cz.tomashula.plenr.frontend.component.bsValidatedForm
 import dev.kilua.core.IComponent
+import dev.kilua.form.ImaskOptions
 import dev.kilua.form.InputType
+import dev.kilua.form.PatternMask
 import dev.kilua.form.check.checkBox
 import dev.kilua.form.fieldWithLabel
 import dev.kilua.html.*
@@ -31,8 +34,8 @@ fun IComponent.addUserPage(viewModel: MainViewModel)
         justifyContent = JustifyContent.Center,
         alignItems = AlignItems.Center
     ) {
-        bsForm<UserCreationForm>(
-            onSubmit = { data, _, _ ->
+        bsValidatedForm<UserCreationForm>(
+            onSubmitValid = { data ->
                 viewModel.createUser(data.toUserDto())
                 router.navigate(Route.MANAGE_USERS)
             }
@@ -56,8 +59,16 @@ fun IComponent.addUserPage(viewModel: MainViewModel)
                 bsFormInput(it, UserCreationForm::email, type = InputType.Email)
             }
 
-            bsLabelledFormField("Phone", groupClassName = "mt-2") {
-                bsFormInput(it, UserCreationForm::phone, type = InputType.Tel)
+            bsLabelledFormField("Phone Number") { inputId ->
+                bsFormInput(
+                    id = inputId,
+                    bindKey = UserCreationForm::phone,
+                    validator = { it.value?.length == 16 },
+                    placeholder = "+000 000 000 000"
+                ) {
+                    maskOptions = ImaskOptions(pattern = PatternMask("{+}000{ }000{ }000{ }000"))
+                }
+                bsInvalidFeedback("Phone number must be in this format: +000 000 000 000")
             }
 
             div(className = "form-check mt-2") {
@@ -79,7 +90,7 @@ private data class UserCreationForm(
     val lastName: String? = null,
     val email: String? = null,
     val phone: String? = null,
-    val isAdmin: Boolean? = null
+    val isAdmin: Boolean = false
 )
 {
     fun toUserDto() = UserDto(
