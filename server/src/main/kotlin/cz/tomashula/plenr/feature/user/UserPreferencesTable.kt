@@ -1,10 +1,11 @@
 package cz.tomashula.plenr.feature.user
 
+import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.Table
 
 object UserPreferencesTable: Table("user_preferences")
 {
-    val userId = reference("user_id", UserTable)
+    val userId = reference("user_id", UserTable, onDelete = ReferenceOption.CASCADE)
     val trainingsPerWeek = integer("trainings_per_week")
     val trainingArrangedNotiEmail = bool("training_arranged_noti_email")
     val trainingArrangedNotiSms = bool("training_arranged_noti_sms")
