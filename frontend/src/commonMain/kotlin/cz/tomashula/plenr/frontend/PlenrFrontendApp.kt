@@ -24,6 +24,7 @@ import dev.kilua.progress.Progress
 import dev.kilua.progress.ProgressOptions
 import dev.kilua.routing.SimpleBrowserRouter
 import dev.kilua.useModule
+import kotlinx.coroutines.launch
 
 class PlenrFrontendApp : Application()
 {
@@ -71,7 +72,8 @@ class PlenrFrontendApp : Application()
                     if (viewModel.isLoggedIn)
                         block()
                     else
-                        router!!.navigate(Route.LOGIN)
+                        // Directly navigation causes issues (the url changes, but the login content is not loaded)
+                        rememberCoroutineScope().launch { router?.navigate(Route.LOGIN) }
                 }
             }
 
