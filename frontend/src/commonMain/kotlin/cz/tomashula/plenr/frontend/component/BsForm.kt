@@ -5,13 +5,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import dev.kilua.core.IComponent
 import dev.kilua.form.*
 import dev.kilua.form.text.IText
-import cz.tomashula.plenr.frontend.component.onSubmit as onFormSubmit
 import dev.kilua.form.text.text
-import dev.kilua.html.data
 import dev.kilua.html.divt
 import kotlinx.coroutines.launch
-import web.dom.events.Event
+import web.events.Event
 import kotlin.reflect.KProperty1
+import cz.tomashula.plenr.frontend.component.onSubmit as onFormSubmit
 
 @Composable
 inline fun <reified T : Any> IComponent.bsValidatedForm(

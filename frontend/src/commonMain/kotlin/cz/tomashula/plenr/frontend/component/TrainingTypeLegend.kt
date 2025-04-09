@@ -3,15 +3,9 @@ package cz.tomashula.plenr.frontend.component
 import androidx.compose.runtime.Composable
 import cz.tomashula.plenr.frontend.Colors
 import dev.kilua.core.IComponent
-import dev.kilua.html.AlignItems
-import dev.kilua.html.BorderStyle
-import dev.kilua.html.Color
-import dev.kilua.html.JustifyContent
-import dev.kilua.html.div
+import dev.kilua.html.*
 import dev.kilua.html.helpers.TagStyleFun.Companion.background
 import dev.kilua.html.helpers.TagStyleFun.Companion.border
-import dev.kilua.html.px
-import dev.kilua.html.spant
 import dev.kilua.panel.hPanel
 
 @Composable

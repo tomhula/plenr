@@ -2,7 +2,7 @@ package cz.tomashula.plenr.frontend
 
 import androidx.compose.runtime.Composable
 import dev.kilua.form.text.IText
-import web.window
+import web.window.window
 
 fun getCurrentPort() = if (window.location.port.isNotEmpty())
     window.location.port.toInt()

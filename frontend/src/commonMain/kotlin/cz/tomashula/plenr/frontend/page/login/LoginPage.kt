@@ -2,24 +2,23 @@ package cz.tomashula.plenr.frontend.page.login
 
 import androidx.compose.runtime.*
 import app.softwork.routingcompose.Router
-import dev.kilua.core.IComponent
-import dev.kilua.form.InputType
-import dev.kilua.form.form
-import dev.kilua.html.*
-import kotlinx.coroutines.launch
 import cz.tomashula.plenr.frontend.MainViewModel
 import cz.tomashula.plenr.frontend.Route
-import cz.tomashula.plenr.frontend.component.*
-import dev.kilua.form.text.password
+import cz.tomashula.plenr.frontend.component.bsForm
+import cz.tomashula.plenr.frontend.component.bsFormInput
+import cz.tomashula.plenr.frontend.component.bsInvalidFeedback
+import cz.tomashula.plenr.frontend.component.bsLabelledFormField
+import dev.kilua.core.IComponent
+import dev.kilua.form.InputType
+import dev.kilua.html.*
 import dev.kilua.html.helpers.TagStyleFun.Companion.textDecoration
-import dev.kilua.html.helpers.onClickLaunch
 import dev.kilua.html.style.pClass
 import dev.kilua.html.style.style
 import dev.kilua.panel.flexPanel
-import kotlinx.serialization.Serializable
-import dev.kilua.KiluaScope
+import dev.kilua.utils.KiluaScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.serialization.Serializable
 
 @Composable
 fun IComponent.loginPage(mainViewModel: MainViewModel)

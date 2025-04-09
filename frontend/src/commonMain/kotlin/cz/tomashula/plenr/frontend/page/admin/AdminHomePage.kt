@@ -3,14 +3,9 @@ package cz.tomashula.plenr.frontend.page.admin
 import androidx.compose.runtime.*
 import app.softwork.routingcompose.Router
 import cz.tomashula.plenr.feature.training.TrainingWithParticipantsDto
-import cz.tomashula.plenr.frontend.Colors
 import cz.tomashula.plenr.frontend.MainViewModel
 import cz.tomashula.plenr.frontend.Route
-import cz.tomashula.plenr.frontend.component.bsObjectDialog
-import cz.tomashula.plenr.frontend.component.rememberObjectDialogState
-import cz.tomashula.plenr.frontend.component.trainingCalendar
-import cz.tomashula.plenr.frontend.component.trainingDialogBody
-import cz.tomashula.plenr.frontend.component.trainingTypeLegend
+import cz.tomashula.plenr.frontend.component.*
 import cz.tomashula.plenr.util.Week
 import dev.kilua.compose.foundation.layout.Arrangement
 import dev.kilua.compose.foundation.layout.Column
@@ -19,17 +14,8 @@ import dev.kilua.compose.ui.Alignment
 import dev.kilua.compose.ui.Modifier
 import dev.kilua.compose.ui.fillMaxWidth
 import dev.kilua.core.IComponent
-import dev.kilua.html.AlignItems
-import dev.kilua.html.BorderStyle
-import dev.kilua.html.Color
-import dev.kilua.html.JustifyContent
 import dev.kilua.html.bsButton
-import dev.kilua.html.div
-import dev.kilua.html.helpers.TagStyleFun.Companion.background
-import dev.kilua.html.helpers.TagStyleFun.Companion.border
 import dev.kilua.html.px
-import dev.kilua.html.spant
-import dev.kilua.panel.hPanel
 import kotlinx.datetime.atTime
 
 @Composable

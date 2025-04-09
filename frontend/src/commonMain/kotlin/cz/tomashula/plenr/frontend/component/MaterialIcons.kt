@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import dev.kilua.core.IComponent
 import dev.kilua.html.ISpan
 import dev.kilua.html.spant
-import kotlinx.serialization.json.JsonNull.content
 
 @Composable
 fun IComponent.materialIconOutlined(

@@ -1,23 +1,24 @@
 package cz.tomashula.plenr.frontend.page.admin
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import app.softwork.routingcompose.Router
 import cz.tomashula.plenr.feature.user.UserDto
-import dev.kilua.core.IComponent
-import dev.kilua.form.check.checkBox
-import dev.kilua.html.*
 import cz.tomashula.plenr.frontend.MainViewModel
 import cz.tomashula.plenr.frontend.Route
-import cz.tomashula.plenr.frontend.component.UserCreationFormState
 import cz.tomashula.plenr.frontend.component.bsForm
 import cz.tomashula.plenr.frontend.component.bsFormInput
 import cz.tomashula.plenr.frontend.component.bsLabelledFormField
+import dev.kilua.core.IComponent
 import dev.kilua.form.InputType
+import dev.kilua.form.check.checkBox
 import dev.kilua.form.fieldWithLabel
+import dev.kilua.html.*
 import dev.kilua.modal.alert
 import dev.kilua.panel.flexPanel
 import kotlinx.serialization.Serializable
-import web.window
 
 @Composable
 fun IComponent.addUserPage(viewModel: MainViewModel)

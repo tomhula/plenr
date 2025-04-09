@@ -5,7 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import dev.kilua.core.IComponent
 import dev.kilua.modal.IModal
 import dev.kilua.modal.modal
-import web.dom.events.Event
+import web.events.Event
 
 @Composable
 fun IComponent.bsModalDialog(

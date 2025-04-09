@@ -12,7 +12,6 @@ fun main()
         JetpackModule,
         ImaskModule,
         TempusDominusModule,
-        RsupProgressModule,
         FontAwesomeModule
     )
 }

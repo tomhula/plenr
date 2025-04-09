@@ -27,15 +27,14 @@ import dev.kilua.html.helpers.TagStyleFun.Companion.border
 import dev.kilua.html.helpers.onClickLaunch
 import dev.kilua.panel.hPanel
 import dev.kilua.utils.cast
-import dev.kilua.utils.hour
 import dev.kilua.utils.toJsAny
 import kotlinx.coroutines.launch
 import kotlinx.datetime.*
 import kotlinx.datetime.format.char
 import kotlinx.serialization.Serializable
-import web.dom.CanvasTextAlign
-import web.dom.CanvasTextBaseline
-import web.dom.events.MouseEvent
+import web.canvas.CanvasTextAlign
+import web.canvas.CanvasTextBaseline
+import web.uievents.MouseEvent
 import kotlin.time.Duration.Companion.minutes
 
 private data class TrainingView(
@@ -572,8 +571,8 @@ fun IComponent.timetableBackground(
         val canvasWidth = this.canvasWidth!!
         val canvasHeight = this.canvasHeight!!
 
-        ctx.fillStyle = color.value.toJsAny()
-        ctx.strokeStyle = color.value.toJsAny()
+        ctx.fillStyle = color.value.toJsAny()!!
+        ctx.strokeStyle = color.value.toJsAny()!!
         ctx.textAlign = "center".cast<CanvasTextAlign>()
         ctx.textBaseline = "middle".cast<CanvasTextBaseline>()
         ctx.font = "20px " + ctx.font.split(" ").last()

@@ -1,9 +1,9 @@
 package cz.tomashula.plenr.frontend.component
 
 import androidx.compose.runtime.Composable
+import cz.tomashula.plenr.feature.user.UserDto
 import dev.kilua.core.IComponent
 import dev.kilua.form.InputType
-import cz.tomashula.plenr.feature.user.UserDto
 
 @Composable
 fun IComponent.userCreationFormFields(

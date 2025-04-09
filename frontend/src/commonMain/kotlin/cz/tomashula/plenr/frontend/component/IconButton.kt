@@ -2,19 +2,9 @@ package cz.tomashula.plenr.frontend.component
 
 import androidx.compose.runtime.Composable
 import dev.kilua.core.IComponent
-import dev.kilua.html.AlignItems
-import dev.kilua.html.BorderStyle
-import dev.kilua.html.Color
-import dev.kilua.html.Cursor
-import dev.kilua.html.Display
-import dev.kilua.html.JustifyContent
-import dev.kilua.html.Transition
-import dev.kilua.html.button
+import dev.kilua.html.*
 import dev.kilua.html.helpers.TagStyleFun.Companion.background
 import dev.kilua.html.helpers.TagStyleFun.Companion.border
-import dev.kilua.html.perc
-import dev.kilua.html.px
-import dev.kilua.html.spant
 import dev.kilua.html.style.pClass
 import dev.kilua.html.style.style
 import kotlin.time.Duration.Companion.seconds

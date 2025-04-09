@@ -6,8 +6,10 @@ import cz.tomashula.plenr.feature.user.UserDto
 import cz.tomashula.plenr.frontend.MainViewModel
 import cz.tomashula.plenr.frontend.Route
 import cz.tomashula.plenr.frontend.allowLettersOnly
-import cz.tomashula.plenr.frontend.component.*
-import dev.kilua.KiluaScope
+import cz.tomashula.plenr.frontend.component.bsFormInput
+import cz.tomashula.plenr.frontend.component.bsInvalidFeedback
+import cz.tomashula.plenr.frontend.component.bsLabelledFormField
+import cz.tomashula.plenr.frontend.component.bsValidatedForm
 import dev.kilua.core.IComponent
 import dev.kilua.form.ImaskOptions
 import dev.kilua.form.InputType
@@ -15,6 +17,7 @@ import dev.kilua.form.PatternMask
 import dev.kilua.html.*
 import dev.kilua.modal.alert
 import dev.kilua.panel.flexPanel
+import dev.kilua.utils.KiluaScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.serialization.Serializable

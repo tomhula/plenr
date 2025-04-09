@@ -4,23 +4,7 @@ import androidx.compose.runtime.Composable
 import cz.tomashula.plenr.feature.user.UserDto
 import cz.tomashula.plenr.frontend.Logo
 import dev.kilua.core.IComponent
-import dev.kilua.html.AlignItems
-import dev.kilua.html.Background
-import dev.kilua.html.Color
-import dev.kilua.html.Cursor
-import dev.kilua.html.FontWeight
-import dev.kilua.html.JustifyContent
-import dev.kilua.html.Position
-import dev.kilua.html.div
-import dev.kilua.html.header
-import dev.kilua.html.img
-import dev.kilua.html.li
-import dev.kilua.html.link
-import dev.kilua.html.perc
-import dev.kilua.html.px
-import dev.kilua.html.rem
-import dev.kilua.html.spant
-import dev.kilua.html.ul
+import dev.kilua.html.*
 import dev.kilua.panel.hPanel
 
 @Composable

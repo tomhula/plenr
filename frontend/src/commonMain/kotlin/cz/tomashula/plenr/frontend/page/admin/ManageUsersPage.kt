@@ -5,10 +5,12 @@ import app.softwork.routingcompose.Router
 import cz.tomashula.plenr.feature.user.UserDto
 import cz.tomashula.plenr.frontend.MainViewModel
 import cz.tomashula.plenr.frontend.Route
-import cz.tomashula.plenr.frontend.component.*
+import cz.tomashula.plenr.frontend.component.applyColumn
+import cz.tomashula.plenr.frontend.component.outlinedMaterialIconButton
+import cz.tomashula.plenr.frontend.component.userDeleteDialog
+import cz.tomashula.plenr.frontend.component.userEditDialog
 import dev.kilua.core.IComponent
 import dev.kilua.html.*
-import dev.kilua.modal.alert
 import dev.kilua.panel.gridPanel
 import dev.kilua.panel.hPanel
 import dev.kilua.panel.vPanel

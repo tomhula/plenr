@@ -12,28 +12,12 @@ import dev.kilua.compose.foundation.layout.Row
 import dev.kilua.compose.ui.Modifier
 import dev.kilua.compose.ui.fillMaxWidth
 import dev.kilua.core.IComponent
-import dev.kilua.html.Cursor
-import dev.kilua.html.FlexWrap
-import dev.kilua.html.FontWeight
-import dev.kilua.html.IDiv
-import dev.kilua.html.br
-import dev.kilua.html.bt
-import dev.kilua.html.div
+import dev.kilua.html.*
 import dev.kilua.html.helpers.TagStyleFun.Companion.background
-import dev.kilua.html.px
-import dev.kilua.html.rem
-import dev.kilua.html.spant
 import dev.kilua.panel.hPanel
-import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.LocalTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.format
+import kotlinx.datetime.*
 import kotlinx.datetime.format.Padding
 import kotlinx.datetime.format.char
-import kotlinx.datetime.plus
-import kotlinx.datetime.toInstant
-import kotlinx.datetime.toLocalDateTime
 
 /**
  * A training card.

@@ -1,9 +1,8 @@
 package cz.tomashula.plenr.frontend.component
 
 import androidx.compose.runtime.Composable
-import dev.kilua.core.IComponent
 import dev.kilua.html.*
-import web.dom.HTMLElement
+import web.html.HTMLElement
 
 @Composable
 fun <E : HTMLElement> ITag<E>.applyColumn(

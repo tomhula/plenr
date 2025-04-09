@@ -1,7 +1,6 @@
 package cz.tomashula.plenr.frontend
 
 import androidx.compose.runtime.*
-import app.softwork.routingcompose.BrowserRouter
 import app.softwork.routingcompose.RouteBuilder
 import app.softwork.routingcompose.Router
 import cz.tomashula.plenr.frontend.component.plenrHeader
@@ -23,6 +22,7 @@ import dev.kilua.html.h1t
 import dev.kilua.html.main
 import dev.kilua.progress.Progress
 import dev.kilua.progress.ProgressOptions
+import dev.kilua.routing.SimpleBrowserRouter
 import dev.kilua.useModule
 
 class PlenrFrontendApp : Application()
@@ -53,7 +53,7 @@ class PlenrFrontendApp : Application()
             }
 
             plenrHeader(
-                title = router?.currentPath?.path?.title() ?: "",
+                title = router?.currentPath()?.path?.title() ?: "",
                 user = viewModel.user,
                 onLogoClick = { router?.navigate(Route.HOME) },
                 onAvailabilityClick = { router?.navigate(Route.AVAILABILITY) },
@@ -77,8 +77,10 @@ class PlenrFrontendApp : Application()
 
             main {
                 style("margin", "24px 100px")
-                BrowserRouter("/") {
-                    if (loading) return@BrowserRouter
+                SimpleBrowserRouter("/") {
+                    if (loading) 
+                        return@SimpleBrowserRouter
+                    
                     router = Router.current
 
                     LaunchedEffect(Unit) {

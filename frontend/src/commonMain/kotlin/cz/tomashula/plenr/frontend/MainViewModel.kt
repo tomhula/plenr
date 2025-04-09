@@ -8,11 +8,11 @@ import cz.tomashula.plenr.feature.training.TrainingService
 import cz.tomashula.plenr.feature.training.TrainingWithParticipantsDto
 import cz.tomashula.plenr.feature.user.UserDto
 import cz.tomashula.plenr.feature.user.UserService
+import cz.tomashula.plenr.feature.user.availability.UserAvailabilityService
 import cz.tomashula.plenr.feature.user.preferences.UserPermanentAvailabilityDto
 import cz.tomashula.plenr.feature.user.preferences.UserPreferencesDto
 import cz.tomashula.plenr.feature.user.preferences.UserPreferencesService
 import cz.tomashula.plenr.feature.user.preferences.WeeklyTimeRanges
-import cz.tomashula.plenr.feature.user.availability.UserAvailabilityService
 import io.ktor.client.*
 import io.ktor.client.engine.js.*
 import io.ktor.http.*
@@ -24,8 +24,8 @@ import kotlinx.rpc.krpc.ktor.client.rpcConfig
 import kotlinx.rpc.krpc.serialization.json.json
 import kotlinx.rpc.withService
 import kotlinx.serialization.json.Json
-import web.localStorage
-import web.window
+import web.storage.localStorage
+import web.window.window
 
 private const val AUTH_TOKEN_STORAGE_KEY = "authToken"
 private const val USER_STORAGE_KEY = "user"

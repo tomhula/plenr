@@ -20,10 +20,10 @@
   resolved "https://registry.yarnpkg.com/@discoveryjs/json-ext/-/json-ext-0.5.7.tgz#1d572bfbbe14b7704e0ba0f39b74815b84870d70"
   integrity sha512-dBVuXR082gk3jsFp7Rd/JI4kytwGHecnCoTtXFb7DB6CNHp4rg5k1bhg0nWdLGLnOV71lmDzGQaLMy8iPLY0pw==
 
-"@eonasdan/tempus-dominus@6.9.11":
-  version "6.9.11"
-  resolved "https://registry.yarnpkg.com/@eonasdan/tempus-dominus/-/tempus-dominus-6.9.11.tgz#a52b1a7cfd1be6a989826e42b408a55a084f3ca1"
-  integrity sha512-KFOyMoCy6OCIl0dzWq4it2zu/jV4YWrSxxLmXR2XClVV9D9f/DaLjEhADJCYSjWBlTYanE18ACjVoyrfsHikgA==
+"@eonasdan/tempus-dominus@6.10.2":
+  version "6.10.2"
+  resolved "https://registry.yarnpkg.com/@eonasdan/tempus-dominus/-/tempus-dominus-6.10.2.tgz#e9c18fe71b0e2ff334a2bfe6f89d0fde4b189a64"
+  integrity sha512-iu8axcs6MftsF9UOW9XhGGHaz3WOeBx434UYDktYGQgBy447zg0PCCGCGfTAsK6HZiMiuBJo/pTZvQbv0mls+g==
 
 "@fortawesome/fontawesome-free@6.7.2":
   version "6.7.2"
@@ -540,10 +540,10 @@ bonjour-service@^1.0.11:
     fast-deep-equal "^3.1.3"
     multicast-dns "^7.2.5"
 
-bootstrap@5.3.3:
-  version "5.3.3"
-  resolved "https://registry.yarnpkg.com/bootstrap/-/bootstrap-5.3.3.tgz#de35e1a765c897ac940021900fcbb831602bac38"
-  integrity sha512-8HLCdWgyoMguSO9o+aH+iuZ+aht+mzW0u3HIMzVu7Srrpv7EBBxTnrFlSCskwdY1+EOFQSm7uMJhNQHkdPcmjg==
+bootstrap@5.3.5:
+  version "5.3.5"
+  resolved "https://registry.yarnpkg.com/bootstrap/-/bootstrap-5.3.5.tgz#be42cfe0d580e97ee1abb7d38ce94f5c393c9bb6"
+  integrity sha512-ct1CHKtiobRimyGzmsSldEtM03E8fcEX4Tb3dGXz1V8faRwM50+vfHwTzOxB3IlKO7m+9vTH3s/3C6T2EAPeTA==
 
 brace-expansion@^1.1.7:
   version "1.1.11"

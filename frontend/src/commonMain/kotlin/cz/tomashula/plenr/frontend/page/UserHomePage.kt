@@ -3,11 +3,7 @@ package cz.tomashula.plenr.frontend.page
 import androidx.compose.runtime.*
 import cz.tomashula.plenr.feature.training.TrainingWithParticipantsDto
 import cz.tomashula.plenr.frontend.MainViewModel
-import cz.tomashula.plenr.frontend.component.bsObjectDialog
-import cz.tomashula.plenr.frontend.component.rememberObjectDialogState
-import cz.tomashula.plenr.frontend.component.trainingCalendar
-import cz.tomashula.plenr.frontend.component.trainingDialogBody
-import cz.tomashula.plenr.frontend.component.trainingTypeLegend
+import cz.tomashula.plenr.frontend.component.*
 import cz.tomashula.plenr.util.Week
 import dev.kilua.compose.foundation.layout.Arrangement
 import dev.kilua.compose.foundation.layout.Row
