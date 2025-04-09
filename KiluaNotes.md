@@ -1,2 +1,0 @@
-- text table header missing (tht)
-- text table data missing (tdt)
