@@ -1,5 +1,6 @@
 package cz.tomashula.plenr.feature.user.availability
 
+import cz.tomashula.plenr.feature.user.UserDto
 import cz.tomashula.plenr.feature.user.preferences.UserPermanentAvailabilityDto
 import cz.tomashula.plenr.util.LocalTimeRanges
 import kotlinx.datetime.DateTimePeriod
@@ -64,4 +65,9 @@ interface UserAvailabilityService: RemoteService
         date: LocalDate,
         authToken: String
     ): LocalTimeRanges
+
+    /**
+     * Same as [getUserAvailabilityForDay], but for multiple users at once.
+     */
+    suspend fun getUsersAvailabilityForDay(userIds: List<Int>, date: LocalDate, authToken: String): Map<Int, LocalTimeRanges>
 }

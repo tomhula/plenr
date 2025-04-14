@@ -17,6 +17,7 @@ import io.ktor.client.*
 import io.ktor.client.engine.js.*
 import io.ktor.http.*
 import io.ktor.util.*
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.rpc.krpc.ktor.client.installKrpc
 import kotlinx.rpc.krpc.ktor.client.rpc
@@ -160,6 +161,11 @@ class MainViewModel
     suspend fun getUserPermanentAvailability() = userAvailabilityService.getUserPermanentAvailability(user!!.id, authToken!!).availableTimes
 
     suspend fun getUserPermanentAvailabilityAdmin(userId: Int) = userAvailabilityService.getUserPermanentAvailability(userId, authToken!!).availableTimes
+
+    suspend fun getUsersAvailabilityForDay(userIds: List<Int>, day: LocalDate) =
+        userAvailabilityService.getUsersAvailabilityForDay(
+            userIds, day, authToken!!
+        )
 
     suspend fun setUserPermanentAvailability(busyTimes: WeeklyTimeRanges) = userAvailabilityService.setUserPermanentAvailability(
         UserPermanentAvailabilityDto(user!!.id, busyTimes),

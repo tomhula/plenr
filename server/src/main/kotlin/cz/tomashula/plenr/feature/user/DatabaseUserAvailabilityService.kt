@@ -94,6 +94,8 @@ class DatabaseUserAvailabilityService(
             val query = BusyPeriodTable.selectAll()
                 .where { BusyPeriodTable.userId eq userId }
 
+            // TODO: Make sure this function returns any periods, that either start, end or continue in the from-to range.
+            
             val queryWithFrom = if (from != null) {
                 query.andWhere { BusyPeriodTable.start greaterEq from }
             } else {
@@ -198,5 +200,19 @@ class DatabaseUserAvailabilityService(
         }
 
         return availabilityRanges
+    }
+
+    override suspend fun getUsersAvailabilityForDay(
+        userIds: List<Int>,
+        date: LocalDate,
+        authToken: String
+    ): Map<Int, LocalTimeRanges>
+    {
+        val result = mutableMapOf<Int, LocalTimeRanges>()
+        
+        for (userId in userIds)
+            result[userId] = getUserAvailabilityForDay(userId, date, authToken)
+        
+        return result.toMap()
     }
 }

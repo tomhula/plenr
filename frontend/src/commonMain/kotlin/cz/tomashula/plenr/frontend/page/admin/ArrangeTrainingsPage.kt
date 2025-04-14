@@ -10,6 +10,7 @@ import cz.tomashula.plenr.frontend.Colors
 import cz.tomashula.plenr.frontend.MainViewModel
 import cz.tomashula.plenr.frontend.component.*
 import cz.tomashula.plenr.util.LocalTimeRange
+import cz.tomashula.plenr.util.LocalTimeRanges
 import cz.tomashula.plenr.util.contains
 import cz.tomashula.plenr.util.now
 import cz.tomashula.plenr.util.rangeTo
@@ -71,7 +72,7 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
     var currentDialogTraining by remember { mutableStateOf<TrainingWithParticipantsDto?>(null) }
     /* Whether the current dialog is editing a training or creating a new one */
     var currentDialogTrainingEdit by remember { mutableStateOf(false) }
-    val userPermanentAvailabilities = remember { mutableStateMapOf<UserDto, WeeklyTimeRanges>() }
+    val userAvailabilities = remember { mutableStateMapOf<LocalDate, Map<UserDto, LocalTimeRanges>>() }
     var tooltipX by remember { mutableStateOf(0) }
     var tooltipY by remember { mutableStateOf(0) }
     var tooltipUser by remember { mutableStateOf<UserDto?>(null) }
@@ -82,11 +83,11 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
         }
     }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(selectedDay) {
         users = mainViewModel.getAllUsers().filterNot { it.isAdmin }
-        for (user in users)
             launch {
-                userPermanentAvailabilities[user] = mainViewModel.getUserPermanentAvailabilityAdmin(user.id)
+                userAvailabilities[selectedDay] = mainViewModel.getUsersAvailabilityForDay(users.map(
+                    UserDto::id), selectedDay).mapKeys { users.find { userDto -> userDto.id == it.key }!! }
             }
     }
 
@@ -103,7 +104,7 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
         edit = currentDialogTrainingEdit,
         training = currentDialogTraining ?: newTraining(selectedDay.atTime(12, 0), mainViewModel.user!!),
         users = users,
-        userAvailabilities = userPermanentAvailabilities,
+        userAvailabilities = emptyMap(),
         onSave = { saveTraining ->
             val originalTraining = currentDialogTraining!!
             val originalDate = originalTraining.startDateTime.date
@@ -166,7 +167,7 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
                 position(Position.Absolute)
                 top(0.px)
                 left((-80).px)
-                for (user in userPermanentAvailabilities.keys)
+                for (user in userAvailabilities[selectedDay]?.keys ?: emptySet())
                 {
                     div {
                         color(Colors.getColor(user.id))
@@ -214,7 +215,7 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
                     width(timetableWidth.px)
                     style("pointer-events", "none")
 
-                    for ((user, availableTimeRanges) in userPermanentAvailabilities)
+                    for (user in userAvailabilities[selectedDay]?.keys ?: emptySet())
                         userAvailability(
                             user = user,
                             heightPx = userAvailabilityHeightPx,
@@ -227,7 +228,7 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
                                 tooltipUser = user
                             },
                             onMouseExit = { tooltipUser = null },
-                            availableTimeRanges = availableTimeRanges.getRangesForDay(selectedDay.dayOfWeek)
+                            availableTimeRanges = userAvailabilities[selectedDay]?.get(user)?.getRanges() ?: emptyList()
                         )
 
                     for (training in trainings[selectedDay] ?: emptyList())
