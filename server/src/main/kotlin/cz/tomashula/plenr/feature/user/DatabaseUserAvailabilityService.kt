@@ -94,21 +94,26 @@ class DatabaseUserAvailabilityService(
             val query = BusyPeriodTable.selectAll()
                 .where { BusyPeriodTable.userId eq userId }
 
-            // TODO: Make sure this function returns any periods, that either start, end or continue in the from-to range.
-            
-            val queryWithFrom = if (from != null) {
-                query.andWhere { BusyPeriodTable.start greaterEq from }
+            // Handle periods that overlap with the specified time range
+            val finalQuery = if (from != null && to != null) {
+                // Return periods that:
+                // 1. Start within the range (start >= from && start <= to)
+                // 2. End within the range (end >= from && end <= to)
+                // 3. Completely encompass the range (start <= from && end >= to)
+                query.andWhere { 
+                    (BusyPeriodTable.start lessEq to and (BusyPeriodTable.end greaterEq from))
+                }
+            } else if (from != null) {
+                // If only from is specified, return periods that end after from
+                query.andWhere { BusyPeriodTable.end greaterEq from }
+            } else if (to != null) {
+                // If only to is specified, return periods that start before to
+                query.andWhere { BusyPeriodTable.start lessEq to }
             } else {
                 query
             }
 
-            val queryWithTo = if (to != null) {
-                queryWithFrom.andWhere { BusyPeriodTable.end lessEq to }
-            } else {
-                queryWithFrom
-            }
-
-            queryWithTo.map {
+            finalQuery.map {
                 BusyPeriodDto(
                     id = it[BusyPeriodTable.id].value,
                     userId = it[BusyPeriodTable.userId].value,
@@ -119,32 +124,17 @@ class DatabaseUserAvailabilityService(
     }
 
     override suspend fun addBusyPeriod(
-        busyPeriod: DateTimePeriod,
+        busyPeriod: LocalDateTimePeriod,
         authToken: String
     ): Int
     {
         val caller = authService.validateToken(authToken) ?: throw UnauthorizedException()
 
         return dbQuery {
-            // Create start and end dates
-            val now = LocalDateTime.now()
-            val startDateTime = now
-
-            // Calculate end date by adding the DateTimePeriod components to the start date
-            val endDateTime = LocalDateTime(
-                now.year + busyPeriod.years,
-                now.monthNumber + busyPeriod.months,
-                now.dayOfMonth + busyPeriod.days,
-                now.hour + busyPeriod.hours,
-                now.minute + busyPeriod.minutes,
-                now.second + busyPeriod.seconds,
-                now.nanosecond + busyPeriod.nanoseconds
-            )
-
             val id = BusyPeriodTable.insert {
                 it[userId] = caller.id
-                it[start] = startDateTime
-                it[end] = endDateTime
+                it[start] = busyPeriod.start
+                it[end] = busyPeriod.end
             } get BusyPeriodTable.id
 
             id.value
@@ -209,10 +199,10 @@ class DatabaseUserAvailabilityService(
     ): Map<Int, LocalTimeRanges>
     {
         val result = mutableMapOf<Int, LocalTimeRanges>()
-        
+
         for (userId in userIds)
             result[userId] = getUserAvailabilityForDay(userId, date, authToken)
-        
+
         return result.toMap()
     }
 }

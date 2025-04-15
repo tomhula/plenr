@@ -1,9 +1,8 @@
 package cz.tomashula.plenr.feature.user.availability
 
-import cz.tomashula.plenr.feature.user.UserDto
 import cz.tomashula.plenr.feature.user.preferences.UserPermanentAvailabilityDto
+import cz.tomashula.plenr.util.LocalDateTimePeriod
 import cz.tomashula.plenr.util.LocalTimeRanges
-import kotlinx.datetime.DateTimePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.rpc.RemoteService
@@ -42,9 +41,10 @@ interface UserAvailabilityService: RemoteService
     
     /**
      * Allows users to add new busy period for themselves.
+     * @return the id of the new busy period.
      */
     suspend fun addBusyPeriod(
-        busyPeriod: DateTimePeriod,
+        busyPeriod: LocalDateTimePeriod,
         authToken: String
     ): Int
 
