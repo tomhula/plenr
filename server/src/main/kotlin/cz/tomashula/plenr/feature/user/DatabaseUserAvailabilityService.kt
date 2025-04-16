@@ -9,9 +9,7 @@ import cz.tomashula.plenr.feature.user.preferences.WeeklyTimeRanges
 import cz.tomashula.plenr.service.DatabaseService
 import cz.tomashula.plenr.util.LocalDateTimePeriod
 import cz.tomashula.plenr.util.LocalTimeRanges
-import cz.tomashula.plenr.util.now
 import cz.tomashula.plenr.util.rangeTo
-import kotlinx.datetime.DateTimePeriod
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -181,12 +179,22 @@ class DatabaseUserAvailabilityService(
         val startOfDay = LocalDateTime(date.year, date.monthNumber, date.dayOfMonth, 0, 0)
         val endOfDay = LocalDateTime(date.year, date.monthNumber, date.dayOfMonth, 23, 59, 59, 999_999_999)
 
-        val busyPeriods = getBusyPeriodsForUser(userId, startOfDay, endOfDay, authToken)
+        val busyPeriodDtos = getBusyPeriodsForUser(userId, startOfDay, endOfDay, authToken)
 
-        for (busyPeriod in busyPeriods) {
-            val start = busyPeriod.period.start.time
-            val end = busyPeriod.period.end.time
-            availabilityRanges = availabilityRanges.remove(start..end)
+        for (busyPeriodDto in busyPeriodDtos) {
+            val busyPeriod = busyPeriodDto.period
+            // The whole day is in the busy period
+            if (busyPeriod.start.date < date && busyPeriod.end.date > date)
+                availabilityRanges = LocalTimeRanges.EMPTY
+            // The busy period is only during this day
+            else if (busyPeriod.start.date == date && busyPeriod.end.date == date)
+                availabilityRanges = availabilityRanges.remove(busyPeriod.start.time..busyPeriod.end.time)
+            // The busy period starts on this day, but ends in future day
+            else if (busyPeriod.start.date == date && busyPeriod.end.date > date)
+                availabilityRanges = availabilityRanges.remove(busyPeriod.start.time..endOfDay.time)
+            // The busy period starts on past day, but ends today
+            else if (busyPeriod.end.date == date && busyPeriod.start.date < date)
+                availabilityRanges = availabilityRanges.remove(startOfDay.time..busyPeriod.end.time)
         }
 
         return availabilityRanges
