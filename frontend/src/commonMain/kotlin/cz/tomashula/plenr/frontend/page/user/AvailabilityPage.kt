@@ -15,7 +15,6 @@ import cz.tomashula.plenr.frontend.Route
 import cz.tomashula.plenr.frontend.component.bsForm
 import cz.tomashula.plenr.frontend.component.bsModalDialog
 import cz.tomashula.plenr.frontend.component.outlinedMaterialIconButton
-import cz.tomashula.plenr.util.LocalDateTimePeriod
 import cz.tomashula.plenr.util.now
 import dev.kilua.core.IComponent
 import dev.kilua.form.time.richDateTime
@@ -141,7 +140,26 @@ fun IComponent.availabilityPage(viewModel: MainViewModel)
             width(100.perc)
 
             // Regular availability section
-            h3("Regular Availability")
+            div {
+                marginBottom(20.px)
+                div {
+                    style {
+                        marginBottom(15.px)
+                        paddingBottom(5.px)
+                    }
+                    h2t("Regular Availability") {
+                        style {
+                            color(Color("#333333"))
+                            margin(0.px)
+                            fontSize(24.px)
+                        }
+                    }
+                }
+                p {
+                    +"Set your regular weekly availability schedule. This represents your standard working hours for each day of the week."
+                    marginBottom(15.px)
+                }
+            }
             bsForm<Unit>(
                 onSubmit = { _, _, _ ->
                     val weeklyTimeRanges = WeeklyTimeRanges.builder().apply {
@@ -199,15 +217,23 @@ fun IComponent.availabilityPage(viewModel: MainViewModel)
 
             // Busy periods section
             div {
-                marginTop(30.px)
-                h3("Busy Periods")
-                p("Add periods when you are not available")
-
+                marginTop(50.px)
                 div {
-                    marginBottom(10.px)
-                    bsButton("Add Busy Period", type = ButtonType.Button) {
-                        onClick { showAddBusyPeriodDialog.value = true }
+                    style {
+                        marginBottom(15.px)
+                        paddingBottom(5.px)
                     }
+                    h2t("Busy Periods") {
+                        style {
+                            color(Color("#333333"))
+                            margin(0.px)
+                            fontSize(24.px)
+                        }
+                    }
+                }
+                p {
+                    +"Define specific time periods when you are not available, overriding your regular availability schedule. Use this for vacations, meetings, or any other temporary unavailability."
+                    marginBottom(20.px)
                 }
 
                 if (busyPeriods.isEmpty()) {
@@ -245,6 +271,14 @@ fun IComponent.availabilityPage(viewModel: MainViewModel)
                                 }
                             }
                         }
+                    }
+                }
+
+                // Add Busy Period button below the table
+                div {
+                    marginTop(20.px)
+                    bsButton("Add Busy Period", type = ButtonType.Button) {
+                        onClick { showAddBusyPeriodDialog.value = true }
                     }
                 }
             }
