@@ -9,7 +9,7 @@ import cz.tomashula.plenr.feature.training.TrainingWithParticipantsDto
 import cz.tomashula.plenr.feature.user.UserDto
 import cz.tomashula.plenr.feature.user.UserService
 import cz.tomashula.plenr.feature.user.availability.UserAvailabilityService
-import cz.tomashula.plenr.feature.user.preferences.UserPermanentAvailabilityDto
+import cz.tomashula.plenr.feature.user.preferences.UserRegularAvailabilityDto
 import cz.tomashula.plenr.feature.user.preferences.UserPreferencesDto
 import cz.tomashula.plenr.feature.user.preferences.UserPreferencesService
 import cz.tomashula.plenr.feature.user.preferences.WeeklyTimeRanges
@@ -158,17 +158,17 @@ class MainViewModel
 
     suspend fun setPreferences(preferences: UserPreferencesDto) = preferencesService.setUserPreferences(user!!.id, preferences, authToken!!)
 
-    suspend fun getUserPermanentAvailability() = userAvailabilityService.getUserPermanentAvailability(user!!.id, authToken!!).availableTimes
+    suspend fun getUserRegularAvailability() = userAvailabilityService.getUserRegularAvailability(user!!.id, authToken!!).availableTimes
 
-    suspend fun getUserPermanentAvailabilityAdmin(userId: Int) = userAvailabilityService.getUserPermanentAvailability(userId, authToken!!).availableTimes
+    suspend fun getUserRegularAvailabilityAdmin(userId: Int) = userAvailabilityService.getUserRegularAvailability(userId, authToken!!).availableTimes
 
     suspend fun getUsersAvailabilityForDay(userIds: List<Int>, day: LocalDate) =
         userAvailabilityService.getUsersAvailabilityForDay(
             userIds, day, authToken!!
         )
 
-    suspend fun setUserPermanentAvailability(busyTimes: WeeklyTimeRanges) = userAvailabilityService.setUserPermanentAvailability(
-        UserPermanentAvailabilityDto(user!!.id, busyTimes),
+    suspend fun setUserRegularAvailability(busyTimes: WeeklyTimeRanges) = userAvailabilityService.setUserRegularAvailability(
+        UserRegularAvailabilityDto(user!!.id, busyTimes),
         authToken!!
     )
 

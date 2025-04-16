@@ -64,8 +64,8 @@ fun IComponent.availabilityPage(viewModel: MainViewModel)
     }
 
     LaunchedEffect(Unit) {
-        // Load permanent availability
-        val weeklyTimeRanges = viewModel.getUserPermanentAvailability()
+        // Load regular availability
+        val weeklyTimeRanges = viewModel.getUserRegularAvailability()
         for (day in DayOfWeek.entries)
         {
             val firstRange = weeklyTimeRanges.getRangesForDay(day).firstOrNull() ?: continue
@@ -140,8 +140,8 @@ fun IComponent.availabilityPage(viewModel: MainViewModel)
             maxWidth(800.px)
             width(100.perc)
 
-            // Permanent availability section
-            h3("Permanent Availability")
+            // Regular availability section
+            h3("Regular Availability")
             bsForm<Unit>(
                 onSubmit = { _, _, _ ->
                     val weeklyTimeRanges = WeeklyTimeRanges.builder().apply {
@@ -149,7 +149,7 @@ fun IComponent.availabilityPage(viewModel: MainViewModel)
                             addTimeRange(day, timeRange.first, timeRange.second)
                     }.build()
 
-                    viewModel.setUserPermanentAvailability(weeklyTimeRanges)
+                    viewModel.setUserRegularAvailability(weeklyTimeRanges)
                     router.navigate(Route.HOME)
                 }
             ) {

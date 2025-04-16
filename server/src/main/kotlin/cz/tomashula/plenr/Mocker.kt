@@ -3,7 +3,7 @@ package cz.tomashula.plenr
 import cz.tomashula.plenr.feature.training.TrainingParticipantTable
 import cz.tomashula.plenr.feature.training.TrainingTable
 import cz.tomashula.plenr.feature.training.TrainingType
-import cz.tomashula.plenr.feature.user.UserPermanentAvailabilityTable
+import cz.tomashula.plenr.feature.user.UserRegularAvailabilityTable
 import cz.tomashula.plenr.feature.user.BusyPeriodTable
 import cz.tomashula.plenr.feature.user.UserPreferencesTable
 import cz.tomashula.plenr.feature.user.UserSetPasswordTable
@@ -36,14 +36,14 @@ class Mocker(
                 UserSetPasswordTable,
                 UserPreferencesTable,
                 BusyPeriodTable,
-                UserPermanentAvailabilityTable,
+                UserRegularAvailabilityTable,
                 TrainingTable,
                 UserTable
             )
             // Recreate all the tables
             SchemaUtils.create(
                 UserTable,
-                UserPermanentAvailabilityTable,
+                UserRegularAvailabilityTable,
                 TrainingTable,
                 TrainingParticipantTable
             )
@@ -90,7 +90,7 @@ class Mocker(
 
                 // Insert busy times for all days of the week
                 DayOfWeek.entries.forEach { dayOfWeek ->
-                    UserPermanentAvailabilityTable.insert {
+                    UserRegularAvailabilityTable.insert {
                         it[this.userId] = userId.value
                         it[this.day] = dayOfWeek
                         it[this.start] = LocalTime.parse(availableFrom, timeFormat)

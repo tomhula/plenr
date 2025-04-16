@@ -15,7 +15,7 @@ class DatabaseUserPreferencesService(
     override val coroutineContext: CoroutineContext,
     database: Database,
     private val authService: AuthService
-) : UserPreferencesService, DatabaseService(database, UserPreferencesTable, UserPermanentAvailabilityTable, BusyPeriodTable)
+) : UserPreferencesService, DatabaseService(database, UserPreferencesTable, UserRegularAvailabilityTable, BusyPeriodTable)
 {
     private fun ResultRow.toUserPreferencesDto() = UserPreferencesDto(
         trainingsPerWeek = this[UserPreferencesTable.trainingsPerWeek],

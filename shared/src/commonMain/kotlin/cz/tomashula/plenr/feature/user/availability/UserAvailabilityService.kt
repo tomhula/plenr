@@ -1,6 +1,6 @@
 package cz.tomashula.plenr.feature.user.availability
 
-import cz.tomashula.plenr.feature.user.preferences.UserPermanentAvailabilityDto
+import cz.tomashula.plenr.feature.user.preferences.UserRegularAvailabilityDto
 import cz.tomashula.plenr.util.LocalDateTimePeriod
 import cz.tomashula.plenr.util.LocalTimeRanges
 import kotlinx.datetime.LocalDate
@@ -12,18 +12,18 @@ import kotlinx.rpc.annotations.Rpc
 interface UserAvailabilityService: RemoteService
 {
     /**
-     * Allows each user to get their own permanent availability.
+     * Allows each user to get their own regular availability.
      */
-    suspend fun getUserPermanentAvailability(
+    suspend fun getUserRegularAvailability(
         userId: Int,
         authToken: String
-    ): UserPermanentAvailabilityDto
+    ): UserRegularAvailabilityDto
 
     /**
-     * Allows each user to set their own permanent availability.
+     * Allows each user to set their own regular availability.
      */
-    suspend fun setUserPermanentAvailability(
-        userPermanentAvailabilityDto: UserPermanentAvailabilityDto,
+    suspend fun setUserRegularAvailability(
+        userRegularAvailabilityDto: UserRegularAvailabilityDto,
         authToken: String
     )
 
@@ -38,7 +38,7 @@ interface UserAvailabilityService: RemoteService
         authToken: String
     ): List<BusyPeriodDto>
 
-    
+
     /**
      * Allows users to add new busy period for themselves.
      * @return the id of the new busy period.
@@ -55,10 +55,10 @@ interface UserAvailabilityService: RemoteService
         busyPeriodId: Int,
         authToken: String
     )
-    
+
     /**
      * Allows admins to get anyone's availability for a given day.
-     * Returns the final availability for the day, taking into account both permanent availability and busy periods.
+     * Returns the final availability for the day, taking into account both regular availability and busy periods.
     */
     suspend fun getUserAvailabilityForDay(
         userId: Int,

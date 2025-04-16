@@ -4,7 +4,7 @@ import cz.tomashula.plenr.auth.AuthService
 import cz.tomashula.plenr.auth.UnauthorizedException
 import cz.tomashula.plenr.feature.user.availability.BusyPeriodDto
 import cz.tomashula.plenr.feature.user.availability.UserAvailabilityService
-import cz.tomashula.plenr.feature.user.preferences.UserPermanentAvailabilityDto
+import cz.tomashula.plenr.feature.user.preferences.UserRegularAvailabilityDto
 import cz.tomashula.plenr.feature.user.preferences.WeeklyTimeRanges
 import cz.tomashula.plenr.service.DatabaseService
 import cz.tomashula.plenr.util.LocalDateTimePeriod
@@ -21,56 +21,56 @@ class DatabaseUserAvailabilityService(
     override val coroutineContext: CoroutineContext,
     database: Database,
     private val authService: AuthService
-) : UserAvailabilityService, DatabaseService(database, UserPermanentAvailabilityTable, BusyPeriodTable)
+) : UserAvailabilityService, DatabaseService(database, UserRegularAvailabilityTable, BusyPeriodTable)
 {
-    override suspend fun getUserPermanentAvailability(
+    override suspend fun getUserRegularAvailability(
         userId: Int,
         authToken: String
-    ): UserPermanentAvailabilityDto
+    ): UserRegularAvailabilityDto
     {
         val caller = authService.validateToken(authToken) ?: throw UnauthorizedException()
 
         if (caller.id != userId && !caller.isAdmin)
-            throw UnauthorizedException("Only admins can get other users' permanent availability")
+            throw UnauthorizedException("Only admins can get other users' regular availability")
 
         val weeklyTimeRangesBuilder = WeeklyTimeRanges.builder()
 
         dbQuery {
-            UserPermanentAvailabilityTable.selectAll()
-                .where { UserPermanentAvailabilityTable.userId eq userId }
+            UserRegularAvailabilityTable.selectAll()
+                .where { UserRegularAvailabilityTable.userId eq userId }
                 .forEach { row ->
-                    val day = row[UserPermanentAvailabilityTable.day]
-                    val start = row[UserPermanentAvailabilityTable.start]
-                    val end = row[UserPermanentAvailabilityTable.end]
+                    val day = row[UserRegularAvailabilityTable.day]
+                    val start = row[UserRegularAvailabilityTable.start]
+                    val end = row[UserRegularAvailabilityTable.end]
                     weeklyTimeRangesBuilder.addTimeRange(day, start, end)
                 }
         }
 
-        return UserPermanentAvailabilityDto(userId, weeklyTimeRangesBuilder.build())
+        return UserRegularAvailabilityDto(userId, weeklyTimeRangesBuilder.build())
     }
 
-    override suspend fun setUserPermanentAvailability(
-        userPermanentAvailabilityDto: UserPermanentAvailabilityDto,
+    override suspend fun setUserRegularAvailability(
+        userRegularAvailabilityDto: UserRegularAvailabilityDto,
         authToken: String
     )
     {
         val caller = authService.validateToken(authToken) ?: throw UnauthorizedException()
 
-        if (caller.id != userPermanentAvailabilityDto.userId && !caller.isAdmin)
-            throw UnauthorizedException("Only admins can set other users' permanent availability")
+        if (caller.id != userRegularAvailabilityDto.userId && !caller.isAdmin)
+            throw UnauthorizedException("Only admins can set other users' regular availability")
 
         dbQuery {
-            UserPermanentAvailabilityTable.deleteWhere { UserPermanentAvailabilityTable.userId eq userPermanentAvailabilityDto.userId }
+            UserRegularAvailabilityTable.deleteWhere { UserRegularAvailabilityTable.userId eq userRegularAvailabilityDto.userId }
 
             for (dayOfWeek in DayOfWeek.entries)
             {
-                val dayTimeRanges = userPermanentAvailabilityDto.availableTimes.getRangesForDay(dayOfWeek)
+                val dayTimeRanges = userRegularAvailabilityDto.availableTimes.getRangesForDay(dayOfWeek)
 
-                UserPermanentAvailabilityTable.batchInsert(dayTimeRanges) { timeRange ->
-                    this[UserPermanentAvailabilityTable.userId] = userPermanentAvailabilityDto.userId
-                    this[UserPermanentAvailabilityTable.day] = dayOfWeek
-                    this[UserPermanentAvailabilityTable.start] = timeRange.start
-                    this[UserPermanentAvailabilityTable.end] = timeRange.endInclusive
+                UserRegularAvailabilityTable.batchInsert(dayTimeRanges) { timeRange ->
+                    this[UserRegularAvailabilityTable.userId] = userRegularAvailabilityDto.userId
+                    this[UserRegularAvailabilityTable.day] = dayOfWeek
+                    this[UserRegularAvailabilityTable.start] = timeRange.start
+                    this[UserRegularAvailabilityTable.end] = timeRange.endInclusive
                 }
             }
         }
@@ -169,10 +169,10 @@ class DatabaseUserAvailabilityService(
         if (!caller.isAdmin)
             throw UnauthorizedException("Only admins can get user availability for a day")
 
-        // Get permanent availability for the day of week
-        val permanentAvailability = getUserPermanentAvailability(userId, authToken)
+        // Get regular availability for the day of week
+        val regularAvailability = getUserRegularAvailability(userId, authToken)
         val dayOfWeek = date.dayOfWeek
-        val dayRanges = permanentAvailability.availableTimes.getRangesForDay(dayOfWeek)
+        val dayRanges = regularAvailability.availableTimes.getRangesForDay(dayOfWeek)
         var availabilityRanges = LocalTimeRanges.of(dayRanges)
 
         // Get busy periods for the day and subtract them from the availability
