@@ -37,6 +37,18 @@ tasks {
         workingDir = rootProject.projectDir.resolve("run")
         dependsOn(processFrontendDev)
     }
+    
+    val runTask = this.run
+    
+    register<JavaExec>("runWithoutBuildingFrontend") {
+        group = project.group.toString()
+        description = project.description.toString()
+        mainClass.set(runTask.get().mainClass)
+        classpath = runTask.get().classpath
+        workingDir = runTask.get().workingDir
+        args = runTask.get().args
+        jvmArgs = runTask.get().jvmArgs
+    }
 }
 
 fun PolymorphicDomainObjectContainer<Task>.registeringCopyIntoResources(
