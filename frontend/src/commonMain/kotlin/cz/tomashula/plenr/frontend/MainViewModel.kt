@@ -185,4 +185,29 @@ class MainViewModel
 
         return userService.deleteUser(userId, authToken!!)
     }
+
+    suspend fun getUserBusyPeriods(from: LocalDateTime? = null, to: LocalDateTime? = null): List<cz.tomashula.plenr.feature.user.availability.BusyPeriodDto> {
+        if (authToken == null || user == null)
+            return emptyList()
+
+        return userAvailabilityService.getBusyPeriodsForUser(user!!.id, from, to, authToken!!)
+    }
+
+    suspend fun addBusyPeriod(start: LocalDateTime, end: LocalDateTime): Int? {
+        if (authToken == null || user == null)
+            return null
+
+        return userAvailabilityService.addBusyPeriod(
+            cz.tomashula.plenr.util.LocalDateTimePeriod(start, end),
+            authToken!!
+        )
+    }
+
+    suspend fun removeBusyPeriod(busyPeriodId: Int): Boolean {
+        if (authToken == null || user == null)
+            return false
+
+        userAvailabilityService.removeBusyPeriod(busyPeriodId, authToken!!)
+        return true
+    }
 }
