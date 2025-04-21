@@ -2,7 +2,7 @@ name: plenr
 
 services:
   plenr:
-    image: tomashula/plenr
+    image: tomasan7/plenr
     ports:
       - "127.0.0.1:8080:80"
     environment:
