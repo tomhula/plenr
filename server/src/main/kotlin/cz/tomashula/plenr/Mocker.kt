@@ -170,6 +170,6 @@ class Mocker(
         private const val MOCK_FOLDER = "mock"
         private const val USERS_CSV = "users.csv"
         private const val TRAININGS_CSV = "trainings.csv"
-        private const val DEFAULT_PASSWORD = "password"
+        private const val DEFAULT_PASSWORD = "qwer1234"
     }
 }
