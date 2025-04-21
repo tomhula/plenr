@@ -34,7 +34,7 @@ class Plenr : ConfigProvider
 
     lateinit var mailService: MailService
 
-    fun init(configFilePath: Path, mock: Boolean)
+    fun init(configFilePath: Path)
     {
         runBlocking {
             /* Config has to be initialized first */
@@ -45,13 +45,6 @@ class Plenr : ConfigProvider
             initApplicationEngine()
             initDb()
             initServices()
-
-            if (mock)
-            {
-                // TODO: Replace with logger
-                println("Filling with mock data!")
-                Mocker(database, passwordHasher).fill()
-            }
         }
     }
 
@@ -104,6 +97,13 @@ class Plenr : ConfigProvider
         authService = BasicAuthService(database, passwordHasher)
     }
 
+    fun fillMockData()
+    {
+        // TODO: Replace with logger
+        println("Filling with mock data!")
+        Mocker(database, passwordHasher).fill()
+    }
+    
     fun startBlocking()
     {
         embeddedServer.start(wait = true)

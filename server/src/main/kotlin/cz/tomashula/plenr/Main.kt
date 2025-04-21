@@ -31,7 +31,11 @@ class Command : CliktCommand()
     override fun run()
     {
         val plenr = Plenr()
-        plenr.init(configFilePath, mock)
-        plenr.startBlocking()
+        plenr.init(configFilePath)
+
+        if (mock)
+            plenr.fillMockData()
+        else
+            plenr.startBlocking()
     }
 }
