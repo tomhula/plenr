@@ -15,7 +15,7 @@ abstract class DatabaseService(
     private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO
 )
 {
-    suspend fun createIfNotExists() = dbQuery {
+    open suspend fun createIfNotExists() = dbQuery {
         SchemaUtils.create(*tables)
     }
 

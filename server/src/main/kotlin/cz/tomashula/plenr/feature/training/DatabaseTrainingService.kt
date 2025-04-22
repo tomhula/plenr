@@ -35,6 +35,12 @@ class DatabaseTrainingService(
 
     private val serverUrl = serverUrl.removeSuffix("/")
 
+    override suspend fun createIfNotExists()
+    {
+        super.createIfNotExists()
+        userPreferencesService.createIfNotExists()
+    }
+
     override suspend fun arrangeTrainings(
         trainings: Set<CreateOrUpdateTrainingDto>,
         authToken: String
