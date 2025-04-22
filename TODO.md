@@ -1,9 +1,10 @@
-### Urgent TODOs
+- disallow negative training length (both frontend and backend)
+- trainings which overlap are not drawn properly (they currently fight over the same spot)
+- handling of cancelled trainings. What if it should be reopened. Should there be an ability to uncancel a training? I would say no, you have to make a new one, but now there are two same trainings, one is just cancelled. So should the cancelled training be removable altogether?
+- in create/update training dialog, when the time or duration is changed, the available participants are not updated
+- consider drag and drop functionality in training arrangement (so you can simply drag the training to the new time)
 - Loading indication
 - Input validation
-
-
-- 
 - Authentication/Authorization
 - Server exception encapsulation
 - Use better authentication (JWT?)
