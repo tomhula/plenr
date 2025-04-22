@@ -104,7 +104,7 @@ fun IComponent.arrangeTrainingsPage(mainViewModel: MainViewModel)
         edit = currentDialogTrainingEdit,
         training = currentDialogTraining ?: newTraining(selectedDay.atTime(12, 0), mainViewModel.user!!),
         users = users,
-        userAvailabilities = emptyMap(),
+        userAvailabilities = userAvailabilities,
         onSave = { saveTraining ->
             val originalTraining = currentDialogTraining!!
             val originalDate = originalTraining.startDateTime.date
@@ -338,7 +338,7 @@ private fun IComponent.trainingDialog(
     edit: Boolean,
     training: TrainingWithParticipantsDto,
     users: List<UserDto>,
-    userAvailabilities: Map<UserDto, WeeklyTimeRanges> = emptyMap(),
+    userAvailabilities: Map<LocalDate, Map<UserDto, LocalTimeRanges>> = emptyMap(),
     onSave: (TrainingWithParticipantsDto) -> Unit,
     onDismiss: () -> Unit,
     onRemove: (() -> Unit)? = null
@@ -349,8 +349,9 @@ private fun IComponent.trainingDialog(
     val availableUsersSorted = remember(training, users, userAvailabilities) {
         users
             .filter { user ->
-                userAvailabilities[user]?.getRangesForDay(training.startDateTime.date.dayOfWeek)?.let { ranges ->
-                    ranges.any { range ->
+                userAvailabilities[training.startDateTime.date]?.get(user)?.let { ranges ->
+                    ranges.getRanges().any { range ->
+                        // TODO: Maybe use LocalTimeRanges methods?
                         training.startDateTime.time..training.startDateTime.time.plusMinutes(training.lengthMinutes) in range
                     }
                 } == true
