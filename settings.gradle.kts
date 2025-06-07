@@ -28,6 +28,11 @@ dependencyResolutionManagement {
     }
 }
 
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
+
 include(":server")
 include(":frontend")
 include(":shared")
+include(":composeFrontend")

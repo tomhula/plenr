@@ -9,6 +9,9 @@ kotlin-logging = "7.0.7"
 hoplite = "2.9.0"
 clikt = "5.0.3"
 compose = "1.8.0-beta01"
+compose-multiplatform = "1.8.1"
+compose-hotReload = "1.0.0-alpha10"
+androidx-lifecycle = "2.9.0"
 kilua = "0.0.22"
 mysql = "9.2.0"
 exposed = "0.60.0"
@@ -17,6 +20,7 @@ kotlinx-rpc = "0.6.2"
 
 [libraries]
 # Kotlin
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 # Serialization
@@ -32,6 +36,10 @@ kilua-toastify = { module = "dev.kilua:kilua-toastify", version.ref = "kilua" }
 kilua-tempus-dominus = { module = "dev.kilua:kilua-tempus-dominus", version.ref = "kilua" }
 kilua-rsup-progress = { module = "dev.kilua:kilua-rsup-progress", version.ref = "kilua" }
 kilua-fontawesome = { module = "dev.kilua:kilua-fontawesome", version.ref = "kilua" }
+# Compose
+androidx-lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+kotlinx-coroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 # Logging
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 kotlin-logging = { module = "io.github.oshai:kotlin-logging", version.ref = "kotlin-logging" }
@@ -71,7 +79,9 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose" }
+compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+compose-hotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "compose-hotReload" }
 kilua = { id = "dev.kilua", version.ref = "kilua" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlinx-rpc-plugin = { id = "org.jetbrains.kotlinx.rpc.plugin", version.ref = "kotlinx-rpc" }
