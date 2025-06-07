@@ -1,4 +1,4 @@
-package cz.tomashula.plenr.frontend
+package cz.tomashula.plenr.frontend.ui.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
