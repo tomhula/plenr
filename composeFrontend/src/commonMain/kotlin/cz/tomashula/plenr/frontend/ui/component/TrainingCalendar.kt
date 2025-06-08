@@ -70,8 +70,7 @@ fun TrainingCalendar(
             fontWeight = FontWeight.Bold
         )
 
-        Row(
-            horizontalArrangement = Arrangement.SpaceEvenly,
+        FlowRow(
             modifier = Modifier.fillMaxWidth()
         ) {
             for (upcomingDay in upcomingTrainingDaysOrdered) {
@@ -80,7 +79,7 @@ fun TrainingCalendar(
                     viewer = viewer,
                     trainings = trainingsByDate[upcomingDay]?.toSet() ?: emptySet(),
                     onTrainingClick = onTrainingClick,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.width(300.dp)
                 )
             }
         }

@@ -49,9 +49,8 @@ class AdminHomeScreenViewModel(
                 
                 if (oldestFetchedWeek == null || week < oldestFetchedWeek!!)
                 {
-                    println("Loading trainings for week: $week")
                     val from = week.dateTimeRange.start
-                    val to = week.dateTimeRange.endInclusive
+                    val to = null
                     
                     val newTrainings = appViewModel.getAllTrainingsAdmin(from, to)
                     uiState = uiState.copy(
