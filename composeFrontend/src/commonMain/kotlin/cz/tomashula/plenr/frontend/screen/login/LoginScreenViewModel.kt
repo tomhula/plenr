@@ -15,11 +15,11 @@ class LoginScreenViewModel(
         private set
 
     fun onEmailChange(email: String) {
-        uiState = uiState.copy(email = email)
+        uiState = uiState.copy(email = email, errorMessage = null)
     }
 
     fun onPasswordChange(password: String) {
-        uiState = uiState.copy(password = password)
+        uiState = uiState.copy(password = password, errorMessage = null)
     }
 
     fun login(onSuccess: () -> Unit) {
