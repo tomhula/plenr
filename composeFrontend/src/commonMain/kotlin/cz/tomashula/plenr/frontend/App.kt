@@ -2,6 +2,7 @@ package cz.tomashula.plenr.frontend
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
@@ -20,6 +21,7 @@ import cz.tomashula.plenr.frontend.screen.forgotpassword.ForgotPasswordScreen
 import cz.tomashula.plenr.frontend.screen.home.AdminHomeScreenViewModel
 import cz.tomashula.plenr.frontend.screen.manageusers.ManageUsersScreen
 import cz.tomashula.plenr.frontend.screen.manageusers.ManageUsersScreenViewModel
+import cz.tomashula.plenr.frontend.ui.component.AppHeader
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -31,11 +33,15 @@ fun App(
     val appViewModel = viewModel { AppViewModel() }
     val navController = rememberNavController()
 
+    var currentDestination by remember { mutableStateOf<String?>("") }
     var isInitialized by remember { mutableStateOf(false) }
     var isLoggedIn by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         appViewModel.init()
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            currentDestination = destination.route
+        }
         isInitialized = true
         isLoggedIn = appViewModel.isLoggedIn
     }
@@ -53,7 +59,25 @@ fun App(
             LaunchedEffect(Unit) {
                 onNavHostReady(navController)
             }
-
+            AppHeader(
+                title = currentDestination ?: "Unknown destination",
+                user = appViewModel.user,
+                onLogoClick = {
+                    if (navController.currentDestination?.route != PlenrScreen.Home.name)
+                        navController.navigate(PlenrScreen.Home.name) {
+                            popUpTo(PlenrScreen.Home.name) { inclusive = true }
+                        }
+                },
+                onLogoutClick = {
+                    appViewModel.logout()
+                    isLoggedIn = false
+                    navController.navigate(PlenrScreen.Login.name) {
+                        popUpTo(PlenrScreen.Login.name) { inclusive = true }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+            
             NavHost(
                 navController = navController,
                 startDestination = if (isLoggedIn) PlenrScreen.Home.name else PlenrScreen.Login.name,
