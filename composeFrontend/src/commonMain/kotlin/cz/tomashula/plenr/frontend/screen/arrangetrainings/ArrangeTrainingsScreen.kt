@@ -1,14 +1,21 @@
 package cz.tomashula.plenr.frontend.screen.arrangetrainings
 
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import cz.tomashula.plenr.feature.training.TrainingType
 import cz.tomashula.plenr.feature.training.TrainingWithParticipantsDto
@@ -18,14 +25,14 @@ import cz.tomashula.plenr.frontend.ui.component.ParticipantBadge
 import cz.tomashula.plenr.frontend.ui.component.Training
 import cz.tomashula.plenr.util.LocalTimeRanges
 import cz.tomashula.plenr.util.now
-import cz.tomashula.plenr.util.contains
 import kotlinx.datetime.*
 import kotlinx.datetime.format.char
 
 @Composable
 fun ArrangeTrainingsScreen(
     viewModel: ArrangeTrainingsScreenViewModel
-) {
+)
+{
     val uiState = viewModel.uiState
     val selectedDay = uiState.selectedDay ?: return
     val todayDay = remember { LocalDate.now() }
@@ -40,7 +47,8 @@ fun ArrangeTrainingsScreen(
             onNext = { viewModel.onDayChange(selectedDay.plus(1, DateTimeUnit.DAY)) },
             onPrevious = { viewModel.onDayChange(selectedDay.minus(1, DateTimeUnit.DAY)) },
             itemDisplay = {
-                when (selectedDay.minus(todayDay).days) {
+                when (selectedDay.minus(todayDay).days)
+                {
                     -1 -> "Yesterday"
                     0 -> "Today"
                     1 -> "Tomorrow"
@@ -51,36 +59,42 @@ fun ArrangeTrainingsScreen(
             }
         )
 
-        if (uiState.isLoading) {
+        if (uiState.isLoading)
             CircularProgressIndicator()
-        } else {
-            // Display trainings for the selected day
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+        else
+        {
+            Box(
+                modifier = Modifier.weight(1f).fillMaxWidth()
             ) {
-                Text("Trainings for ${selectedDay.format(dateFormat)}")
-
-                uiState.trainings[selectedDay]?.forEach { trainingView ->
-                    Training(
-                        training = trainingView.training,
-                        onClick = { viewModel.onTrainingClick(trainingView.training) },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-
-                Button(
-                    onClick = { 
-                        viewModel.onNewTrainingClick(selectedDay.atTime(12, 0)) 
+                val fromHour = 8
+                val toHour = 21
+                var timetableSize by remember { mutableStateOf(IntSize.Zero) }
+                val spacing = timetableSize.width / (toHour - fromHour)
+                
+                TimetableBackground(
+                    fromHour = fromHour,
+                    toHour = toHour,
+                    color = Color.Gray,
+                    onClick = { clickedTime ->
+                        viewModel.onNewTrainingClick(selectedDay.atTime(clickedTime.hour, 0))
+                    },
+                    modifier = Modifier.matchParentSize().onSizeChanged { size ->
+                        timetableSize = size
                     }
-                ) {
-                    Text("Add Training")
-                }
+                )
+                for (trainingView in uiState.trainings[selectedDay] ?: emptyList())
+                    TrainingView(
+                        trainingView = trainingView,
+                        hourWidth = spacing,
+                        startHour = fromHour,
+                        onEdit = { viewModel.onTrainingClick(it) }
+                    )
             }
 
             // Save button for modified trainings
             val newOrModifiedTrainings = uiState.trainings.values.flatten().filter { it.edited || it.created }
-            if (newOrModifiedTrainings.isNotEmpty()) {
+            if (newOrModifiedTrainings.isNotEmpty())
+            {
                 Button(
                     onClick = { viewModel.saveTrainings() }
                 ) {
@@ -91,7 +105,8 @@ fun ArrangeTrainingsScreen(
     }
 
     // Training dialog
-    if (uiState.currentDialogTraining != null) {
+    if (uiState.currentDialogTraining != null)
+    {
         TrainingDialog(
             training = uiState.currentDialogTraining,
             isEdit = uiState.isCurrentDialogTrainingEdit,
@@ -105,6 +120,54 @@ fun ArrangeTrainingsScreen(
 }
 
 @Composable
+private fun TimetableBackground(
+    fromHour: Int,
+    toHour: Int,
+    color: Color,
+    onClick: (LocalTime) -> Unit = {},
+    modifier: Modifier = Modifier
+)
+{
+    val textMeasurer = rememberTextMeasurer()
+    var canvasSize by remember { mutableStateOf(IntSize.Zero) }
+
+    Canvas(
+        modifier = modifier
+            .onSizeChanged {
+                canvasSize = it
+            }
+            .pointerInput(Unit) {
+                detectTapGestures { offset ->
+                    val totalHours = toHour - fromHour
+                    val spacing = canvasSize.width / totalHours
+                    val relativeMinute = ((offset.x / spacing + fromHour) * 60).toInt()
+                    val clickedTime = LocalTime(relativeMinute / 60, relativeMinute % 60)
+                    onClick(clickedTime)
+                }
+            }
+    ) {
+        val totalHours = toHour - fromHour
+        val spacing = size.width / totalHours
+
+        for (i in 0 until totalHours)
+        {
+            val x = i * spacing + .5f
+            val hour = fromHour + i
+            drawLine(
+                color = color,
+                start = Offset(x, 0f),
+                end = Offset(x, size.height - 30)
+            )
+            val hourText = textMeasurer.measure(hour.toString().padStart(2, '0'))
+            drawText(
+                textLayoutResult = hourText,
+                topLeft = Offset(x - hourText.size.width / 2, size.height - 20),
+            )
+        }
+    }
+}
+
+@Composable
 fun TrainingDialog(
     training: TrainingWithParticipantsDto,
     isEdit: Boolean,
@@ -113,7 +176,8 @@ fun TrainingDialog(
     onSave: (TrainingWithParticipantsDto) -> Unit,
     onDismiss: () -> Unit,
     onRemove: () -> Unit
-) {
+)
+{
     var name by remember { mutableStateOf(training.name) }
     var description by remember { mutableStateOf(training.description) }
     var type by remember { mutableStateOf(training.type) }
@@ -176,25 +240,25 @@ fun TrainingDialog(
 
                 // Participants
                 Text("Participants")
-                LazyVerticalGrid(
-                    columns = GridCells.Adaptive(minSize = 120.dp),
+                FlowRow(
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
-                    modifier = Modifier.height(200.dp)
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    items(availableUsersSorted.toList()) { user ->
+                    availableUsersSorted.forEach { user ->
                         Box(
                             modifier = Modifier.clickable {
-                                participants = if (participants.contains(user)) {
+                                participants = if (participants.contains(user))
                                     participants - user
-                                } else {
+                                else
                                     participants + user
-                                }
                             }
                         ) {
+                            val isSelected = user in participants
+                            val borderModifier = if (isSelected) Modifier.border(width = 2.dp, color = Color.Black) else Modifier
                             ParticipantBadge(
                                 participant = user,
                                 modifier = Modifier.padding(4.dp)
+                                    .then(borderModifier)
                             )
                         }
                     }
@@ -221,7 +285,8 @@ fun TrainingDialog(
         },
         dismissButton = {
             Row {
-                if (training.id == -1) {
+                if (training.id == -1)
+                {
                     TextButton(
                         onClick = onRemove
                     ) {
@@ -235,6 +300,27 @@ fun TrainingDialog(
                 }
             }
         }
+    )
+}
+
+@Composable
+fun TrainingView(
+    trainingView: TrainingView,
+    hourWidth: Int,
+    startHour: Int,
+    onEdit: (TrainingWithParticipantsDto) -> Unit = {},
+)
+{
+    val training = trainingView.training
+    val startMinute = training.startDateTime.hour * 60 + training.startDateTime.minute
+    val durationMinutes = training.lengthMinutes
+
+    Training(
+        training = training,
+        onClick = { onEdit(training) },
+        modifier = Modifier
+            .width((durationMinutes / 60f * hourWidth).dp)
+            .offset(x = ((startMinute / 60f - startHour) * hourWidth).dp)
     )
 }
 

@@ -55,9 +55,10 @@ fun Training(
                 textDecoration = if (training.cancelled) TextDecoration.LineThrough else TextDecoration.None
             )
 
-            Row(
+            FlowRow(
                 modifier = Modifier.padding(top = 5.dp, bottom = 5.dp, start = 5.dp),
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 participants.forEach { participant ->
                     ParticipantBadge(participant = participant)
