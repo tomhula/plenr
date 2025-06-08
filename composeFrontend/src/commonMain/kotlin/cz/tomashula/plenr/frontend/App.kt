@@ -25,6 +25,7 @@ import cz.tomashula.plenr.frontend.screen.home.AdminHomeScreenViewModel
 import cz.tomashula.plenr.frontend.screen.manageusers.ManageUsersScreen
 import cz.tomashula.plenr.frontend.screen.manageusers.ManageUsersScreenViewModel
 import cz.tomashula.plenr.frontend.ui.component.AppHeader
+import cz.tomashula.plenr.frontend.ui.theme.AppTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -52,7 +53,7 @@ fun App(
     if (!isInitialized)
         return
 
-    MaterialTheme {
+    AppTheme(darkTheme = false) {
         Column(
             modifier = Modifier
                 .safeContentPadding()
