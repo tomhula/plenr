@@ -1,24 +1,21 @@
 package cz.tomashula.plenr.frontend.ui.component
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.layout.BoxScope
 import cz.tomashula.plenr.feature.training.TrainingType
 import cz.tomashula.plenr.feature.training.TrainingWithParticipantsDto
 import cz.tomashula.plenr.feature.user.UserDto
 import cz.tomashula.plenr.frontend.ui.Colors
+import cz.tomashula.plenr.frontend.ui.theme.extendedLight
 import kotlinx.datetime.*
 
 /**
@@ -31,23 +28,23 @@ fun Training(
     training: TrainingWithParticipantsDto,
     viewer: UserDto? = null,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    content: @Composable BoxScope.() -> Unit = {}
+    modifier: Modifier = Modifier
 ) {
     val participants = remember(training.participants) { training.participants.filter { it.id != viewer?.id } }
     val backgroundColor = if (training.type == TrainingType.DRESSAGE) 
         Colors.DRESSAGE_TRAINING_BACKGROUND else Colors.PARKOUR_TRAINING_BACKGROUND
 
-    Box(
+    Surface(
+        color = backgroundColor,
+        shape = RoundedCornerShape(5.dp),
+        onClick = onClick,
         modifier = modifier
-            .clip(RoundedCornerShape(5.dp))
-            .background(backgroundColor)
-            .clickable { onClick() }
-            .padding(5.dp)
     ) {
-        content()
-
-        Column {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp)
+        ) {
             Text(
                 text = training.name,
                 fontWeight = FontWeight.Bold,
