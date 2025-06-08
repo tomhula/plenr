@@ -1,10 +1,16 @@
 package cz.tomashula.plenr.frontend.screen.arrangetrainings
 
+import androidx.compose.foundation.BasicTooltipBox
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberBasicTooltipState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -14,19 +20,27 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.font.FontVariation.width
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import cz.tomashula.plenr.feature.training.TrainingType
 import cz.tomashula.plenr.feature.training.TrainingWithParticipantsDto
 import cz.tomashula.plenr.feature.user.UserDto
+import cz.tomashula.plenr.frontend.ui.Colors
 import cz.tomashula.plenr.frontend.ui.component.ArrowSelector
 import cz.tomashula.plenr.frontend.ui.component.ParticipantBadge
 import cz.tomashula.plenr.frontend.ui.component.Training
+import cz.tomashula.plenr.util.LocalTimeRange
 import cz.tomashula.plenr.util.LocalTimeRanges
+import cz.tomashula.plenr.util.contains
 import cz.tomashula.plenr.util.now
+import cz.tomashula.plenr.util.rangeTo
+import io.ktor.http.HttpHeaders.Position
 import kotlinx.datetime.*
 import kotlinx.datetime.format.char
+import org.jetbrains.skia.Surface
+import kotlin.time.Duration.Companion.minutes
 
 @Composable
 fun ArrangeTrainingsScreen(
@@ -70,7 +84,7 @@ fun ArrangeTrainingsScreen(
                 val toHour = 21
                 var timetableSize by remember { mutableStateOf(IntSize.Zero) }
                 val spacing = timetableSize.width / (toHour - fromHour)
-                
+
                 TimetableBackground(
                     fromHour = fromHour,
                     toHour = toHour,
@@ -82,13 +96,32 @@ fun ArrangeTrainingsScreen(
                         timetableSize = size
                     }
                 )
-                for (trainingView in uiState.trainings[selectedDay] ?: emptyList())
-                    TrainingView(
-                        trainingView = trainingView,
-                        hourWidth = spacing,
-                        startHour = fromHour,
-                        onEdit = { viewModel.onTrainingClick(it) }
-                    )
+                
+                Column {
+                    Column(verticalArrangement = Arrangement.spacedBy(1.dp)) {
+                        for (user in uiState.users)
+                        {
+                            val userAvailability = uiState.userAvailabilities[selectedDay]?.get(user)
+                            if (userAvailability != null)
+                            {
+                                UserAvailability(
+                                    user = user,
+                                    startHour = fromHour,
+                                    hourWidth = spacing,
+                                    availableTimeRanges = userAvailability,
+                                    modifier = Modifier.fillMaxWidth().height(12.dp)
+                                )
+                            }
+                        }
+                    }
+                    for (trainingView in uiState.trainings[selectedDay] ?: emptyList())
+                        TrainingView(
+                            trainingView = trainingView,
+                            hourWidth = spacing,
+                            startHour = fromHour,
+                            onEdit = { viewModel.onTrainingClick(it) }
+                        )
+                }
             }
 
             // Save button for modified trainings
@@ -186,7 +219,21 @@ fun TrainingDialog(
     var participants by remember { mutableStateOf(training.participants) }
 
     val availableUsersSorted = remember(training, users, userAvailabilities) {
-        users.sortedBy { it.fullName }.toSet()
+        users
+            .filter { user ->
+                userAvailabilities[training.startDateTime.date]?.get(user)?.let { ranges ->
+                    ranges.getRanges().any { range ->
+                        // TODO: Maybe use LocalTimeRanges methods?
+                        training.startDateTime.time..training.startDateTime.time.plusMinutes(training.lengthMinutes) in range
+                    }
+                } == true
+            }
+            .sortedBy { it.fullName }
+            .toSet()
+    }
+
+    val unavailableUsers = remember(users, availableUsersSorted) {
+        users.toSet() - availableUsersSorted
     }
 
     AlertDialog(
@@ -254,12 +301,61 @@ fun TrainingDialog(
                             }
                         ) {
                             val isSelected = user in participants
-                            val borderModifier = if (isSelected) Modifier.border(width = 2.dp, color = Color.Black) else Modifier
+                            val borderModifier = if (isSelected)
+                                Modifier.border(width = 2.dp, color = Color.Black) 
+                            else 
+                                Modifier
                             ParticipantBadge(
                                 participant = user,
                                 modifier = Modifier.padding(4.dp)
                                     .then(borderModifier)
                             )
+                        }
+                    }
+                }
+                
+                var unavailableUsersShown by remember { mutableStateOf(false) }
+                
+                if (!unavailableUsers.isEmpty())
+                {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.clickable {
+                            unavailableUsersShown = !unavailableUsersShown
+                        }
+                    ) {
+                        Text("Unavailable Users")
+                        Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                    }
+
+                    if (unavailableUsersShown)
+                    {
+                        FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            unavailableUsers.forEach { user ->
+                                Box(
+                                    modifier = Modifier.clickable {
+                                        participants = if (participants.contains(user))
+                                            participants - user
+                                        else
+                                            participants + user
+                                    }
+                                ) {
+                                    val isSelected = user in participants
+                                    val borderModifier = if (isSelected)
+                                        Modifier.border(width = 2.dp, color = Color.Black)
+                                    else
+                                        Modifier
+                                    ParticipantBadge(
+                                        participant = user,
+                                        modifier = Modifier.padding(4.dp)
+                                            .then(borderModifier)
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -300,6 +396,77 @@ fun TrainingDialog(
                 }
             }
         }
+    )
+}
+
+private fun LocalTime.plusMinutes(minutes: Int): LocalTime
+{
+    val date = Clock.System.todayIn(TimeZone.currentSystemDefault())
+    val instant = this.atDate(date).toInstant(TimeZone.currentSystemDefault())
+    val instantOffset = instant.plus(minutes.minutes)
+    val offsetTime = instantOffset.toLocalDateTime(TimeZone.currentSystemDefault()).time
+    return offsetTime
+}
+
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@Composable
+fun UserAvailability(
+    user: UserDto,
+    startHour: Int,
+    hourWidth: Int,
+    availableTimeRanges: LocalTimeRanges,
+    modifier: Modifier = Modifier
+)
+{
+    BasicTooltipBox(
+        positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+        tooltip = {
+            Surface(
+                color = Colors.getColor(user.id),
+            ) {
+                Text(
+                    text = user.fullName,
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
+        },
+        state = rememberBasicTooltipState()
+    ) {
+        Box(
+            modifier = modifier
+        ) {
+            for (timeRange in availableTimeRanges.getRanges())
+            {
+                UserAvailabilityPart(
+                    range = timeRange,
+                    hourWidth = hourWidth,
+                    startHour = startHour,
+                    color = Colors.getColor(user.id)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun UserAvailabilityPart(
+    range: LocalTimeRange,
+    hourWidth: Int,
+    startHour: Int,
+    color: Color,
+    modifier: Modifier = Modifier
+)
+{
+    val startMinute = range.start.hour * 60 + range.start.minute
+    val endMinute = range.endInclusive.hour * 60 + range.endInclusive.minute
+    val durationMinutes = endMinute - startMinute
+
+    Box(
+        modifier = modifier
+            .fillMaxHeight()
+            .width((durationMinutes / 60f * hourWidth).dp)
+            .offset(x = ((startMinute / 60f - startHour) * hourWidth).dp)
+            .background(color)
     )
 }
 
