@@ -21,9 +21,11 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontVariation.width
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import cz.tomashula.plenr.feature.training.TrainingType
 import cz.tomashula.plenr.feature.training.TrainingWithParticipantsDto
 import cz.tomashula.plenr.feature.user.UserDto
@@ -279,6 +281,77 @@ fun TrainingDialog(
                         onClick = { type = TrainingType.PARKOUR }
                     )
                     Text("Parkour")
+                }
+
+                // Date and time selection
+                Text("Date")
+                ArrowSelector(
+                    selectedItem = startDateTime.date,
+                    onNext = { 
+                        startDateTime = LocalDateTime(
+                            startDateTime.date.plus(1, DateTimeUnit.DAY),
+                            startDateTime.time
+                        )
+                    },
+                    onPrevious = { 
+                        startDateTime = LocalDateTime(
+                            startDateTime.date.minus(1, DateTimeUnit.DAY),
+                            startDateTime.time
+                        )
+                    },
+                    itemDisplay = { it.toString() },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Text("Time")
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    // Hours selector
+                    ArrowSelector(
+                        selectedItem = startDateTime.time.hour,
+                        onNext = { 
+                            val newHour = (startDateTime.time.hour + 1) % 24
+                            startDateTime = LocalDateTime(
+                                startDateTime.date,
+                                LocalTime(newHour, startDateTime.time.minute)
+                            )
+                        },
+                        onPrevious = { 
+                            val newHour = (startDateTime.time.hour - 1 + 24) % 24
+                            startDateTime = LocalDateTime(
+                                startDateTime.date,
+                                LocalTime(newHour, startDateTime.time.minute)
+                            )
+                        },
+                        itemDisplay = { it.toString().padStart(2, '0') },
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    Text(":", fontSize = 22.sp, fontWeight = FontWeight.Bold)
+
+                    // Minutes selector
+                    ArrowSelector(
+                        selectedItem = startDateTime.time.minute,
+                        onNext = { 
+                            val newMinute = (startDateTime.time.minute + 5) % 60
+                            startDateTime = LocalDateTime(
+                                startDateTime.date,
+                                LocalTime(startDateTime.time.hour, newMinute)
+                            )
+                        },
+                        onPrevious = { 
+                            val newMinute = (startDateTime.time.minute - 5 + 60) % 60
+                            startDateTime = LocalDateTime(
+                                startDateTime.date,
+                                LocalTime(startDateTime.time.hour, newMinute)
+                            )
+                        },
+                        itemDisplay = { it.toString().padStart(2, '0') },
+                        modifier = Modifier.weight(1f)
+                    )
                 }
 
                 // Length in minutes
