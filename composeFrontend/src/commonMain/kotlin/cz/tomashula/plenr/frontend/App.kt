@@ -12,30 +12,32 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import cz.tomashula.plenr.frontend.screen.HomeScreen
+import cz.tomashula.plenr.frontend.screen.home.AdminHomeScreen
 import cz.tomashula.plenr.frontend.screen.LoginScreen
+import cz.tomashula.plenr.frontend.screen.home.AdminHomeScreenViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 @Preview
 fun App(
     onNavHostReady: suspend (NavController) -> Unit = {},
-) {
+)
+{
     val appViewModel = viewModel { AppViewModel() }
     val navController = rememberNavController()
-    
+
     var isInitialized by remember { mutableStateOf(false) }
     var isLoggedIn by remember { mutableStateOf(false) }
-    
+
     LaunchedEffect(Unit) {
         appViewModel.init()
         isInitialized = true
         isLoggedIn = appViewModel.isLoggedIn
     }
-    
+
     if (!isInitialized)
         return
-    
+
     MaterialTheme {
         Column(
             modifier = Modifier
@@ -46,7 +48,7 @@ fun App(
             LaunchedEffect(Unit) {
                 onNavHostReady(navController)
             }
-            
+
             NavHost(
                 navController = navController,
                 startDestination = if (isLoggedIn) PlenrScreen.Home.name else PlenrScreen.Login.name,
@@ -58,11 +60,14 @@ fun App(
                         onForgotPassword = { navController.navigate(PlenrScreen.ForgotPassword.name) },
                     )
                 }
-                
+
                 composable(PlenrScreen.Home.name) {
-                    HomeScreen(
-                        appViewModel = appViewModel,
-                    )
+                    if (appViewModel.user!!.isAdmin)
+                        AdminHomeScreen(
+                            viewModel = viewModel { AdminHomeScreenViewModel(appViewModel) },
+                        )
+                    else
+                        TODO("Not yet implemented for non-admin users")
                 }
             }
         }
