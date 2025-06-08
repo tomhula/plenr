@@ -57,6 +57,14 @@ class ManageUsersScreenViewModel(
         uiState = uiState.copy(isDeleteDialogShown = false)
     }
 
+    fun onAddClick() {
+        uiState = uiState.copy(isAddDialogShown = true)
+    }
+
+    fun onAddDialogDismiss() {
+        uiState = uiState.copy(isAddDialogShown = false)
+    }
+
     fun updateUser(user: UserDto) {
         viewModelScope.launch {
             try {
@@ -79,6 +87,20 @@ class ManageUsersScreenViewModel(
                     refreshUserList()
                 }
                 uiState = uiState.copy(isDeleteDialogShown = false)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun createUser(user: UserDto) {
+        viewModelScope.launch {
+            try {
+                val userId = appViewModel.createUser(user)
+                if (userId > 0) {
+                    refreshUserList()
+                }
+                uiState = uiState.copy(isAddDialogShown = false)
             } catch (e: Exception) {
                 e.printStackTrace()
             }

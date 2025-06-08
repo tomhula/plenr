@@ -52,7 +52,7 @@ fun ManageUsersScreen(
             }
 
             Button(
-                onClick = { /* Navigate to Add User screen */ },
+                onClick = { viewModel.onAddClick() },
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
                 Text("Add User")
@@ -75,6 +75,14 @@ fun ManageUsersScreen(
             user = uiState.selectedUser,
             onDismiss = { viewModel.onDeleteDialogDismiss() },
             onConfirm = { viewModel.deleteUser(uiState.selectedUser.id) }
+        )
+    }
+
+    // Add Dialog
+    if (uiState.isAddDialogShown) {
+        UserAddDialog(
+            onDismiss = { viewModel.onAddDialogDismiss() },
+            onSave = { viewModel.createUser(it) }
         )
     }
 }
@@ -156,6 +164,7 @@ fun UserEditDialog(
 
                 OutlinedTextField(
                     value = firstName,
+                    singleLine = true,
                     onValueChange = { firstName = it },
                     label = { Text("First Name") },
                     modifier = Modifier.fillMaxWidth()
@@ -163,6 +172,7 @@ fun UserEditDialog(
 
                 OutlinedTextField(
                     value = lastName,
+                    singleLine = true,
                     onValueChange = { lastName = it },
                     label = { Text("Last Name") },
                     modifier = Modifier.fillMaxWidth()
@@ -170,6 +180,7 @@ fun UserEditDialog(
 
                 OutlinedTextField(
                     value = email,
+                    singleLine = true,
                     onValueChange = { email = it },
                     label = { Text("Email") },
                     modifier = Modifier.fillMaxWidth()
@@ -177,6 +188,7 @@ fun UserEditDialog(
 
                 OutlinedTextField(
                     value = phone,
+                    singleLine = true,
                     onValueChange = { phone = it },
                     label = { Text("Phone") },
                     modifier = Modifier.fillMaxWidth()
@@ -247,4 +259,103 @@ fun UserDeleteDialog(
             }
         }
     )
+}
+
+@Composable
+fun UserAddDialog(
+    onDismiss: () -> Unit,
+    onSave: (UserDto) -> Unit
+) {
+    var firstName by remember { mutableStateOf("") }
+    var lastName by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var phone by remember { mutableStateOf("") }
+    var isAdmin by remember { mutableStateOf(false) }
+
+    Dialog(onDismissRequest = onDismiss) {
+        Surface(
+            shape = MaterialTheme.shapes.medium,
+            color = MaterialTheme.colorScheme.surface
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = "Add User",
+                    style = MaterialTheme.typography.headlineSmall
+                )
+
+                OutlinedTextField(
+                    value = firstName,
+                    singleLine = true,
+                    onValueChange = { firstName = it },
+                    label = { Text("First Name") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                OutlinedTextField(
+                    value = lastName,
+                    singleLine = true,
+                    onValueChange = { lastName = it },
+                    label = { Text("Last Name") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                OutlinedTextField(
+                    value = email,
+                    singleLine = true,
+                    onValueChange = { email = it },
+                    label = { Text("Email") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                OutlinedTextField(
+                    value = phone,
+                    singleLine = true,
+                    onValueChange = { phone = it },
+                    label = { Text("Phone") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(
+                        checked = isAdmin,
+                        onCheckedChange = { isAdmin = it }
+                    )
+                    Text("Admin")
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextButton(onClick = onDismiss) {
+                        Text("Cancel")
+                    }
+                    Spacer(Modifier.width(8.dp))
+                    Button(
+                        onClick = {
+                            onSave(
+                                UserDto(
+                                    id = 0, // This will be assigned by the server
+                                    firstName = firstName,
+                                    lastName = lastName,
+                                    email = email,
+                                    phone = phone,
+                                    isActive = true,
+                                    isAdmin = isAdmin
+                                )
+                            )
+                        }
+                    ) {
+                        Text("Save")
+                    }
+                }
+            }
+        }
+    }
 }

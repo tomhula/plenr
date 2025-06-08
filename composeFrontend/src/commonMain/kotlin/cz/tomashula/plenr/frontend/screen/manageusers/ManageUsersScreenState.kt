@@ -7,5 +7,6 @@ data class ManageUsersScreenState(
     val isLoading: Boolean = true,
     val selectedUser: UserDto? = null,
     val isEditDialogShown: Boolean = false,
-    val isDeleteDialogShown: Boolean = false
+    val isDeleteDialogShown: Boolean = false,
+    val isAddDialogShown: Boolean = false
 )
