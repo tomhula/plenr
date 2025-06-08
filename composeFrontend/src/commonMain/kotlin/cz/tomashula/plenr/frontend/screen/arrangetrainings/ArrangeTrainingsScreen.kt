@@ -97,7 +97,7 @@ fun ArrangeTrainingsScreen(
                         timetableSize = size
                     }
                 )
-                
+
                 Column {
                     Column(verticalArrangement = Arrangement.spacedBy(1.dp)) {
                         for (user in uiState.users)
@@ -115,13 +115,16 @@ fun ArrangeTrainingsScreen(
                             }
                         }
                     }
-                    for (trainingView in uiState.trainings[selectedDay] ?: emptyList())
-                        TrainingView(
-                            trainingView = trainingView,
-                            hourWidth = spacing,
-                            startHour = fromHour,
-                            onEdit = { viewModel.onTrainingClick(it) }
-                        )
+                    Spacer(modifier = Modifier.height(50.dp))
+                    Box {
+                        for (trainingView in uiState.trainings[selectedDay] ?: emptyList())
+                            TrainingView(
+                                trainingView = trainingView,
+                                hourWidth = spacing,
+                                startHour = fromHour,
+                                onEdit = { viewModel.onTrainingClick(it) }
+                            )
+                    }
                 }
             }
 
@@ -303,8 +306,8 @@ fun TrainingDialog(
                         ) {
                             val isSelected = user in participants
                             val borderModifier = if (isSelected)
-                                Modifier.border(width = 2.dp, color = Color.Black) 
-                            else 
+                                Modifier.border(width = 2.dp, color = Color.Black)
+                            else
                                 Modifier
                             ParticipantBadge(
                                 participant = user,
@@ -314,9 +317,9 @@ fun TrainingDialog(
                         }
                     }
                 }
-                
+
                 var unavailableUsersShown by remember { mutableStateOf(false) }
-                
+
                 if (!unavailableUsers.isEmpty())
                 {
                     Row(
