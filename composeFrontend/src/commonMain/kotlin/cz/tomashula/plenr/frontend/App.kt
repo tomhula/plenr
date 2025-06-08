@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -105,14 +106,14 @@ fun App(
                 }
 
                 composable(PlenrScreen.Home.name) {
-                    if (appViewModel.user!!.isAdmin)
+                    if (appViewModel.user?.isAdmin ?: false)
                         AdminHomeScreen(
                             viewModel = viewModel { AdminHomeScreenViewModel(appViewModel) },
                             onManageUsersClick = { navController.navigate(PlenrScreen.ManageUsers.name) },
                             onArrangeTrainingsClick = { navController.navigate(PlenrScreen.ArrangeTrainings.name) },
                         )
                     else
-                        TODO("Not yet implemented for non-admin users")
+                        Text("User home screen not implemented yet.")
                 }
                 
                 composable(PlenrScreen.ManageUsers.name) {
