@@ -33,6 +33,7 @@ import cz.tomashula.plenr.frontend.ui.Colors
 import cz.tomashula.plenr.frontend.ui.component.ArrowSelector
 import cz.tomashula.plenr.frontend.ui.component.ParticipantBadge
 import cz.tomashula.plenr.frontend.ui.component.Training
+import cz.tomashula.plenr.frontend.ui.component.dashedBorder
 import cz.tomashula.plenr.util.LocalTimeRange
 import cz.tomashula.plenr.util.LocalTimeRanges
 import cz.tomashula.plenr.util.contains
@@ -559,12 +560,18 @@ fun TrainingView(
     val startMinute = training.startDateTime.hour * 60 + training.startDateTime.minute
     val durationMinutes = training.lengthMinutes
 
+    val borderModifier = if (trainingView.edited || trainingView.created)
+        Modifier.dashedBorder(width = 4.dp, color = Color.Black, on = 2.dp, off = 2.dp)
+    else
+        Modifier
+    
     Training(
         training = training,
         onClick = { onEdit(training) },
         modifier = Modifier
             .width((durationMinutes / 60f * hourWidth).dp)
             .offset(x = ((startMinute / 60f - startHour) * hourWidth).dp)
+            .then(borderModifier)
     )
 }
 
