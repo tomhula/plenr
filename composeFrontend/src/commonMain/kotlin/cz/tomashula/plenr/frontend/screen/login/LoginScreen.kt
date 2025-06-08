@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -27,9 +28,11 @@ fun LoginScreen(
     val uiState = viewModel.uiState
 
     Column(
-        modifier = Modifier.padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .padding(16.dp)
+            .width(300.dp)
     ) {
         Text("Login to Plenr")
 
@@ -59,7 +62,7 @@ fun LoginScreen(
 
         TextButton(
             onClick = onForgotPassword,
-            modifier = Modifier.align(Alignment.End)
+            modifier = Modifier.align(Alignment.Start)
         ) {
             Text("Forgot password?")
         }
