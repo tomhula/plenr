@@ -70,7 +70,8 @@ fun ArrangeTrainingsScreen(
                     else -> selectedDay.dayOfWeek.name.lowercase()
                         .replaceFirstChar { it.uppercase() } + " " + selectedDay.format(dateFormat)
                 }
-            }
+            },
+            modifier = Modifier.width(330.dp)
         )
 
         if (uiState.isLoading)
