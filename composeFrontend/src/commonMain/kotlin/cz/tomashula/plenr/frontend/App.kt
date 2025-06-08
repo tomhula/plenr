@@ -25,10 +25,12 @@ fun App(
     val navController = rememberNavController()
     
     var isInitialized by remember { mutableStateOf(false) }
+    var isLoggedIn by remember { mutableStateOf(false) }
     
     LaunchedEffect(Unit) {
         appViewModel.init()
         isInitialized = true
+        isLoggedIn = appViewModel.isLoggedIn
     }
     
     if (!isInitialized)
@@ -47,7 +49,7 @@ fun App(
             
             NavHost(
                 navController = navController,
-                startDestination = PlenrScreen.Login.name,
+                startDestination = if (isLoggedIn) PlenrScreen.Home.name else PlenrScreen.Login.name,
             ) {
                 composable(PlenrScreen.Login.name) {
                     LoginScreen(

@@ -1,4 +1,5 @@
 /run/
+auth.json
 
 *.iml
 .kotlin

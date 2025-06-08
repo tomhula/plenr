@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.compose.hotReload)
+    alias(libs.plugins.serialization)
 }
 
 kotlin {
