@@ -13,7 +13,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import cz.tomashula.plenr.frontend.screen.home.AdminHomeScreen
-import cz.tomashula.plenr.frontend.screen.LoginScreen
+import cz.tomashula.plenr.frontend.screen.login.LoginScreen
+import cz.tomashula.plenr.frontend.screen.forgotpassword.ForgotPasswordScreen
 import cz.tomashula.plenr.frontend.screen.home.AdminHomeScreenViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -58,6 +59,13 @@ fun App(
                         appViewModel = appViewModel,
                         onLogin = { navController.navigate(PlenrScreen.Home.name) },
                         onForgotPassword = { navController.navigate(PlenrScreen.ForgotPassword.name) },
+                    )
+                }
+
+                composable(PlenrScreen.ForgotPassword.name) {
+                    ForgotPasswordScreen(
+                        appViewModel = appViewModel,
+                        onBackToLogin = { navController.navigate(PlenrScreen.Login.name) }
                     )
                 }
 
