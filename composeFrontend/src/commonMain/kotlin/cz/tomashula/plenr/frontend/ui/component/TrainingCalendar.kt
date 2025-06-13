@@ -1,6 +1,8 @@
 package cz.tomashula.plenr.frontend.ui.component
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -51,40 +53,47 @@ fun TrainingCalendar(
             modifier = Modifier
                 .width(250.dp)
         )
-
-        Row(
-            horizontalArrangement = Arrangement.SpaceEvenly,
+        
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(20.dp),
             modifier = Modifier.fillMaxWidth()
+                .verticalScroll(rememberScrollState()),
         ) {
-            for (day in selectedWeek.days) {
-                TrainingCalendarDay(
-                    date = day,
-                    viewer = viewer,
-                    trainings = trainingsByDate[day]?.toSet() ?: emptySet(),
-                    onTrainingClick = onTrainingClick,
-                    modifier = Modifier.weight(1f)
-                )
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                for (day in selectedWeek.days) {
+                    TrainingCalendarDay(
+                        date = day,
+                        viewer = viewer,
+                        trainings = trainingsByDate[day]?.toSet() ?: emptySet(),
+                        onTrainingClick = onTrainingClick,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
             }
-        }
 
-        Text(
-            text = "Upcoming",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
-        )
+            Text(
+                text = "Upcoming",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold
+            )
 
-        FlowRow(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            for (upcomingDay in upcomingTrainingDaysOrdered) {
-                TrainingCalendarDay(
-                    date = upcomingDay,
-                    viewer = viewer,
-                    trainings = trainingsByDate[upcomingDay]?.toSet() ?: emptySet(),
-                    onTrainingClick = onTrainingClick,
-                    modifier = Modifier.width(300.dp)
-                )
-            }
+            FlowRow(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                for (upcomingDay in upcomingTrainingDaysOrdered) {
+                    TrainingCalendarDay(
+                        date = upcomingDay,
+                        viewer = viewer,
+                        trainings = trainingsByDate[upcomingDay]?.toSet() ?: emptySet(),
+                        onTrainingClick = onTrainingClick,
+                        modifier = Modifier.width(300.dp)
+                    )
+                }
+            }   
         }
     }
 }
