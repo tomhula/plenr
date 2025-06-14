@@ -17,6 +17,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import cz.tomashula.plenr.frontend.screen.adminsetup.AdminSetupScreen
 import cz.tomashula.plenr.frontend.screen.arrangetrainings.ArrangeTrainingsScreen
 import cz.tomashula.plenr.frontend.screen.arrangetrainings.ArrangeTrainingsScreenViewModel
 import cz.tomashula.plenr.frontend.screen.home.AdminHomeScreen
@@ -41,12 +42,14 @@ fun App(
     var currentDestination by remember { mutableStateOf<String?>("") }
     var isInitialized by remember { mutableStateOf(false) }
     var isLoggedIn by remember { mutableStateOf(false) }
+    var adminExists by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
         appViewModel.init()
         navController.addOnDestinationChangedListener { _, destination, _ ->
             currentDestination = destination.route
         }
+        adminExists = appViewModel.adminExists()
         isInitialized = true
         isLoggedIn = appViewModel.isLoggedIn
     }
@@ -85,11 +88,25 @@ fun App(
                     .height(90.dp)
                     .padding(bottom = 16.dp)
             )
-            
+
             NavHost(
                 navController = navController,
-                startDestination = if (isLoggedIn) PlenrScreen.Home.name else PlenrScreen.Login.name,
+                startDestination = when {
+                    !adminExists -> PlenrScreen.AdminSetup.name
+                    isLoggedIn -> PlenrScreen.Home.name
+                    else -> PlenrScreen.Login.name
+                },
             ) {
+                composable(PlenrScreen.AdminSetup.name) {
+                    AdminSetupScreen(
+                        appViewModel = appViewModel,
+                        onNavigateToLogin = { 
+                            adminExists = true
+                            navController.navigate(PlenrScreen.Login.name) 
+                        }
+                    )
+                }
+
                 composable(PlenrScreen.Login.name) {
                     LoginScreen(
                         appViewModel = appViewModel,
@@ -115,13 +132,13 @@ fun App(
                     else
                         Text("User home screen not implemented yet.")
                 }
-                
+
                 composable(PlenrScreen.ManageUsers.name) {
                     ManageUsersScreen(
                         viewModel = viewModel { ManageUsersScreenViewModel(appViewModel) },
                     )
                 }
-                
+
                 composable(PlenrScreen.ArrangeTrainings.name) {
                     ArrangeTrainingsScreen(
                         viewModel = viewModel { ArrangeTrainingsScreenViewModel(appViewModel) },
