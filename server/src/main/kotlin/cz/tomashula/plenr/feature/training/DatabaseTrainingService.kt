@@ -5,14 +5,12 @@ import cz.tomashula.plenr.auth.UnauthorizedException
 import cz.tomashula.plenr.feature.user.DatabaseUserPreferencesService
 import cz.tomashula.plenr.feature.user.UserDto
 import cz.tomashula.plenr.feature.user.UserTable
-import cz.tomashula.plenr.feature.user.preferences.UserPreferencesDto
-import cz.tomashula.plenr.feature.user.preferences.UserPreferencesService
 import cz.tomashula.plenr.feature.user.toUserDto
 import cz.tomashula.plenr.mail.MailService
 import cz.tomashula.plenr.service.DatabaseService
 import kotlinx.datetime.LocalDateTime
-import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.v1.core.*
+import org.jetbrains.exposed.v1.jdbc.*
 import kotlin.coroutines.CoroutineContext
 
 class DatabaseTrainingService(

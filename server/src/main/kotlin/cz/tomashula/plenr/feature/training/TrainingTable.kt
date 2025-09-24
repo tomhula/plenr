@@ -1,8 +1,9 @@
 package cz.tomashula.plenr.feature.training
 
 import cz.tomashula.plenr.feature.user.UserTable
-import org.jetbrains.exposed.dao.id.IntIdTable
-import org.jetbrains.exposed.sql.kotlin.datetime.datetime
+import org.jetbrains.exposed.v1.core.dao.id.IntIdTable
+import org.jetbrains.exposed.v1.core.greater
+import org.jetbrains.exposed.v1.datetime.datetime
 
 object TrainingTable : IntIdTable("training")
 {

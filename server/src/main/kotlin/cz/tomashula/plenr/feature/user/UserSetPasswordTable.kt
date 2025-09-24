@@ -1,8 +1,8 @@
 package cz.tomashula.plenr.feature.user
 
-import org.jetbrains.exposed.dao.id.IntIdTable
-import org.jetbrains.exposed.sql.ReferenceOption
-import org.jetbrains.exposed.sql.kotlin.datetime.datetime
+import org.jetbrains.exposed.v1.core.ReferenceOption
+import org.jetbrains.exposed.v1.core.dao.id.IntIdTable
+import org.jetbrains.exposed.v1.datetime.datetime
 
 object UserSetPasswordTable : IntIdTable("user_set_password")
 {

@@ -1,6 +1,6 @@
 package cz.tomashula.plenr.feature.user
 
-import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.v1.core.dao.id.IntIdTable
 
 object UserTable : IntIdTable("user") {
     val firstName = varchar("first_name", 20)

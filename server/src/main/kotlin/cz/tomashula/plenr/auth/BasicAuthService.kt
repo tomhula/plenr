@@ -7,9 +7,10 @@ import cz.tomashula.plenr.feature.user.UserTable
 import cz.tomashula.plenr.feature.user.toUserDto
 import cz.tomashula.plenr.security.PasswordHasher
 import cz.tomashula.plenr.service.DatabaseService
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.v1.core.and
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.jdbc.Database
+import org.jetbrains.exposed.v1.jdbc.selectAll
 
 /** Checks tokens as a base64 encoded `username:password` combination. */
 class BasicAuthService(

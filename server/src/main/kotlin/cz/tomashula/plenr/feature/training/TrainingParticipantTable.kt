@@ -1,8 +1,8 @@
 package cz.tomashula.plenr.feature.training
 
 import cz.tomashula.plenr.feature.user.UserTable
-import org.jetbrains.exposed.sql.ReferenceOption
-import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.v1.core.ReferenceOption
+import org.jetbrains.exposed.v1.core.Table
 
 /** Many [users][UserTable] to one [training][TrainingTable] */
 object TrainingParticipantTable : Table("training_participant")

@@ -1,9 +1,10 @@
 package cz.tomashula.plenr.feature.user
 
 import kotlinx.datetime.DayOfWeek
-import org.jetbrains.exposed.dao.id.IntIdTable
-import org.jetbrains.exposed.sql.ReferenceOption
-import org.jetbrains.exposed.sql.kotlin.datetime.time
+import org.jetbrains.exposed.v1.core.ReferenceOption
+import org.jetbrains.exposed.v1.core.dao.id.IntIdTable
+import org.jetbrains.exposed.v1.core.less
+import org.jetbrains.exposed.v1.datetime.time
 
 object UserRegularAvailabilityTable : IntIdTable("user_regular_availability")
 {

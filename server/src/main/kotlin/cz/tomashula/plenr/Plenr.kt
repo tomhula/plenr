@@ -17,7 +17,7 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.rpc.krpc.ktor.server.Krpc
-import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.v1.jdbc.Database
 import java.nio.file.Path
 import kotlin.io.path.pathString
 

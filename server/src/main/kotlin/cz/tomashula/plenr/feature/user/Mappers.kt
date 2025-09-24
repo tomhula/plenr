@@ -1,7 +1,7 @@
 package cz.tomashula.plenr.feature.user
 
-import org.jetbrains.exposed.sql.Alias
-import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.v1.core.Alias
+import org.jetbrains.exposed.v1.core.ResultRow
 
 fun ResultRow.toUserDto(
     alias: Alias<UserTable>? = null,
