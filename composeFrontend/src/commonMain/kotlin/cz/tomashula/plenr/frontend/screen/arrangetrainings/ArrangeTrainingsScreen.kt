@@ -299,7 +299,9 @@ fun TrainingDialog(
 
                 Text("Date and time")
 
-                WheelDateTimePicker { snappedDateTime ->
+                WheelDateTimePicker(
+                    startDateTime = startDateTime,
+                ) { snappedDateTime ->
                     startDateTime = snappedDateTime
                 }
                 
