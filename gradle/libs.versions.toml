@@ -2,7 +2,7 @@
 kotlin = "2.1.20"
 kotlinx-serialization = "1.8.1"
 kotlinx-coroutines = "1.10.2"
-kotlinx-datetime = "0.6.2"
+kotlinx-datetime = "0.7.1"
 ktor = "3.1.2"
 logback = "1.5.18"
 kotlin-logging = "7.0.7"
@@ -19,6 +19,7 @@ mysql = "9.2.0"
 exposed = "0.60.0"
 commons-email = "2.0.0-M1"
 kotlinx-rpc = "0.6.2"
+datetime-wheel-picker = "1.1.0-alpha05-compose1.8"
 
 [libraries]
 # Kotlin
@@ -43,6 +44,7 @@ androidx-lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecy
 androidx-lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx" }
 kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 androidx-navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "androidx"}
+datetime-wheel-picker = { module = "io.github.darkokoa:datetime-wheel-picker", version.ref = "datetime-wheel-picker" }
 # Logging
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 kotlin-logging = { module = "io.github.oshai:kotlin-logging", version.ref = "kotlin-logging" }

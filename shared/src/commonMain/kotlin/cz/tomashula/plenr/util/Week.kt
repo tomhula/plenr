@@ -1,9 +1,21 @@
 package cz.tomashula.plenr.util
 
-import kotlinx.datetime.*
 import kotlinx.serialization.Serializable
 import cz.tomashula.plenr.serialization.WeekSerializer
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atTime
+import kotlinx.datetime.daysUntil
+import kotlinx.datetime.format
 import kotlinx.datetime.format.DateTimeFormat
+import kotlinx.datetime.minus
+import kotlinx.datetime.plus
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 @Serializable(with = WeekSerializer::class)
 class Week(date: LocalDate): Comparable<Week>
@@ -42,6 +54,7 @@ class Week(date: LocalDate): Comparable<Week>
 
     companion object
     {
+        @OptIn(ExperimentalTime::class)
         fun current() = Week(Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date)
     }
 }

@@ -40,11 +40,23 @@ import cz.tomashula.plenr.util.LocalTimeRanges
 import cz.tomashula.plenr.util.contains
 import cz.tomashula.plenr.util.now
 import cz.tomashula.plenr.util.rangeTo
-import io.ktor.http.HttpHeaders.Position
-import kotlinx.datetime.*
+import dev.darkokoa.datetimewheelpicker.WheelDateTimePicker
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atDate
+import kotlinx.datetime.atTime
+import kotlinx.datetime.format
 import kotlinx.datetime.format.char
-import org.jetbrains.skia.Surface
+import kotlinx.datetime.minus
+import kotlinx.datetime.plus
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
+import kotlinx.datetime.todayIn
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.ExperimentalTime
 
 @Composable
 fun ArrangeTrainingsScreen(
@@ -285,77 +297,12 @@ fun TrainingDialog(
                     Text("Parkour")
                 }
 
-                // Date and time selection
-                Text("Date")
-                ArrowSelector(
-                    selectedItem = startDateTime.date,
-                    onNext = { 
-                        startDateTime = LocalDateTime(
-                            startDateTime.date.plus(1, DateTimeUnit.DAY),
-                            startDateTime.time
-                        )
-                    },
-                    onPrevious = { 
-                        startDateTime = LocalDateTime(
-                            startDateTime.date.minus(1, DateTimeUnit.DAY),
-                            startDateTime.time
-                        )
-                    },
-                    itemDisplay = { it.toString() },
-                    modifier = Modifier.fillMaxWidth()
-                )
+                Text("Date and time")
 
-                Text("Time")
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    // Hours selector
-                    ArrowSelector(
-                        selectedItem = startDateTime.time.hour,
-                        onNext = { 
-                            val newHour = (startDateTime.time.hour + 1) % 24
-                            startDateTime = LocalDateTime(
-                                startDateTime.date,
-                                LocalTime(newHour, startDateTime.time.minute)
-                            )
-                        },
-                        onPrevious = { 
-                            val newHour = (startDateTime.time.hour - 1 + 24) % 24
-                            startDateTime = LocalDateTime(
-                                startDateTime.date,
-                                LocalTime(newHour, startDateTime.time.minute)
-                            )
-                        },
-                        itemDisplay = { it.toString().padStart(2, '0') },
-                        modifier = Modifier.weight(1f)
-                    )
-
-                    Text(":", fontSize = 22.sp, fontWeight = FontWeight.Bold)
-
-                    // Minutes selector
-                    ArrowSelector(
-                        selectedItem = startDateTime.time.minute,
-                        onNext = { 
-                            val newMinute = (startDateTime.time.minute + 5) % 60
-                            startDateTime = LocalDateTime(
-                                startDateTime.date,
-                                LocalTime(startDateTime.time.hour, newMinute)
-                            )
-                        },
-                        onPrevious = { 
-                            val newMinute = (startDateTime.time.minute - 5 + 60) % 60
-                            startDateTime = LocalDateTime(
-                                startDateTime.date,
-                                LocalTime(startDateTime.time.hour, newMinute)
-                            )
-                        },
-                        itemDisplay = { it.toString().padStart(2, '0') },
-                        modifier = Modifier.weight(1f)
-                    )
+                WheelDateTimePicker { snappedDateTime ->
+                    startDateTime = snappedDateTime
                 }
-
+                
                 // Length in minutes
                 OutlinedTextField(
                     value = lengthMinutes,
@@ -478,6 +425,7 @@ fun TrainingDialog(
     )
 }
 
+@OptIn(ExperimentalTime::class)
 private fun LocalTime.plusMinutes(minutes: Int): LocalTime
 {
     val date = Clock.System.todayIn(TimeZone.currentSystemDefault())

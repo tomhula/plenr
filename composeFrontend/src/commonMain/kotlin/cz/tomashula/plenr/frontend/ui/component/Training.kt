@@ -15,14 +15,15 @@ import cz.tomashula.plenr.feature.training.TrainingType
 import cz.tomashula.plenr.feature.training.TrainingWithParticipantsDto
 import cz.tomashula.plenr.feature.user.UserDto
 import cz.tomashula.plenr.frontend.ui.Colors
-import cz.tomashula.plenr.frontend.ui.theme.extendedLight
 import kotlinx.datetime.*
+import kotlin.time.ExperimentalTime
 
 /**
  * A training card.
  *
  * @param viewer The viewer, which is excluded from the participant list.
  */
+@OptIn(ExperimentalTime::class)
 @Composable
 fun Training(
     training: TrainingWithParticipantsDto,
